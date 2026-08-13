@@ -1,0 +1,137 @@
+@page "/rankings"
+@inject RankingService RankingService
+
+<PageTitle>Rankings — MU Online</PageTitle>
+
+<section class="py-16">
+    <div class="container-page">
+        <div class="text-center mb-12">
+            <h1 class="font-display-hero text-secondary-fixed uppercase tracking-wider mb-2">Hall of Legends</h1>
+            <p class="font-body-lg text-on-surface-variant max-w-2xl mx-auto">The mightiest warriors of the realm.</p>
+        </div>
+
+        <!-- Tabs -->
+        <div class="flex flex-wrap gap-4 mb-8 border-b border-primary-container pb-2">
+            <button @onclick="() => SetTab(0)" class="@(TabIndex == 0 ? "btn-ornate px-6 py-2" : "text-on-surface-variant hover:text-secondary-fixed font-label-caps uppercase px-6 py-2")">Reset</button>
+            <button @onclick="() => SetTab(1)" class="@(TabIndex == 1 ? "btn-ornate px-6 py-2" : "text-on-surface-variant hover:text-secondary-fixed font-label-caps uppercase px-6 py-2")">Killers</button>
+            <button @onclick="() => SetTab(2)" class="@(TabIndex == 2 ? "btn-ornate px-6 py-2" : "text-on-surface-variant hover:text-secondary-fixed font-label-caps uppercase px-6 py-2")">Online</button>
+            <button @onclick="() => SetTab(3)" class="@(TabIndex == 3 ? "btn-ornate px-6 py-2" : "text-on-surface-variant hover:text-secondary-fixed font-label-caps uppercase px-6 py-2")">Guilds</button>
+        </div>
+
+        @if (TabIndex == 0)
+        {
+            <table class="rank-table">
+                <thead>
+                    <tr><th>#</th><th>Name</th><th>Resets</th><th>Level</th><th>Master Level</th></tr>
+                </thead>
+                <tbody>
+                    @for (var i = 0; i < _resets.Count; i++)
+                    {
+                        var r = _resets[i];
+                        <tr class="@(i < 3 ? "rank-top3" : "")">
+                            <td class="text-secondary-fixed">@(i + 1)</td>
+                            <td>@r.Name</td>
+                            <td>@r.Resets</td>
+                            <td>@r.Level</td>
+                            <td>@r.MasterLevel</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+        else if (TabIndex == 1)
+        {
+            <table class="rank-table">
+                <thead>
+                    <tr><th>#</th><th>Name</th><th>Class</th><th>Kills</th></tr>
+                </thead>
+                <tbody>
+                    @for (var i = 0; i < _killers.Count; i++)
+                    {
+                        var k = _killers[i];
+                        <tr class="@(i < 3 ? "rank-top3" : "")">
+                            <td class="text-secondary-fixed">@(i + 1)</td>
+                            <td>@k.Name</td>
+                            <td>@k.ClassName</td>
+                            <td>@k.PlayerKillCount</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+        else if (TabIndex == 2)
+        {
+            <table class="rank-table">
+                <thead>
+                    <tr><th>Name</th><th>Class</th><th>Map</th></tr>
+                </thead>
+                <tbody>
+                    @foreach (var o in _online)
+                    {
+                        <tr>
+                            <td>@o.Name</td>
+                            <td>@o.ClassName</td>
+                            <td>@o.MapName</td>
+                        </tr>
+                    }
+                    @if (_online.Count == 0)
+                    {
+                        <tr><td colspan="3" class="text-on-surface-variant">No players online right now.</td></tr>
+                    }
+                </tbody>
+            </table>
+        }
+        else
+        {
+            <table class="rank-table">
+                <thead>
+                    <tr><th>#</th><th>Guild</th><th>Score</th></tr>
+                </thead>
+                <tbody>
+                    @for (var i = 0; i < _guilds.Count; i++)
+                    {
+                        var g = _guilds[i];
+                        <tr class="@(i < 3 ? "rank-top3" : "")">
+                            <td class="text-secondary-fixed">@(i + 1)</td>
+                            <td>@g.Name</td>
+                            <td>@g.Score</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+    </div>
+</section>
+
+@code {
+    private int TabIndex;
+    private List<ResetRank> _resets = new();
+    private List<KillerRank> _killers = new();
+    private List<OnlineRank> _online = new();
+    private List<GuildRank> _guilds = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        await SetTab(0);
+    }
+
+    private async Task SetTab(int tab)
+    {
+        TabIndex = tab;
+        switch (tab)
+        {
+            case 0:
+                _resets = await RankingService.GetResetRankingAsync();
+                break;
+            case 1:
+                _killers = await RankingService.GetKillersAsync();
+                break;
+            case 2:
+                _online = await RankingService.GetOnlineRankingAsync();
+                break;
+            case 3:
+                _guilds = await RankingService.GetGuildsAsync();
+                break;
+        }
+    }
+}

@@ -1,0 +1,50 @@
+@page "/classes"
+
+<PageTitle>Classes — MU Online</PageTitle>
+
+<section class="bg-surface-container-high py-16 border-b border-primary-container relative overflow-hidden">
+    <div class="container-page relative z-10">
+        <div class="text-center mb-12">
+            <h1 class="font-display-hero text-secondary-fixed uppercase tracking-wider mb-2">Choose Your Path</h1>
+            <p class="font-body-lg text-on-surface-variant max-w-2xl mx-auto">Master devastating skills and impenetrable defenses across unique archetypes.</p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            @foreach (var cls in _classes)
+            {
+                <div class="card-metallic relative overflow-hidden group h-[400px]">
+                    <div class="absolute inset-0 bg-cover bg-center opacity-60 group-hover:opacity-80 transition-opacity duration-500 group-hover:scale-105 transform"
+                         style="background-image: url('@cls.Image')"></div>
+                    <div class="absolute inset-0 bg-gradient-to-t from-[#0a0a0a] via-[#0a0a0a]/60 to-transparent"></div>
+                    <div class="absolute bottom-0 left-0 w-full p-6 text-center transform translate-y-4 group-hover:translate-y-0 transition-transform duration-300">
+                        <div class="w-12 h-12 mx-auto bg-primary-container border-2 border-secondary-fixed rounded-full flex items-center justify-center mb-3" style="box-shadow: 0 0 10px #8b0000;">
+                            <span class="material-symbols-outlined text-secondary-fixed">@cls.Icon</span>
+                        </div>
+                        <h3 class="font-headline-md text-secondary-fixed uppercase tracking-widest mb-1">@cls.Name</h3>
+                        <p class="text-on-surface-variant text-sm mb-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300">@cls.Description</p>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</section>
+
+@code {
+    private readonly List<ClassInfo> _classes = new()
+    {
+        new() { Name = "Dark Knight", Icon = "swords", Description = "Master of melee combat, boasting unmatched physical strength and defense.", Image = "https://lh3.googleusercontent.com/aida-public/AB6AXuBJefDGeXn0sOpOvyJSz7b8sg7K_mchwgehTNKCG-SUyDdCn285qUpOLuoEzlhCuB45vj9AUUzyVaYgHTHOEpoJHCPCQ_pvqc6rh73UXdyfNSqBo9ewfUPEg_NdmdvL2ZMC-yqKkb1uE5qdIWF64CeL23coLFufafkUt1AX1aPb1T8BnUafRyDNYcQ-FfSUwFTNU2UYqn9wJIvkg2h0OoBR0a0SK9ZW6ImFIRifANt56I4xnhW5zkZuXg" },
+        new() { Name = "Dark Wizard", Icon = "auto_fix_high", Description = "Wields devastating elemental magic capable of decimating hordes of enemies.", Image = "https://lh3.googleusercontent.com/aida-public/AB6AXuBZbPAFhf47moN8vSJWr9pAknhk0Rt8ywgq14p0HXOKyx0uPBLhe98JJ2CKuiUzFpUJlU7FdgnjGKAdQrOYwKH9hFkO9b341esPO2kjVgzKeAMUSS2KvSSa3Ook7RWO87AqKpmUkG3E8Jeh7PjJtcBoP5PD7MbkclDMZzfIKfeAk6VXUGCZplw-RizNcvwU5tfOraJWnFnJUdQc9vMf6IpR3mRnG-u8bZzumrDnSWf4Z-tzdXY6SD3JeA" },
+        new() { Name = "Fairy Elf", Icon = "join_inner", Description = "Versatile combatant specializing in ranged attacks and supportive blessings.", Image = "https://lh3.googleusercontent.com/aida-public/AB6AXuCFBsJCwM7-_LkDcRjB21l7vSx2UUyLbM80DcMsvxtBPwwbD6S2dJW3GQ0q2SfB4siNiEAuf1y70anWdZYiks1Q5bWNgJfPXcDgGU57T1f1eqpvZqr2GGHHnw5u4AEiavz-j90XEWgZGDmNu87O-6-r9sfO7VKnBEaJLntInfo0BcLuMWcBi2qZX3AZZta6wkEILIWOaQmNC96fRqg_dp1wL2I3NRfa4XaO58FUDgckJ-7DuSgpikCEig" },
+        new() { Name = "Dark Lord", Icon = "local_police", Description = "A commander who leads armies with dark aura and devastating combos.", Image = "https://lh3.googleusercontent.com/aida-public/AB6AXuBJefDGeXn0sOpOvyJSz7b8sg7K_mchwgehTNKCG-SUyDdCn285qUpOLuoEzlhCuB45vj9AUUzyVaYgHTHOEpoJHCPCQ_pvqc6rh73UXdyfNSqBo9ewfUPEg_NdmdvL2ZMC-yqKkb1uE5qdIWF64CeL23coLFufafkUt1AX1aPb1T8BnUafRyDNYcQ-FfSUwFTNU2UYqn9wJIvkg2h0OoBR0a0SK9ZW6ImFIRifANt56I4xnhW5zkZuXg" },
+        new() { Name = "Summoner", Icon = "auto_awesome", Description = "Channels the power of otherworldly spirits to overwhelm foes.", Image = "https://lh3.googleusercontent.com/aida-public/AB6AXuBZbPAFhf47moN8vSJWr9pAknhk0Rt8ywgq14p0HXOKyx0uPBLhe98JJ2CKuiUzFpUJlU7FdgnjGKAdQrOYwKH9hFkO9b341esPO2kjVgzKeAMUSS2KvSSa3Ook7RWO87AqKpmUkG3E8Jeh7PjJtcBoP5PD7MbkclDMZzfIKfeAk6VXUGCZplw-RizNcvwU5tfOraJWnFnJUdQc9vMf6IpR3mRnG-u8bZzumrDnSWf4Z-tzdXY6SD3JeA" },
+        new() { Name = "Rage Fighter", Icon = "sports_mma", Description = "An unrelenting brawler who crushes enemies with raw ferocity.", Image = "https://lh3.googleusercontent.com/aida-public/AB6AXuCFBsJCwM7-_LkDcRjB21l7vSx2UUyLbM80DcMsvxtBPwwbD6S2dJW3GQ0q2SfB4siNiEAuf1y70anWdZYiks1Q5bWNgJfPXcDgGU57T1f1eqpvZqr2GGHHnw5u4AEiavz-j90XEWgZGDmNu87O-6-r9sfO7VKnBEaJLntInfo0BcLuMWcBi2qZX3AZZta6wkEILIWOaQmNC96fRqg_dp1wL2I3NRfa4XaO58FUDgckJ-7DuSgpikCEig" },
+    };
+
+    private class ClassInfo
+    {
+        public string Name { get; init; } = string.Empty;
+        public string Icon { get; init; } = string.Empty;
+        public string Description { get; init; } = string.Empty;
+        public string Image { get; init; } = string.Empty;
+    }
+}

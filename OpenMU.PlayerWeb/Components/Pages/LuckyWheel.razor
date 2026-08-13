@@ -1,0 +1,171 @@
+@page "/lucky-wheel"
+@rendermode InteractiveServer
+@attribute [Authorize]
+@inject WheelService WheelService
+@inject CharacterService CharacterService
+@inject AuthenticationStateProvider AuthStateProvider
+
+<PageTitle>Lucky Wheel — MU Online</PageTitle>
+
+<section class="py-16">
+    <div class="container-page max-w-4xl mx-auto">
+        <h1 class="font-headline-lg text-secondary-fixed uppercase tracking-wider mb-8 text-center">Lucky Wheel</h1>
+
+        @if (_loading)
+        {
+            <p class="text-center text-on-surface-variant">Loading...</p>
+        }
+        else
+        {
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
+                <!-- Wheel Display Card -->
+                <div class="panel-metallic p-8 text-center">
+                    <div class="mb-6">
+                        <span class="font-label-caps uppercase text-on-surface-variant block mb-1">Spins Remaining</span>
+                        <span class="font-stats-ui text-4xl text-secondary-fixed">@_spinsRemaining</span>
+                    </div>
+
+                    <!-- Visual Wheel SVG -->
+                    <div class="relative w-64 h-64 mx-auto mb-8">
+                        <svg class="w-full h-full transform transition-transform duration-1000 @_spinClass" viewBox="0 0 100 100">
+                            <circle cx="50" cy="50" r="48" fill="#1e1e24" stroke="#8B0000" stroke-width="2" />
+                            <!-- 6 Slices -->
+                            <path d="M50 50 L50 2 A48 48 0 0 1 91.57 26" fill="#8B0000" opacity="0.6" />
+                            <path d="M50 50 L91.57 26 A48 48 0 0 1 91.57 74" fill="#FFD700" opacity="0.4" />
+                            <path d="M50 50 L91.57 74 A48 48 0 0 1 50 98" fill="#8B0000" opacity="0.8" />
+                            <path d="M50 50 L50 98 A48 48 0 0 1 8.43 74" fill="#FFD700" opacity="0.6" />
+                            <path d="M50 50 L8.43 74 A48 48 0 0 1 8.43 26" fill="#8B0000" opacity="0.5" />
+                            <path d="M50 50 L8.43 26 A48 48 0 0 1 50 2" fill="#FFD700" opacity="0.3" />
+                            <circle cx="50" cy="50" r="12" fill="#121214" stroke="#FFD700" stroke-width="1.5" />
+                        </svg>
+                        <!-- Pointer -->
+                        <div class="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-2 text-[#FFD700] text-xl">▼</div>
+                    </div>
+
+                    @if (_characters.Count > 0)
+                    {
+                        <div class="mb-4">
+                            <label class="font-label-caps uppercase text-on-surface-variant text-xs mb-1 block">Receive Prize On</label>
+                            <select @bind="_selectedCharId" class="input-recessed text-xs py-1 px-3">
+                                @foreach (var c in _characters)
+                                {
+                                    <option value="@c.Id">@c.Name (@(c.CharacterClass?.Name ?? "Unknown"))</option>
+                                }
+                            </select>
+                        </div>
+                    }
+
+                    <button class="btn-ornate w-full py-3 text-lg" disabled="@(_spinning || _spinsRemaining <= 0 || _characters.Count == 0)" @onclick="SpinAsync">
+                        @(_spinning ? "SPINNING..." : "SPIN NOW!")
+                    </button>
+
+                    @if (!string.IsNullOrEmpty(_error))
+                    {
+                        <div class="alert-error mt-4">@_error</div>
+                    }
+                    @if (_lastPrize is not null)
+                    {
+                        <div class="alert-success mt-4">
+                            🎉 Prize Won: <strong>@_lastPrize.Name</strong>
+                        </div>
+                    }
+                </div>
+
+                <!-- History & Prizes Column -->
+                <div class="space-y-6">
+                    <div class="panel-metallic p-6">
+                        <h3 class="font-headline-sm text-secondary-fixed uppercase mb-4">Prize Pool</h3>
+                        <ul class="space-y-2 text-sm text-on-surface-variant">
+                            <li class="flex justify-between border-b border-outline-variant/30 pb-1"><span>Jewel of Bless x5</span><span class="text-secondary-fixed">30%</span></li>
+                            <li class="flex justify-between border-b border-outline-variant/30 pb-1"><span>Jewel of Soul x5</span><span class="text-secondary-fixed">25%</span></li>
+                            <li class="flex justify-between border-b border-outline-variant/30 pb-1"><span>Jewel of Life x3</span><span class="text-secondary-fixed">20%</span></li>
+                            <li class="flex justify-between border-b border-outline-variant/30 pb-1"><span>Jewel of Chaos x10</span><span class="text-secondary-fixed">15%</span></li>
+                            <li class="flex justify-between border-b border-outline-variant/30 pb-1"><span>Exc Item (Random)</span><span class="text-secondary-fixed">8%</span></li>
+                            <li class="flex justify-between pb-1"><span>Bonus Spin x1</span><span class="text-secondary-fixed">2%</span></li>
+                        </ul>
+                    </div>
+
+                    <div class="panel-metallic p-6">
+                        <h3 class="font-headline-sm text-secondary-fixed uppercase mb-4">Recent Wins</h3>
+                        @if (_history.Count == 0)
+                        {
+                            <p class="text-xs text-on-surface-variant">No spin history yet.</p>
+                        }
+                        else
+                        {
+                            <div class="space-y-2 text-xs">
+                                @foreach (var item in _history)
+                                {
+                                    <div class="flex justify-between border-b border-outline-variant/20 pb-1">
+                                        <span class="text-secondary-fixed font-bold">@item.Prize</span>
+                                        <span class="text-on-surface-variant">@item.SpunAt.ToLocalTime().ToString("g")</span>
+                                    </div>
+                                }
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</section>
+
+@code {
+    private bool _loading = true;
+    private bool _spinning;
+    private int _spinsRemaining;
+    private Guid _accountId;
+    private Guid _selectedCharId;
+    private List<Character> _characters = new();
+    private List<WheelSpin> _history = new();
+    private WheelPrize? _lastPrize;
+    private string? _error;
+    private string _spinClass = "";
+
+    protected override async Task OnInitializedAsync()
+    {
+        var state = await AuthStateProvider.GetAuthenticationStateAsync();
+        var idClaim = state.User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+        if (Guid.TryParse(idClaim, out var id))
+        {
+            _accountId = id;
+            _spinsRemaining = await WheelService.GetSpinsRemainingAsync(_accountId);
+            _characters = await CharacterService.GetAccountCharactersAsync(_accountId);
+            if (_characters.Count > 0)
+            {
+                _selectedCharId = _characters[0].Id;
+            }
+            _history = await WheelService.GetHistoryAsync(_accountId);
+        }
+
+        _loading = false;
+    }
+
+    private async Task SpinAsync()
+    {
+        if (_spinning || _spinsRemaining <= 0 || _selectedCharId == Guid.Empty) return;
+
+        _spinning = true;
+        _error = null;
+        _lastPrize = null;
+        _spinClass = "rotate-[720deg]";
+
+        await Task.Delay(1000); // Simulate spin animation delay
+
+        var (err, prize) = await WheelService.SpinAsync(_accountId, _selectedCharId);
+        _spinClass = "";
+
+        if (err is not null)
+        {
+            _error = err;
+        }
+        else
+        {
+            _lastPrize = prize;
+            _spinsRemaining = await WheelService.GetSpinsRemainingAsync(_accountId);
+            _history = await WheelService.GetHistoryAsync(_accountId);
+        }
+
+        _spinning = false;
+    }
+}

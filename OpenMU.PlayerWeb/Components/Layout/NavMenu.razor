@@ -1,0 +1,43 @@
+@inject AuthenticationStateProvider AuthStateProvider
+
+<nav class="fixed top-0 w-full z-50 border-b border-primary-container shadow-[0_4px_20px_rgba(0,0,0,0.8)]" style="background-color: rgba(19,19,19,0.85); backdrop-filter: blur(8px);">
+    <div class="container-page flex justify-between items-center h-20">
+        <a href="/" class="font-headline-sm text-secondary-fixed tracking-widest uppercase flex items-center gap-2">
+            <span class="material-symbols-outlined" style="font-variation-settings:'FILL' 1;">swords</span>
+            MU ONLINE
+        </a>
+
+        <div class="hidden md:flex gap-8 font-label-caps uppercase">
+            <a href="/" class="text-secondary-fixed border-b-2 border-secondary-fixed-dim pb-1">Home</a>
+            <a href="/rankings" class="text-on-surface-variant hover:text-secondary-fixed transition-colors">Rankings</a>
+            <a href="/classes" class="text-on-surface-variant hover:text-secondary-fixed transition-colors">Classes</a>
+            <a href="/maps" class="text-on-surface-variant hover:text-secondary-fixed transition-colors">Maps</a>
+            <a href="/lucky-wheel" class="text-on-surface-variant hover:text-secondary-fixed transition-colors">Lucky Wheel</a>
+            <a href="/news" class="text-on-surface-variant hover:text-secondary-fixed transition-colors">News</a>
+            <a href="/download" class="text-on-surface-variant hover:text-secondary-fixed transition-colors">Download</a>
+        </div>
+
+        <div class="flex items-center gap-4">
+            @if (_isAuthenticated)
+            {
+                <a href="/account" class="text-on-surface-variant hover:text-secondary-fixed font-label-caps uppercase">Account</a>
+                <a href="/logout" class="btn-ornate px-4 py-1 text-xs">Logout</a>
+            }
+            else
+            {
+                <a href="/login" class="text-on-surface-variant hover:text-secondary-fixed font-label-caps uppercase">Sign In</a>
+                <a href="/register" class="btn-ornate px-6 py-2">Play Now</a>
+            }
+        </div>
+    </div>
+</nav>
+
+@code {
+    private bool _isAuthenticated;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var state = await AuthStateProvider.GetAuthenticationStateAsync();
+        _isAuthenticated = state.User.Identity?.IsAuthenticated == true;
+    }
+}

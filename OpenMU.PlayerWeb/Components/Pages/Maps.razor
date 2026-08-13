@@ -1,0 +1,49 @@
+@page "/maps"
+
+<PageTitle>Maps — MU Online</PageTitle>
+
+<section class="py-16 relative overflow-hidden">
+    <div class="container-page">
+        <div class="text-center mb-12">
+            <h1 class="font-display-hero text-secondary-fixed uppercase tracking-wider mb-2">World of Darkness</h1>
+            <p class="font-body-lg text-on-surface-variant max-w-2xl mx-auto">Explore vast lands filled with peril, treasure, and ancient secrets.</p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            @foreach (var map in _maps)
+            {
+                <div class="card-metallic p-6">
+                    <h3 class="font-headline-sm text-secondary-fixed uppercase tracking-wider mb-2">@map.Name</h3>
+                    <p class="text-on-surface-variant text-sm mb-4">@map.Description</p>
+                    <div class="flex justify-between text-xs font-stats-ui text-on-surface-variant">
+                        <span>Level: @map.LevelRange</span>
+                        <span class="text-secondary-fixed">@map.Type</span>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</section>
+
+@code {
+    private readonly List<MapInfo> _maps = new()
+    {
+        new() { Name = "Lorencia", Type = "Town", LevelRange = "1-20", Description = "The starting city of humans, a bastion of light amid the darkness." },
+        new() { Name = "Noria", Type = "Elf Realm", LevelRange = "1-20", Description = "Home of the elves, surrounded by mystical forests." },
+        new() { Name = "Elbeland", Type = "Summoner Realm", LevelRange = "1-20", Description = "The forgotten land where summoners awaken their power." },
+        new() { Name = "Dungeon", Type = "Dungeon", LevelRange = "15-60", Description = "A three-floor catacomb teeming with undead and treasure." },
+        new() { Name = "Devias", Type = "Snowfield", LevelRange = "60-100", Description = "A frozen battlefield where ice beasts guard ancient relics." },
+        new() { Name = "Lost Tower", Type = "Dungeon", LevelRange = "40-120", Description = "A twisted tower of trials, growing deadlier with each floor." },
+        new() { Name = "Atlans", Type = "Underwater", LevelRange = "120-180", Description = "A sunken city where the ocean hides its most feared creatures." },
+        new() { Name = "Tarkan", Type = "Desert", LevelRange = "180-250", Description = "A scorched wasteland under an eternal blood-red sun." },
+        new() { Name = "Icarus", Type = "Sky", LevelRange = "250-320", Description = "A floating island of legend, reachable only by the worthy." },
+    };
+
+    private class MapInfo
+    {
+        public string Name { get; init; } = string.Empty;
+        public string Type { get; init; } = string.Empty;
+        public string LevelRange { get; init; } = string.Empty;
+        public string Description { get; init; } = string.Empty;
+    }
+}

@@ -1,0 +1,131 @@
+@page "/account/rename"
+@rendermode InteractiveServer
+@attribute [Authorize]
+@inject CharacterService CharacterService
+@inject AuthenticationStateProvider AuthStateProvider
+@inject NavigationManager Navigation
+
+<PageTitle>Rename Character — MU Online</PageTitle>
+
+<section class="py-16">
+    <div class="container-page max-w-xl mx-auto">
+        <h1 class="font-headline-lg text-secondary-fixed uppercase tracking-wider mb-8">Rename Character</h1>
+
+        @if (_loading)
+        {
+            <p class="text-on-surface-variant">Loading...</p>
+        }
+        else if (_characters.Count == 0)
+        {
+            <div class="panel-metallic p-8 text-center">
+                <p class="text-on-surface-variant mb-4">You have no characters yet.</p>
+                <a href="/account" class="btn-ornate px-6 py-2">Back to Account</a>
+            </div>
+        }
+        else
+        {
+            <div class="panel-metallic p-6">
+                <EditForm Model="_model" OnValidSubmit="HandleRenameAsync" FormName="renameForm">
+                    <div class="space-y-4">
+                        <div>
+                            <label class="font-label-caps uppercase text-on-surface-variant mb-2 block">Select Character</label>
+                            <InputSelect @bind-Value="_model.OldName" class="input-recessed w-full">
+                                @foreach (var charItem in _characters)
+                                {
+                                    <option value="@charItem.Name">@charItem.Name (@(charItem.CharacterClass?.Name ?? "Unknown"))</option>
+                                }
+                            </InputSelect>
+                        </div>
+
+                        <div>
+                            <label class="font-label-caps uppercase text-on-surface-variant mb-2 block">New Name</label>
+                            <InputText @bind-Value="_model.NewName" class="input-recessed w-full" placeholder="3-10 alphanumeric characters" maxlength="10" />
+                        </div>
+
+                        <div class="text-xs text-on-surface-variant">
+                            Fee: <span class="text-secondary-fixed">5,000,000 Zen</span> (deducted from character inventory)
+                        </div>
+
+                        @if (!string.IsNullOrEmpty(_message))
+                        {
+                            <div class="@(_isError ? "alert-error" : "alert-success") mt-4">@_message</div>
+                        }
+
+                        <div class="pt-4 flex gap-4">
+                            <button type="submit" class="btn-ornate px-6 py-2" disabled="@_submitting">
+                                @(_submitting ? "Renaming..." : "Confirm Rename")
+                            </button>
+                            <a href="/account" class="text-on-surface-variant hover:text-secondary-fixed font-label-caps uppercase flex items-center">Cancel</a>
+                        </div>
+                    </div>
+                </EditForm>
+            </div>
+        }
+    </div>
+</section>
+
+@code {
+    private List<Character> _characters = new();
+    private bool _loading = true;
+    private bool _submitting;
+    private string? _message;
+    private bool _isError;
+    private RenameModel _model = new();
+    private Guid _accountId;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var state = await AuthStateProvider.GetAuthenticationStateAsync();
+        var idClaim = state.User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+        if (Guid.TryParse(idClaim, out var id))
+        {
+            _accountId = id;
+            _characters = await CharacterService.GetAccountCharactersAsync(_accountId);
+            if (_characters.Count > 0)
+            {
+                _model.OldName = _characters[0].Name;
+            }
+        }
+
+        _loading = false;
+    }
+
+    private async Task HandleRenameAsync()
+    {
+        if (string.IsNullOrWhiteSpace(_model.OldName) || string.IsNullOrWhiteSpace(_model.NewName))
+        {
+            _message = "Please fill in all fields.";
+            _isError = true;
+            return;
+        }
+
+        _submitting = true;
+        _message = null;
+
+        var error = await CharacterService.RenameAsync(_accountId, _model.OldName, _model.NewName);
+        if (error is not null)
+        {
+            _message = error;
+            _isError = true;
+        }
+        else
+        {
+            _message = $"Character '{_model.OldName}' renamed to '{_model.NewName}' successfully!";
+            _isError = false;
+            _model.NewName = string.Empty;
+            _characters = await CharacterService.GetAccountCharactersAsync(_accountId);
+            if (_characters.Count > 0)
+            {
+                _model.OldName = _characters[0].Name;
+            }
+        }
+
+        _submitting = false;
+    }
+
+    private class RenameModel
+    {
+        public string OldName { get; set; } = string.Empty;
+        public string NewName { get; set; } = string.Empty;
+    }
+}

@@ -1,0 +1,149 @@
+@page "/admin/vip"
+@rendermode InteractiveServer
+@attribute [Authorize]
+@using Microsoft.EntityFrameworkCore
+@inject VipService VipService
+@inject IDbContextFactory<AppDbContext> DbFactory
+
+<PageTitle>Admin VIP Management — MU Online</PageTitle>
+
+<section class="py-16">
+    <div class="container-page max-w-4xl mx-auto">
+        <h1 class="font-headline-lg text-secondary-fixed uppercase tracking-wider mb-8">Admin VIP Management</h1>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <!-- Grant VIP Form -->
+            <div class="panel-metallic p-6">
+                <h2 class="font-headline-sm text-secondary-fixed uppercase mb-6">Grant VIP Status</h2>
+                <EditForm Model="_model" OnValidSubmit="GrantVipAsync" FormName="grantVip">
+                    <div class="space-y-4">
+                        <div>
+                            <label class="font-label-caps uppercase text-on-surface-variant block mb-1">Account Login Name</label>
+                            <InputText @bind-Value="_model.LoginName" class="input-recessed w-full" placeholder="Username" />
+                        </div>
+
+                        <div>
+                            <label class="font-label-caps uppercase text-on-surface-variant block mb-1">VIP Tier</label>
+                            <InputSelect @bind-Value="_model.Tier" class="input-recessed w-full">
+                                <option value="0">0 — None</option>
+                                <option value="1">1 — Silver (+20% EXP)</option>
+                                <option value="2">2 — Gold (+50% EXP)</option>
+                                <option value="3">3 — Platinum (+100% EXP)</option>
+                            </InputSelect>
+                        </div>
+
+                        <div>
+                            <label class="font-label-caps uppercase text-on-surface-variant block mb-1">Duration (Days, -1 for Lifetime)</label>
+                            <InputNumber @bind-Value="_model.DurationDays" class="input-recessed w-full" />
+                        </div>
+
+                        @if (!string.IsNullOrEmpty(_message))
+                        {
+                            <div class="@(_isError ? "alert-error" : "alert-success") mt-4">@_message</div>
+                        }
+
+                        <button type="submit" class="btn-ornate w-full py-2 mt-4" disabled="@_submitting">
+                            @(_submitting ? "Processing..." : "Grant VIP")
+                        </button>
+                    </div>
+                </EditForm>
+            </div>
+
+            <!-- Active VIP Accounts List -->
+            <div class="panel-metallic p-6">
+                <h2 class="font-headline-sm text-secondary-fixed uppercase mb-6">Active VIP Accounts</h2>
+                @if (_loading)
+                {
+                    <p class="text-xs text-on-surface-variant">Loading VIP accounts...</p>
+                }
+                else if (_vipAccounts.Count == 0)
+                {
+                    <p class="text-xs text-on-surface-variant">No active VIP accounts found.</p>
+                }
+                else
+                {
+                    <div class="space-y-3 max-h-96 overflow-y-auto">
+                        @foreach (var acc in _vipAccounts)
+                        {
+                            <div class="card-metallic p-3 flex justify-between items-center text-sm">
+                                <div>
+                                    <span class="font-bold text-secondary-fixed">@acc.LoginName</span>
+                                    <span class="badge text-xs ml-2">Tier @acc.VipTier</span>
+                                </div>
+                                <div class="text-xs text-on-surface-variant">
+                                    @(acc.VipExpiry.HasValue ? acc.VipExpiry.Value.ToString("yyyy-MM-dd") : "Lifetime")
+                                </div>
+                            </div>
+                        }
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</section>
+
+@code {
+    private List<Account> _vipAccounts = new();
+    private bool _loading = true;
+    private bool _submitting;
+    private string? _message;
+    private bool _isError;
+    private VipFormModel _model = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadVipAccountsAsync();
+        _loading = false;
+    }
+
+    private async Task LoadVipAccountsAsync()
+    {
+        _vipAccounts = await VipService.GetActiveVipAccountsAsync();
+    }
+
+    private async Task GrantVipAsync()
+    {
+        if (string.IsNullOrWhiteSpace(_model.LoginName))
+        {
+            _message = "Please enter a login name.";
+            _isError = true;
+            return;
+        }
+
+        _submitting = true;
+        _message = null;
+
+        await using var db = await DbFactory.CreateDbContextAsync();
+        var acc = await db.Accounts.FirstOrDefaultAsync(a => a.LoginName == _model.LoginName);
+        if (acc is null)
+        {
+            _message = $"Account '{_model.LoginName}' not found.";
+            _isError = true;
+        }
+        else
+        {
+            var err = await VipService.GrantVipAsync(acc.Id, _model.Tier, _model.DurationDays);
+            if (err is not null)
+            {
+                _message = err;
+                _isError = true;
+            }
+            else
+            {
+                _message = $"VIP Tier {_model.Tier} granted to {_model.LoginName}!";
+                _isError = false;
+                _model = new VipFormModel();
+                await LoadVipAccountsAsync();
+            }
+        }
+
+        _submitting = false;
+    }
+
+    private class VipFormModel
+    {
+        public string LoginName { get; set; } = string.Empty;
+        public short Tier { get; set; } = 1;
+        public int DurationDays { get; set; } = 30;
+    }
+}

@@ -1,0 +1,69 @@
+@page "/admin/bots"
+@rendermode InteractiveServer
+@attribute [Authorize(Roles = "GAME_MASTER")]
+@inject BotService BotService
+
+<PageTitle>Manage Bots — MU Online</PageTitle>
+
+<section class="py-16">
+    <div class="container-page max-w-4xl mx-auto">
+        <div class="flex items-center justify-between mb-8">
+            <h1 class="font-headline-lg text-secondary-fixed uppercase tracking-wider">Manage Bots</h1>
+            <div class="flex items-center gap-4">
+                <span class="font-stats-ui text-on-surface-variant">Total: <span class="text-secondary-fixed">@_bots.Count</span></span>
+                <button class="btn-ornate px-4 py-1 text-xs" @onclick="DeleteAllAsync">Delete All Bots</button>
+            </div>
+        </div>
+
+        @if (!string.IsNullOrEmpty(_message))
+        {
+            <div class="alert-success mb-6">@_message</div>
+        }
+
+        <div class="panel-metallic overflow-hidden">
+            <table class="rank-table">
+                <thead>
+                    <tr><th>Account</th><th>Character</th><th>Class</th><th>Map</th><th>Created</th></tr>
+                </thead>
+                <tbody>
+                    @foreach (var bot in _bots)
+                    {
+                        <tr>
+                            <td>@bot.LoginName</td>
+                            <td>@bot.CharacterName</td>
+                            <td>@bot.ClassName</td>
+                            <td>@bot.MapName</td>
+                            <td>@bot.RegistrationDate.ToString("dd MMM yyyy")</td>
+                        </tr>
+                    }
+                    @if (_bots.Count == 0)
+                    {
+                        <tr><td colspan="5" class="text-on-surface-variant">No bots found.</td></tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</section>
+
+@code {
+    private List<BotInfo> _bots = new();
+    private string? _message;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadAsync();
+    }
+
+    private async Task LoadAsync()
+    {
+        _bots = await BotService.GetBotsAsync();
+    }
+
+    private async Task DeleteAllAsync()
+    {
+        var count = await BotService.DeleteAllBotsAsync();
+        _message = $"Deleted {count} bot accounts.";
+        await LoadAsync();
+    }
+}

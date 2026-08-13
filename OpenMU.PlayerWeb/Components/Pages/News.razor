@@ -1,0 +1,52 @@
+@page "/news"
+@inject NewsService NewsService
+
+<PageTitle>News — MU Online</PageTitle>
+
+<section class="py-16">
+    <div class="container-page">
+        <h1 class="font-display-hero text-secondary-fixed uppercase tracking-wider mb-8">Chronicles</h1>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            @foreach (var news in _news)
+            {
+                <article class="card-metallic p-6 flex flex-col">
+                    <div class="flex items-center justify-between mb-3">
+                        <span class="badge">News</span>
+                        <span class="text-on-surface-variant text-xs">@news.CreationDate.ToString("dd MMM yyyy")</span>
+                    </div>
+                    <h3 class="font-headline-md text-secondary-fixed mb-2">@news.Title</h3>
+                    <p class="text-on-surface-variant text-sm flex-grow">@Truncate(news.Body, 200)</p>
+                    <div class="mt-4">
+                        <a href="/news/@news.Id" class="text-secondary-fixed hover:text-[#FFD700] font-label-caps uppercase flex items-center gap-1">
+                            Read More <span class="material-symbols-outlined text-sm">arrow_forward</span>
+                        </a>
+                    </div>
+                </article>
+            }
+            @if (_news.Count == 0)
+            {
+                <p class="text-on-surface-variant">No news available.</p>
+            }
+        </div>
+    </div>
+</section>
+
+@code {
+    private List<NewsItem> _news = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        _news = await NewsService.GetAllAsync(50);
+    }
+
+    private static string Truncate(string text, int max)
+    {
+        if (string.IsNullOrEmpty(text) || text.Length <= max)
+        {
+            return text;
+        }
+
+        return text[..max] + "...";
+    }
+}

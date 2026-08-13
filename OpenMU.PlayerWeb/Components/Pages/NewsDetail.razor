@@ -1,0 +1,42 @@
+@page "/news/{Id:guid}"
+@inject NewsService NewsService
+
+<PageTitle>@(_news?.Title ?? "News") — MU Online</PageTitle>
+
+<section class="py-16">
+    <div class="container-page max-w-3xl mx-auto">
+        @if (_news is null)
+        {
+            <p class="text-on-surface-variant">News not found.</p>
+        }
+        else
+        {
+            <div class="panel-metallic p-8">
+                <div class="flex items-center justify-between mb-4">
+                    <span class="badge">News</span>
+                    <span class="text-on-surface-variant text-sm">@_news.CreationDate.ToString("dd MMM yyyy")</span>
+                </div>
+                <h1 class="font-headline-lg text-secondary-fixed mb-2">@_news.Title</h1>
+                <p class="text-on-surface-variant text-sm mb-6">By @_news.Author</p>
+                <div class="text-on-surface whitespace-pre-wrap">@_news.Body</div>
+                <div class="mt-8">
+                    <a href="/news" class="text-secondary-fixed hover:text-[#FFD700] font-label-caps uppercase flex items-center gap-1">
+                        <span class="material-symbols-outlined text-sm">arrow_back</span> Back to News
+                    </a>
+                </div>
+            </div>
+        }
+    </div>
+</section>
+
+@code {
+    [Parameter]
+    public Guid Id { get; set; }
+
+    private NewsItem? _news;
+
+    protected override async Task OnInitializedAsync()
+    {
+        _news = await NewsService.GetByIdAsync(Id);
+    }
+}

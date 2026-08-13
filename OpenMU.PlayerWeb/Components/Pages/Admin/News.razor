@@ -1,0 +1,91 @@
+@page "/admin/news"
+@rendermode InteractiveServer
+@attribute [Authorize(Roles = "GAME_MASTER")]
+@inject NewsService NewsService
+@inject AuthenticationStateProvider AuthStateProvider
+
+<PageTitle>Manage News — MU Online</PageTitle>
+
+<section class="py-16">
+    <div class="container-page max-w-4xl mx-auto">
+        <h1 class="font-headline-lg text-secondary-fixed uppercase tracking-wider mb-8">Manage News</h1>
+
+        <div class="panel-metallic p-8 mb-8">
+            <h2 class="font-headline-sm text-secondary-fixed mb-4 uppercase">New Post</h2>
+            <EditForm Model="_model" OnValidSubmit="CreateAsync" FormName="news">
+                <DataAnnotationsValidator />
+                <div class="space-y-4">
+                    <div>
+                        <label class="font-label-caps uppercase text-on-surface-variant">Title</label>
+                        <InputText @bind-Value="_model.Title" class="input-recessed" />
+                        <ValidationMessage For="() => _model.Title" class="text-sm" style="color: var(--on-error-container);" />
+                    </div>
+                    <div>
+                        <label class="font-label-caps uppercase text-on-surface-variant">Body</label>
+                        <InputTextArea @bind-Value="_model.Body" class="input-recessed" rows="5" />
+                        <ValidationMessage For="() => _model.Body" class="text-sm" style="color: var(--on-error-container);" />
+                    </div>
+                    @if (!string.IsNullOrEmpty(_message))
+                    {
+                        <div class="alert-success">@_message</div>
+                    }
+                    <button type="submit" class="btn-ornate px-6 py-2">Publish</button>
+                </div>
+            </EditForm>
+        </div>
+
+        <div class="space-y-4">
+            @foreach (var news in _news)
+            {
+                <div class="card-metallic p-6 flex items-center justify-between gap-4">
+                    <div>
+                        <h3 class="font-headline-sm text-secondary-fixed">@news.Title</h3>
+                        <p class="text-on-surface-variant text-xs">@news.Author — @news.CreationDate.ToString("dd MMM yyyy")</p>
+                    </div>
+                    <button class="btn-ornate px-4 py-1 text-xs" @onclick="() => DeleteAsync(news.Id)">Delete</button>
+                </div>
+            }
+        </div>
+    </div>
+</section>
+
+@code {
+    private List<NewsItem> _news = new();
+    private NewsModel _model = new();
+    private string? _message;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadAsync();
+    }
+
+    private async Task LoadAsync()
+    {
+        _news = await NewsService.GetAllAsync(50);
+    }
+
+    private async Task CreateAsync()
+    {
+        var state = await AuthStateProvider.GetAuthenticationStateAsync();
+        var name = state.User.Identity?.Name ?? "GM";
+        await NewsService.CreateAsync(_model.Title, _model.Body, name);
+        _model = new NewsModel();
+        _message = "News published.";
+        await LoadAsync();
+    }
+
+    private async Task DeleteAsync(Guid id)
+    {
+        await NewsService.DeleteAsync(id);
+        await LoadAsync();
+    }
+
+    private class NewsModel
+    {
+        [System.ComponentModel.DataAnnotations.Required(ErrorMessage = "Title is required.")]
+        public string Title { get; set; } = string.Empty;
+
+        [System.ComponentModel.DataAnnotations.Required(ErrorMessage = "Body is required.")]
+        public string Body { get; set; } = string.Empty;
+    }
+}

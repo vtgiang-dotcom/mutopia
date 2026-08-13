@@ -1,0 +1,201 @@
+@page "/account"
+@rendermode InteractiveServer
+@attribute [Authorize]
+@inject CharacterService CharacterService
+@inject AuthenticationStateProvider AuthStateProvider
+
+<PageTitle>My Account — MU Online</PageTitle>
+
+<section class="py-16">
+    <div class="container-page max-w-4xl mx-auto">
+        <h1 class="font-headline-lg text-secondary-fixed uppercase tracking-wider mb-8">My Characters</h1>
+
+        @if (_loading)
+        {
+            <p class="text-on-surface-variant">Loading...</p>
+        }
+        else if (_characters.Count == 0)
+        {
+            <div class="panel-metallic p-8 text-center">
+                <p class="text-on-surface-variant mb-4">You have no characters yet.</p>
+                <p class="text-sm text-on-surface-variant">Create a character in-game, then return here to manage it.</p>
+            </div>
+        }
+        else
+        {
+            <div class="space-y-4">
+                @foreach (var character in _characters)
+                {
+                    <div class="panel-metallic p-6">
+                        <div class="flex flex-wrap items-center justify-between gap-4">
+                            <div>
+                                <h2 class="font-headline-md text-secondary-fixed">@character.Name</h2>
+                                <div class="flex gap-3 mt-2 text-sm">
+                                    <span class="badge">@(character.CharacterClass?.Name ?? "Unknown")</span>
+                                    <span class="badge badge-gold">@(character.GameMapDefinition?.Name ?? "Lorencia")</span>
+                                </div>
+                            </div>
+                            <div class="font-stats-ui text-sm text-on-surface-variant">
+                                Level-Up Points: <span class="text-secondary-fixed">@character.LevelUpPoints</span>
+                            </div>
+                        </div>
+
+                        @if (_selectedName == character.Name)
+                        {
+                            <div class="mt-6 pt-6 border-t border-outline-variant/50 space-y-6">
+                                <!-- Add Stats -->
+                                <div>
+                                    <h3 class="font-headline-sm text-secondary-fixed mb-3 uppercase">Add Stats</h3>
+                                    <EditForm Model="_statsModel" OnValidSubmit="() => AddStatsAsync(character)" FormName="addstats">
+                                        <div class="grid grid-cols-2 md:grid-cols-5 gap-3">
+                                            <div><label class="font-label-caps uppercase text-on-surface-variant">STR</label><InputNumber @bind-Value="_statsModel.Str" class="input-recessed" /></div>
+                                            <div><label class="font-label-caps uppercase text-on-surface-variant">AGI</label><InputNumber @bind-Value="_statsModel.Agi" class="input-recessed" /></div>
+                                            <div><label class="font-label-caps uppercase text-on-surface-variant">VIT</label><InputNumber @bind-Value="_statsModel.Vit" class="input-recessed" /></div>
+                                            <div><label class="font-label-caps uppercase text-on-surface-variant">ENE</label><InputNumber @bind-Value="_statsModel.Ene" class="input-recessed" /></div>
+                                            <div><label class="font-label-caps uppercase text-on-surface-variant">CMD</label><InputNumber @bind-Value="_statsModel.Lead" class="input-recessed" /></div>
+                                        </div>
+                                        <button type="submit" class="btn-ornate mt-4 px-6 py-2">Apply Stats</button>
+                                    </EditForm>
+                                </div>
+
+                                <!-- Character Actions -->
+                                <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                                    <div class="card-metallic p-4">
+                                        <h4 class="font-label-caps uppercase text-secondary-fixed mb-2">Reset</h4>
+                                        <p class="text-on-surface-variant text-xs mb-3">Return to level 1, keep resets.</p>
+                                        <button class="btn-ornate px-4 py-1 text-xs" @onclick="() => ResetAsync(character)">Reset Character</button>
+                                    </div>
+                                    <div class="card-metallic p-4">
+                                        <h4 class="font-label-caps uppercase text-secondary-fixed mb-2">Reset Stats</h4>
+                                        <p class="text-on-surface-variant text-xs mb-3">Refund all stat points.</p>
+                                        <button class="btn-ornate px-4 py-1 text-xs" @onclick="() => ResetStatsAsync(character)">Reset Stats</button>
+                                    </div>
+                                    <div class="card-metallic p-4">
+                                        <h4 class="font-label-caps uppercase text-secondary-fixed mb-2">PK Clear</h4>
+                                        <p class="text-on-surface-variant text-xs mb-3">Clear your PK status.</p>
+                                        <button class="btn-ornate px-4 py-1 text-xs" @onclick="() => PkClearAsync(character)">Clear PK</button>
+                                    </div>
+                                    <div class="card-metallic p-4">
+                                        <h4 class="font-label-caps uppercase text-secondary-fixed mb-2">Rename</h4>
+                                        <p class="text-on-surface-variant text-xs mb-3">Change character name (5M Zen).</p>
+                                        <a href="/account/rename" class="btn-ornate inline-block px-4 py-1 text-xs text-center">Rename</a>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                        else
+                        {
+                            <button class="text-secondary-fixed hover:text-[#FFD700] font-label-caps uppercase mt-4 flex items-center gap-1" @onclick="() => Select(character.Name)">
+                                Manage <span class="material-symbols-outlined text-sm">arrow_forward</span>
+                            </button>
+                        }
+                    </div>
+                }
+            </div>
+
+            @if (!string.IsNullOrEmpty(_message))
+            {
+                <div class="@(_isError ? "alert-error" : "alert-success") mt-6">@_message</div>
+            }
+
+            <div class="mt-8 flex flex-wrap gap-4">
+                <a href="/account/rename" class="text-on-surface-variant hover:text-secondary-fixed font-label-caps uppercase">Rename Character</a>
+                <span class="text-outline-variant">|</span>
+                <a href="/account/changepassword" class="text-on-surface-variant hover:text-secondary-fixed font-label-caps uppercase">Change Password</a>
+                <span class="text-outline-variant">|</span>
+                <a href="/logout" class="text-on-surface-variant hover:text-secondary-fixed font-label-caps uppercase">Logout</a>
+            </div>
+        }
+    </div>
+</section>
+
+@code {
+    private List<Character> _characters = new();
+    private bool _loading = true;
+    private string? _selectedName;
+    private string? _message;
+    private bool _isError;
+    private StatsModel _statsModel = new();
+
+    private Guid _accountId;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var state = await AuthStateProvider.GetAuthenticationStateAsync();
+        var idClaim = state.User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+        if (Guid.TryParse(idClaim, out var id))
+        {
+            _accountId = id;
+            await LoadCharactersAsync();
+        }
+
+        _loading = false;
+    }
+
+    private async Task LoadCharactersAsync()
+    {
+        _characters = await CharacterService.GetAccountCharactersAsync(_accountId);
+    }
+
+    private void Select(string name)
+    {
+        _selectedName = name;
+        _message = null;
+    }
+
+    private async Task AddStatsAsync(Character character)
+    {
+        _message = null;
+        var error = await CharacterService.AddStatsAsync(_accountId, character.Name, _statsModel.Str, _statsModel.Agi, _statsModel.Vit, _statsModel.Ene, _statsModel.Lead);
+        Show(error, "Stats applied successfully.");
+        _statsModel = new StatsModel();
+        await LoadCharactersAsync();
+    }
+
+    private async Task ResetAsync(Character character)
+    {
+        _message = null;
+        var error = await CharacterService.ResetAsync(_accountId, character.Name, character.CharacterClassId.ToString());
+        Show(error, "Character reset successfully.");
+        await LoadCharactersAsync();
+    }
+
+    private async Task ResetStatsAsync(Character character)
+    {
+        _message = null;
+        var error = await CharacterService.ResetStatsAsync(_accountId, character.Name);
+        Show(error, "Stats reset successfully.");
+        await LoadCharactersAsync();
+    }
+
+    private async Task PkClearAsync(Character character)
+    {
+        _message = null;
+        var error = await CharacterService.PkClearAsync(_accountId, character.Name);
+        Show(error, "PK cleared successfully.");
+        await LoadCharactersAsync();
+    }
+
+    private void Show(string? error, string successMessage)
+    {
+        if (error is not null)
+        {
+            _message = error;
+            _isError = true;
+        }
+        else
+        {
+            _message = successMessage;
+            _isError = false;
+        }
+    }
+
+    private class StatsModel
+    {
+        public int Str { get; set; }
+        public int Agi { get; set; }
+        public int Vit { get; set; }
+        public int Ene { get; set; }
+        public int Lead { get; set; }
+    }
+}

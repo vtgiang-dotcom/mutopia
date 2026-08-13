@@ -1,0 +1,31 @@
+﻿@page "/Error"
+@using System.Diagnostics
+
+<PageTitle>Error</PageTitle>
+
+<section class="py-16">
+    <div class="container-page max-w-2xl mx-auto text-center">
+        <h1 class="font-display-hero text-primary uppercase tracking-wider mb-4">Error</h1>
+        <p class="text-on-surface-variant mb-6">An error occurred while processing your request.</p>
+
+        @if (ShowRequestId)
+        {
+            <p class="text-sm text-on-surface-variant mb-6">
+                <strong>Request ID:</strong> <code class="font-stats-ui">@RequestId</code>
+            </p>
+        }
+
+        <a href="/" class="btn-ornate px-8 py-3">Return Home</a>
+    </div>
+</section>
+
+@code {
+    [CascadingParameter]
+    private HttpContext? HttpContext { get; set; }
+
+    private string? RequestId { get; set; }
+    private bool ShowRequestId => !string.IsNullOrEmpty(RequestId);
+
+    protected override void OnInitialized() =>
+        RequestId = Activity.Current?.Id ?? HttpContext?.TraceIdentifier;
+}

@@ -1,0 +1,14 @@
+﻿<Router AppAssembly="typeof(Program).Assembly">
+    <Found Context="routeData">
+        <AuthorizeRouteView RouteData="routeData" DefaultLayout="typeof(Layout.MainLayout)">
+            <NotAuthorized>
+                <div class="max-w-7xl mx-auto px-8 py-24 text-center">
+                    <h1 class="text-2xl text-secondary-fixed uppercase tracking-widest mb-4">Access Denied</h1>
+                    <p class="text-on-surface-variant mb-6">You need to sign in to access this page.</p>
+                    <a href="/login" class="btn-ornate inline-block px-6 py-2 uppercase tracking-wider">Sign In</a>
+                </div>
+            </NotAuthorized>
+        </AuthorizeRouteView>
+        <FocusOnNavigate RouteData="routeData" Selector="h1" />
+    </Found>
+</Router>
