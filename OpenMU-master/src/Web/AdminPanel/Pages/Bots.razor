@@ -1,0 +1,657 @@
+@page "/bots"
+@using System.Threading
+@using MUnique.OpenMU.DataModel.Entities
+@using MUnique.OpenMU.DataModel.Configuration
+@using MUnique.OpenMU.GameLogic
+@using MUnique.OpenMU.GameLogic.Attributes
+@using MUnique.OpenMU.GameLogic.Bots
+@using MUnique.OpenMU.GameServer
+@using MUnique.OpenMU.Interfaces
+@using MUnique.OpenMU.Persistence
+@using MUnique.OpenMU.Web.AdminPanel.Services
+@using Microsoft.Extensions.Logging
+@implements IDisposable
+
+@inject IPersistenceContextProvider PersistenceContextProvider
+@inject IServiceProvider ServiceProvider
+@inject ILogger<Bots> Logger
+
+<PageTitle>OpenMU: Bot AI Controller & Dashboard</PageTitle>
+<Breadcrumb IsFirstFromRoot="true" Caption="Bot AI Controller & Dashboard" />
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h1>🤖 Bot AI Dashboard & Controller</h1>
+    <div class="btn-group">
+        <button class="btn btn-primary" @onclick="() => SpawnBotsAsync(10)" disabled="@_isProcessing">
+            <span class="oi oi-plus" aria-hidden="true"></span> Spawn 10
+        </button>
+        <button class="btn btn-info text-white" @onclick="() => SpawnBotsAsync(50)" disabled="@_isProcessing">
+            <span class="oi oi-plus" aria-hidden="true"></span> Spawn 50
+        </button>
+        <button class="btn btn-success text-white" @onclick="() => SpawnBotsAsync(100)" disabled="@_isProcessing">
+            <span class="oi oi-bolt" aria-hidden="true"></span> Spawn 100
+        </button>
+        <button class="btn btn-warning text-dark" @onclick="KillAllFaultedAsync" disabled="@_isProcessing">
+            <span class="oi oi-action-undo" aria-hidden="true"></span> Kill Faulted (@_stats.FaultedCount)
+        </button>
+        <button class="btn btn-danger" @onclick="PurgeAllBotsAsync" disabled="@_isProcessing">
+            <span class="oi oi-trash" aria-hidden="true"></span> Purge All
+        </button>
+    </div>
+</div>
+
+@if (!string.IsNullOrEmpty(_message))
+{
+    <div class="alert alert-info alert-dismissible fade show mb-3" role="alert">
+        @_message
+        <button type="button" class="btn-close" @onclick="() => _message = null"></button>
+    </div>
+}
+
+<!-- Top Stats Cards -->
+<div class="row g-3 mb-4">
+    <div class="col-md-3">
+        <div class="card bg-primary text-white shadow-sm h-100">
+            <div class="card-body d-flex align-items-center justify-content-between">
+                <div>
+                    <h6 class="card-title mb-0 text-white-50">Active Bots</h6>
+                    <h2 class="fw-bold mb-0">@_stats.TotalActive</h2>
+                    <small class="text-white-50">DB: @_botAccounts.Count accounts</small>
+                </div>
+                <div class="display-5">🤖</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card @_statsCardFaultedBg text-white shadow-sm h-100">
+            <div class="card-body d-flex align-items-center justify-content-between">
+                <div>
+                    <h6 class="card-title mb-0 text-white-50">Faulted Bots</h6>
+                    <h2 class="fw-bold mb-0">@_stats.FaultedCount</h2>
+                    <small class="text-white-50">Auto-healing via relog</small>
+                </div>
+                <div class="display-5">⚠️</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card bg-success text-white shadow-sm h-100">
+            <div class="card-body d-flex align-items-center justify-content-between">
+                <div>
+                    <h6 class="card-title mb-0 text-white-50">Bots in Party</h6>
+                    <h2 class="fw-bold mb-0">@_stats.InPartyCount</h2>
+                    <small class="text-white-50">Auto-Party FSM Active</small>
+                </div>
+                <div class="display-5">👥</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card bg-dark text-white shadow-sm h-100">
+            <div class="card-body d-flex align-items-center justify-content-between">
+                <div>
+                    <h6 class="card-title mb-0 text-white-50">Average Level / Rate</h6>
+                    <h2 class="fw-bold mb-0">L.@(_stats.AverageLevel.ToString("0"))</h2>
+                    <small class="text-white-50">Avg EXP: @_stats.AverageExperiencePerHour.ToString("N0")/h</small>
+                </div>
+                <div class="display-5">📈</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Personality Archetype Stats Bar -->
+<div class="card shadow-sm mb-3 bg-dark text-white">
+    <div class="card-body py-2">
+        <div class="d-flex flex-wrap align-items-center justify-content-between small">
+            <span class="fw-bold me-2 text-warning">🎭 Personality Archetypes:</span>
+            <span>⚖️ Balanced: <strong class="text-info">@(_stats.PersonalityCounts.GetValueOrDefault("Balanced", 0))</strong></span>
+            <span>💰 Greedy: <strong class="text-warning">@(_stats.PersonalityCounts.GetValueOrDefault("Greedy", 0))</strong></span>
+            <span>⚔️ Warrior: <strong class="text-danger">@(_stats.PersonalityCounts.GetValueOrDefault("Warrior", 0))</strong></span>
+            <span>🐺 Loner: <strong class="text-light">@(_stats.PersonalityCounts.GetValueOrDefault("Loner", 0))</strong></span>
+            <span>🛡️ Guardian: <strong class="text-success">@(_stats.PersonalityCounts.GetValueOrDefault("Guardian", 0))</strong></span>
+            <span>💥 Reckless: <strong class="text-danger font-monospace">@(_stats.PersonalityCounts.GetValueOrDefault("Reckless", 0))</strong></span>
+        </div>
+    </div>
+</div>
+
+<!-- Controls & Filters Bar -->
+<div class="card shadow-sm mb-3">
+    <div class="card-body py-2">
+        <div class="row g-2 align-items-center">
+            <div class="col-md-3">
+                <input type="text" class="form-control form-control-sm" placeholder="🔍 Search character or login..." @bind="_searchQuery" @bind:event="oninput" />
+            </div>
+            <div class="col-md-2">
+                <select class="form-select form-select-sm" @bind="_statusFilter">
+                    <option value="All">All Statuses</option>
+                    <option value="Faulted">⚠️ Faulted Only</option>
+                    <option value="MasterWait">🔄 MasterWait Only</option>
+                    <option value="Overpowered">🔴 Overpowered (>5M/h)</option>
+                    <option value="Normal">✅ Normal Only</option>
+                </select>
+            </div>
+            <div class="col-md-2">
+                <select class="form-select form-select-sm" @bind="_personalityFilter">
+                    <option value="All">All Personalities</option>
+                    <option value="Balanced">⚖️ Balanced</option>
+                    <option value="Greedy">💰 Greedy</option>
+                    <option value="Warrior">⚔️ Warrior</option>
+                    <option value="Loner">🐺 Loner</option>
+                    <option value="Guardian">🛡️ Guardian</option>
+                    <option value="Reckless">💥 Reckless</option>
+                </select>
+            </div>
+            <div class="col-md-2">
+                <select class="form-select form-select-sm" @bind="_mapFilter">
+                    <option value="All">All Maps</option>
+                    @foreach (var map in _availableMaps)
+                    {
+                        <option value="@map">@map</option>
+                    }
+                </select>
+            </div>
+            <div class="col-md-3 d-flex align-items-center">
+                <div class="form-check form-switch mb-0">
+                    <input class="form-check-input" type="checkbox" id="autoRefreshSwitch" @bind="_autoRefresh" @bind:after="OnAutoRefreshToggled" />
+                    <label class="form-check-label ms-1" for="autoRefreshSwitch">Live 5s Auto-refresh</label>
+                </div>
+            </div>
+            <div class="col-md-2 text-end">
+                <button class="btn btn-sm btn-outline-secondary w-100" @onclick="RefreshLiveStateAsync" disabled="@_isLoading">
+                    <span class="oi oi-reload" aria-hidden="true"></span> Refresh Live
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Live Bot Table -->
+<div class="card shadow-sm mb-4">
+    <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center">
+        <h5 class="mb-0">Live Active Bots (@FilteredLiveBots.Count() / @_liveBots.Count)</h5>
+        <span class="badge bg-secondary">Updated: @_lastUpdated.ToString("HH:mm:ss")</span>
+    </div>
+    <div class="card-body p-0">
+        @if (_isLoading)
+        {
+            <div class="p-4 text-center">
+                <div class="spinner-border text-primary" role="status">
+                    <span class="visually-hidden">Loading live bot metrics...</span>
+                </div>
+            </div>
+        }
+        else if (!FilteredLiveBots.Any())
+        {
+            <div class="p-4 text-center text-muted">
+                No active bots match the selected filters or no bots are currently spawned.
+            </div>
+        }
+        else
+        {
+            <div class="table-responsive">
+                <table class="table table-striped table-hover mb-0 align-middle">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>#</th>
+                            <th>Login Account</th>
+                            <th>Character</th>
+                            <th>Level / Reset</th>
+                            <th>Map</th>
+                            <th>EXP / Hour</th>
+                            <th>Party</th>
+                            <th>Uptime</th>
+                            <th>Status</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var (bot, index) in FilteredLiveBots.Select((b, i) => (b, i + 1)))
+                        {
+                            <tr class="@GetRowCssClass(bot)">
+                                <td>@index</td>
+                                <td class="fw-bold font-monospace">@bot.LoginName</td>
+                                <td>@bot.CharacterName</td>
+                                <td>
+                                    <span class="badge bg-primary">L.@bot.Level</span>
+                                    @if (bot.ResetCount > 0)
+                                    {
+                                        <span class="badge bg-info text-dark">R.@bot.ResetCount</span>
+                                    }
+                                </td>
+                                <td><span class="badge bg-secondary">@bot.MapName</span></td>
+                                <td>
+                                    <strong class="@(bot.ExperiencePerHour > 5_000_000 ? "text-danger" : "text-success")">
+                                        @bot.ExperiencePerHour.ToString("N0") /h
+                                    </strong>
+                                </td>
+                                <td>
+                                    @if (bot.PartySize > 0)
+                                    {
+                                        <span class="badge bg-success">👥 Party (@bot.PartySize/5)</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-outline-secondary text-muted">Solo</span>
+                                    }
+                                </td>
+                                <td class="font-monospace fs-7">@FormatUptime(bot.UptimeSeconds)</td>
+                                <td>
+                                    @if (bot.StatusTag == "Faulted")
+                                    {
+                                        <span class="badge bg-danger">⚠️ Faulted</span>
+                                    }
+                                    else if (bot.StatusTag == "MasterWait")
+                                    {
+                                        <span class="badge bg-warning text-dark">🔄 Relog Required</span>
+                                    }
+                                    else if (bot.StatusTag == "Overpowered")
+                                    {
+                                        <span class="badge bg-danger text-white">🔴 Overpowered</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-success">✅ Normal</span>
+                                    }
+                                </td>
+                                <td>
+                                    <button class="btn btn-sm btn-outline-danger" @onclick="() => KillSingleBotAsync(bot.LoginName)">
+                                        <span class="oi oi-x" aria-hidden="true"></span> Kill
+                                    </button>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+    </div>
+</div>
+
+@code {
+    private List<Account> _botAccounts = new();
+    private List<BotLiveDto> _liveBots = new();
+    private BotDashboardStats _stats = new();
+    private bool _isLoading = true;
+    private bool _isProcessing = false;
+    private string? _message;
+    private DateTime _lastUpdated = DateTime.Now;
+
+    private string _searchQuery = string.Empty;
+    private string _statusFilter = "All";
+    private string _personalityFilter = "All";
+    private string _mapFilter = "All";
+    private bool _autoRefresh = true;
+    private Timer? _timer;
+
+    private string _statsCardFaultedBg => _stats.FaultedCount > 0 ? "bg-danger" : "bg-secondary";
+
+    private IEnumerable<string> _availableMaps => _liveBots
+        .Select(b => b.MapName)
+        .Where(m => !string.IsNullOrEmpty(m))
+        .Distinct()
+        .OrderBy(m => m);
+
+    private IEnumerable<BotLiveDto> FilteredLiveBots
+    {
+        get
+        {
+            var query = _liveBots.AsEnumerable();
+
+            if (!string.IsNullOrWhiteSpace(_searchQuery))
+            {
+                query = query.Where(b =>
+                    b.LoginName.Contains(_searchQuery, StringComparison.OrdinalIgnoreCase) ||
+                    b.CharacterName.Contains(_searchQuery, StringComparison.OrdinalIgnoreCase));
+            }
+
+            if (_statusFilter != "All")
+            {
+                query = query.Where(b => b.StatusTag.Equals(_statusFilter, StringComparison.OrdinalIgnoreCase));
+            }
+
+            if (_personalityFilter != "All")
+            {
+                query = query.Where(b => b.Personality.Equals(_personalityFilter, StringComparison.OrdinalIgnoreCase));
+            }
+
+            if (_mapFilter != "All")
+            {
+                query = query.Where(b => b.MapName.Equals(_mapFilter, StringComparison.OrdinalIgnoreCase));
+            }
+
+            return query;
+        }
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadBotsAsync();
+        await RefreshLiveStateAsync();
+
+        if (_autoRefresh)
+        {
+            StartTimer();
+        }
+    }
+
+    private void StartTimer()
+    {
+        _timer?.Dispose();
+        _timer = new Timer(async _ =>
+        {
+            await InvokeAsync(async () =>
+            {
+                await RefreshLiveStateAsync();
+                StateHasChanged();
+            });
+        }, null, 5000, 5000);
+    }
+
+    private void StopTimer()
+    {
+        _timer?.Dispose();
+        _timer = null;
+    }
+
+    private void OnAutoRefreshToggled()
+    {
+        if (_autoRefresh)
+        {
+            StartTimer();
+        }
+        else
+        {
+            StopTimer();
+        }
+    }
+
+    private async Task RefreshLiveStateAsync()
+    {
+        try
+        {
+            var botPlugin = GetBotPlugin();
+            if (botPlugin != null)
+            {
+                var activeBots = botPlugin.GetAllActiveBots();
+
+                _liveBots = activeBots.Select(bot =>
+                {
+                    var loginName = bot.Account?.LoginName ?? "N/A";
+                    var charName = bot.SelectedCharacter?.Name ?? bot.Name;
+                    var level = (int)(bot.Attributes?[Stats.Level] ?? 1);
+                    var resetCount = bot.SelectedCharacter is { } c ? (int)(c.Attributes.FirstOrDefault(a => a.Definition == Stats.Resets)?.Value ?? 0) : 0;
+                    var mapName = bot.CurrentMap?.Definition.Name ?? "Unknown";
+                    var partySize = bot.Party?.PartyList.Count ?? 0;
+
+                    var uptimeSeconds = Math.Max(1, (long)(DateTime.UtcNow - bot.StartedAt).TotalSeconds);
+                    var expPerHour = (long)(bot.ExperienceGainedSinceStart / (uptimeSeconds / 3600.0));
+
+                    string statusTag = "Normal";
+                    if (bot.AwaitsFaultRestart)
+                    {
+                        statusTag = "Faulted";
+                    }
+                    else if (bot.AwaitsMasterRestart)
+                    {
+                        statusTag = "MasterWait";
+                    }
+                    else if (expPerHour > 5_000_000)
+                    {
+                        statusTag = "Overpowered";
+                    }
+
+                    return new BotLiveDto
+                    {
+                        LoginName = loginName,
+                        CharacterName = charName,
+                        Level = level,
+                        ResetCount = resetCount,
+                        MapName = mapName,
+                        PartySize = partySize,
+                        ExperiencePerHour = expPerHour,
+                        TotalExperience = bot.ExperienceGainedSinceStart,
+                        UptimeSeconds = uptimeSeconds,
+                        IsFaulted = bot.AwaitsFaultRestart,
+                        Personality = BotPersonalityResolver.Resolve(charName).ToString(),
+                        StatusTag = statusTag,
+                    };
+                }).ToList();
+
+                var topFarmer = _liveBots.OrderByDescending(b => b.ExperiencePerHour).FirstOrDefault();
+
+                _stats = new BotDashboardStats
+                {
+                    TotalActive = _liveBots.Count,
+                    FaultedCount = _liveBots.Count(b => b.IsFaulted),
+                    InPartyCount = _liveBots.Count(b => b.PartySize > 0),
+                    AverageLevel = _liveBots.Count > 0 ? _liveBots.Average(b => b.Level) : 0,
+                    AverageExperiencePerHour = _liveBots.Count > 0 ? (long)_liveBots.Average(b => b.ExperiencePerHour) : 0,
+                    TopFarmerName = topFarmer?.CharacterName ?? "N/A",
+                    TopFarmerExpPerHour = topFarmer?.ExperiencePerHour ?? 0,
+                    PersonalityCounts = _liveBots.GroupBy(b => b.Personality).ToDictionary(g => g.Key, g => g.Count()),
+                };
+            }
+            else
+            {
+                _liveBots.Clear();
+                _stats = new BotDashboardStats();
+            }
+
+            _lastUpdated = DateTime.Now;
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Failed to refresh live bot state");
+        }
+        finally
+        {
+            _isLoading = false;
+        }
+    }
+
+    private async Task LoadBotsAsync()
+    {
+        try
+        {
+            var gameContext = GetGameContext();
+            if (gameContext != null)
+            {
+                using var context = PersistenceContextProvider.CreateNewPlayerContext(gameContext.Configuration);
+                var accounts = await context.GetAccountsOrderedByLoginNameAsync(0, 500);
+                _botAccounts = accounts.Where(a => a.IsBot || a.LoginName.StartsWith("bot", StringComparison.OrdinalIgnoreCase)).ToList();
+            }
+            else
+            {
+                using var context = PersistenceContextProvider.CreateNewContext();
+                var accounts = await context.GetAsync<Account>();
+                _botAccounts = accounts.Where(a => a.IsBot || a.LoginName.StartsWith("bot", StringComparison.OrdinalIgnoreCase)).ToList();
+            }
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Failed to load bot accounts from DB");
+        }
+    }
+
+    private async Task SpawnBotsAsync(int count)
+    {
+        _isProcessing = true;
+        _message = $"Generating {count} AI bots...";
+        StateHasChanged();
+
+        try
+        {
+            var gameContext = GetGameContext();
+            if (gameContext == null)
+            {
+                _message = "GameServer is currently initializing or not available. Please wait a few seconds and try again.";
+                return;
+            }
+
+            var botPlugin = gameContext.FeaturePlugIns.GetPlugIn<BotFeaturePlugIn>();
+            var charactersPerAccount = botPlugin?.Configuration?.GetEffectiveCharactersPerAccount()
+                ?? BotConfiguration.MaxCharactersPerAccountLimit;
+
+            // Generate with the SAME characters-per-account the spawn loop uses (the plugin's configured
+            // value, not a hard-coded 1): generating one character per account while the spawn pass asks
+            // for all slots is what produces the "could not be loaded or has no character" warning flood.
+            var generator = new BotGenerator(gameContext, Logger);
+            var created = await generator.EnsureBotsAsync(count, charactersPerAccount);
+
+            if (botPlugin != null)
+            {
+                botPlugin.Configuration ??= new BotConfiguration();
+                botPlugin.Configuration.Enabled = true;
+                botPlugin.Configuration.NumberOfAccounts = Math.Max(botPlugin.Configuration.NumberOfAccounts, count);
+                botPlugin.Configuration.MinOnlineSharePercent = 100;
+                botPlugin.Configuration.PresenceRotation = false;
+                botPlugin.ForceStart();
+            }
+
+            _message = $"Successfully generated {count} AI bots & activated Bot Plugin in-game (Created {created} new accounts).";
+            await LoadBotsAsync();
+            await RefreshLiveStateAsync();
+        }
+        catch (Exception ex)
+        {
+            _message = "Error spawning bots: " + ex.Message;
+            Logger.LogError(ex, "Failed to spawn bots");
+        }
+        finally
+        {
+            _isProcessing = false;
+            StateHasChanged();
+        }
+    }
+
+    private async Task KillSingleBotAsync(string loginName)
+    {
+        try
+        {
+            var botPlugin = GetBotPlugin();
+            if (botPlugin != null && await botPlugin.KillBotAsync(loginName))
+            {
+                _message = $"Successfully killed bot account '{loginName}'.";
+                await RefreshLiveStateAsync();
+            }
+            else
+            {
+                _message = $"Could not stop bot '{loginName}'.";
+            }
+        }
+        catch (Exception ex)
+        {
+            _message = "Error killing bot: " + ex.Message;
+            Logger.LogError(ex, "Failed to kill bot {Login}", loginName);
+        }
+    }
+
+    private async Task KillAllFaultedAsync()
+    {
+        _isProcessing = true;
+        StateHasChanged();
+
+        try
+        {
+            var botPlugin = GetBotPlugin();
+            if (botPlugin != null)
+            {
+                var faulted = _liveBots.Where(b => b.IsFaulted).ToList();
+                int killed = 0;
+                foreach (var b in faulted)
+                {
+                    if (await botPlugin.KillBotAsync(b.LoginName))
+                    {
+                        killed++;
+                    }
+                }
+                _message = $"Killed {killed} faulted bot(s).";
+                await RefreshLiveStateAsync();
+            }
+        }
+        catch (Exception ex)
+        {
+            _message = "Error killing faulted bots: " + ex.Message;
+            Logger.LogError(ex, "Failed to kill faulted bots");
+        }
+        finally
+        {
+            _isProcessing = false;
+            StateHasChanged();
+        }
+    }
+
+    private async Task PurgeAllBotsAsync()
+    {
+        _isProcessing = true;
+        _message = "Deleting all bot accounts from database...";
+        StateHasChanged();
+
+        try
+        {
+            var gameContext = GetGameContext();
+            if (gameContext == null)
+            {
+                _message = "GameServer is currently initializing or not available. Please wait a few seconds and try again.";
+                return;
+            }
+
+            var generator = new BotGenerator(gameContext, Logger);
+            var deleted = await generator.DeleteAllBotsAsync();
+            _message = $"Successfully deleted {deleted} bot accounts.";
+            await LoadBotsAsync();
+            await RefreshLiveStateAsync();
+        }
+        catch (Exception ex)
+        {
+            _message = "Error purging bots: " + ex.Message;
+            Logger.LogError(ex, "Failed to purge bots");
+        }
+        finally
+        {
+            _isProcessing = false;
+            StateHasChanged();
+        }
+    }
+
+    private IGameContext? GetGameContext()
+    {
+        var servers = ServiceProvider.GetService(typeof(IDictionary<int, IGameServer>)) as IDictionary<int, IGameServer>;
+        if (servers != null && servers.Values.FirstOrDefault() is IGameServerContextProvider provider)
+        {
+            return provider.Context;
+        }
+
+        return null;
+    }
+
+    private BotFeaturePlugIn? GetBotPlugin()
+    {
+        var gameContext = GetGameContext();
+        return gameContext?.FeaturePlugIns.GetPlugIn<BotFeaturePlugIn>();
+    }
+
+    private static string GetRowCssClass(BotLiveDto bot)
+    {
+        if (bot.IsFaulted) return "table-danger";
+        if (bot.AwaitsMasterRestart) return "table-warning";
+        if (bot.StatusTag == "Overpowered") return "table-dark text-warning";
+        return string.Empty;
+    }
+
+    private static string FormatUptime(long seconds)
+    {
+        var ts = TimeSpan.FromSeconds(seconds);
+        if (ts.TotalHours >= 1)
+        {
+            return $"{(int)ts.TotalHours}h {ts.Minutes}m";
+        }
+        return $"{ts.Minutes}m {ts.Seconds}s";
+    }
+
+    public void Dispose()
+    {
+        StopTimer();
+    }
+}
