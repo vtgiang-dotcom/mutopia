@@ -56,6 +56,9 @@ builder.Services.AddScoped<ServerStatusService>();
 builder.Services.AddScoped<BotService>();
 builder.Services.AddScoped<VipService>();
 builder.Services.AddScoped<WheelService>();
+builder.Services.AddScoped<MarketplaceService>();
+builder.Services.AddScoped<ShopService>();
+builder.Services.AddScoped<PaymentService>();
 
 builder.Services.AddHttpClient();
 
@@ -107,6 +110,19 @@ app.MapGet("/logout", async (HttpContext httpContext) =>
 {
     await httpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
     return Results.Redirect("/");
+});
+
+app.MapPost("/api/payment/webhook", async (HttpContext httpContext, PaymentService paymentService) =>
+{
+    using var reader = new System.IO.StreamReader(httpContext.Request.Body);
+    var body = await reader.ReadToEndAsync();
+    try {
+        var payload = System.Text.Json.JsonDocument.Parse(body).RootElement;
+        var result = await paymentService.HandleWebhookAsync(payload);
+        return result ? Results.Ok(new { success = true }) : Results.BadRequest(new { success = false });
+    } catch {
+        return Results.BadRequest(new { success = false });
+    }
 });
 
 app.MapRazorComponents<App>()

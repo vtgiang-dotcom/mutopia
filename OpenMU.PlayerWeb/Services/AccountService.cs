@@ -90,11 +90,17 @@ public class AccountService
         return BCrypt.Net.BCrypt.Verify(password, account.PasswordHash) ? account : null;
     }
 
-    /// <summary>Checks whether the account owns a GM character (CharacterStatus == 32).</summary>
     public async Task<bool> IsGameMasterAsync(Guid accountId)
     {
         await using var db = await _dbFactory.CreateDbContextAsync();
         return await db.Characters.AnyAsync(c => c.AccountId == accountId && c.CharacterStatus == 32);
+    }
+
+    /// <summary>Gets an account by ID.</summary>
+    public async Task<Account?> GetAccountByIdAsync(Guid accountId)
+    {
+        await using var db = await _dbFactory.CreateDbContextAsync();
+        return await db.Accounts.FirstOrDefaultAsync(a => a.Id == accountId);
     }
 
     /// <summary>Changes the account password. Returns null on success, or an error message.</summary>

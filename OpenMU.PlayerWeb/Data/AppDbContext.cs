@@ -23,6 +23,10 @@ public class AppDbContext : DbContext
     public DbSet<GuildMember> GuildMembers => Set<GuildMember>();
     public DbSet<NewsItem> NewsItems => Set<NewsItem>();
     public DbSet<WheelSpin> WheelSpins => Set<WheelSpin>();
+    public DbSet<Item> Items => Set<Item>();
+    public DbSet<ItemDefinition> ItemDefinitions => Set<ItemDefinition>();
+    public DbSet<MarketplaceItem> MarketplaceItems => Set<MarketplaceItem>();
+    public DbSet<ShopItem> ShopItems => Set<ShopItem>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -49,6 +53,30 @@ public class AppDbContext : DbContext
             .HasOne(c => c.Inventory)
             .WithMany()
             .HasForeignKey(c => c.InventoryId);
+
+        // Account -> ItemStorage (vault)
+        modelBuilder.Entity<Account>()
+            .HasOne(a => a.Vault)
+            .WithMany()
+            .HasForeignKey(a => a.VaultId);
+
+        // Item -> ItemDefinition
+        modelBuilder.Entity<Item>()
+            .HasOne(i => i.Definition)
+            .WithMany()
+            .HasForeignKey(i => i.DefinitionId);
+
+        // MarketplaceItem -> Item
+        modelBuilder.Entity<MarketplaceItem>()
+            .HasOne(m => m.Item)
+            .WithMany()
+            .HasForeignKey(m => m.ItemId);
+
+        // MarketplaceItem -> Account (Seller)
+        modelBuilder.Entity<MarketplaceItem>()
+            .HasOne(m => m.Seller)
+            .WithMany()
+            .HasForeignKey(m => m.SellerAccountId);
 
         // GuildMember -> Guild
         modelBuilder.Entity<GuildMember>()

@@ -55,5 +55,10 @@ public class Account
     [Column("WCoin")]
     public int WCoin { get; set; }
 
+    [Column("VaultId")]
+    public Guid? VaultId { get; set; }
+
+    public ItemStorage? Vault { get; set; }
+
     public List<Character> Characters { get; set; } = new();
 }

@@ -1,0 +1,176 @@
+@page "/marketplace"
+@using Microsoft.AspNetCore.Components.Authorization
+@using OpenMU.PlayerWeb.Data
+@using OpenMU.PlayerWeb.Services
+@inject MarketplaceService MarketplaceService
+@inject AuthenticationStateProvider AuthStateProvider
+@inject AccountService AccountService
+@rendermode InteractiveServer
+
+<PageTitle>Player Marketplace</PageTitle>
+
+<div class="container mt-4">
+    <h1 class="mb-4">Player Marketplace</h1>
+
+    @if (!string.IsNullOrEmpty(_message))
+    {
+        <div class="alert alert-info">@_message</div>
+    }
+
+    <ul class="nav nav-tabs mb-4">
+        <li class="nav-item">
+            <a class="nav-link @(_activeTab == "buy" ? "active" : "")" style="cursor:pointer;" @onclick="@(() => _activeTab = "buy")">Buy Items</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link @(_activeTab == "sell" ? "active" : "")" style="cursor:pointer;" @onclick="@(() => _activeTab = "sell")">Sell Items (from Vault)</a>
+        </li>
+    </ul>
+
+    @if (_activeTab == "buy")
+    {
+        <div class="row mb-3">
+            <div class="col">
+                <h4>Available Listings</h4>
+                <p>Your WCoin: <strong class="text-warning">@_wcoin</strong></p>
+            </div>
+        </div>
+
+        <div class="row row-cols-1 row-cols-md-4 g-4">
+            @if (_listings == null)
+            {
+                <p>Loading...</p>
+            }
+            else if (!_listings.Any())
+            {
+                <p>No items available on the marketplace.</p>
+            }
+            else
+            {
+                foreach (var listing in _listings)
+                {
+                    <div class="col">
+                        <div class="card h-100 bg-dark text-light border-secondary">
+                            <div class="card-body text-center">
+                                <h5 class="card-title text-warning">@listing.Item?.Definition?.Name (+@listing.Item?.Level)</h5>
+                                <p class="card-text text-muted small">Seller: @listing.Seller?.LoginName</p>
+                                <p class="card-text">
+                                    Durability: @listing.Item?.Durability <br/>
+                                    Skill: @(listing.Item?.HasSkill == true ? "Yes" : "No") <br/>
+                                </p>
+                                <h4 class="text-success mb-3">@listing.PriceWCoin WCoin</h4>
+                                <button class="btn btn-primary w-100" @onclick="() => BuyItem(listing.Id)">Buy Item</button>
+                            </div>
+                        </div>
+                    </div>
+                }
+            }
+        </div>
+    }
+    else if (_activeTab == "sell")
+    {
+        <div class="row mb-3">
+            <div class="col">
+                <h4>Your Vault Items</h4>
+                <p class="text-muted">You can only list items that are currently in your vault.</p>
+            </div>
+        </div>
+
+        <div class="row row-cols-1 row-cols-md-4 g-4">
+            @if (_vaultItems == null)
+            {
+                <p>Loading...</p>
+            }
+            else if (!_vaultItems.Any())
+            {
+                <p>No items in your vault.</p>
+            }
+            else
+            {
+                foreach (var item in _vaultItems)
+                {
+                    <div class="col">
+                        <div class="card h-100 bg-dark text-light border-secondary">
+                            <div class="card-body text-center">
+                                <h5 class="card-title text-warning">@item.Definition?.Name (+@item.Level)</h5>
+                                <div class="mt-3">
+                                    <input type="number" class="form-control bg-dark text-light mb-2" placeholder="Price (WCoin)" @bind="_sellPrices[item.Id]" />
+                                    <button class="btn btn-danger w-100" @onclick="() => SellItem(item.Id)">List on Market</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+            }
+        </div>
+    }
+</div>
+
+@code {
+    private string _activeTab = "buy";
+    private List<MarketplaceItem>? _listings;
+    private List<Item>? _vaultItems;
+    private Dictionary<Guid, int> _sellPrices = new();
+    
+    private int _wcoin = 0;
+    private Guid _accountId;
+    private string? _message;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var authState = await AuthStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+        if (user.Identity?.IsAuthenticated == true)
+        {
+            var idClaim = user.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier);
+            if (idClaim != null && Guid.TryParse(idClaim.Value, out _accountId))
+            {
+                await LoadData();
+            }
+        }
+    }
+
+    private async Task LoadData()
+    {
+        _listings = await MarketplaceService.GetActiveListingsAsync();
+        if (_accountId != Guid.Empty)
+        {
+            _vaultItems = await MarketplaceService.GetVaultItemsAsync(_accountId);
+            var account = await AccountService.GetAccountByIdAsync(_accountId);
+            if (account != null) _wcoin = account.WCoin;
+        }
+    }
+
+    private async Task BuyItem(Guid listingId)
+    {
+        if (_accountId == Guid.Empty) { _message = "Please login first."; return; }
+
+        _message = "Processing purchase...";
+        var err = await MarketplaceService.BuyItemAsync(_accountId, listingId);
+        if (err != null) _message = err;
+        else 
+        {
+            _message = "Purchase successful!";
+            await LoadData();
+        }
+    }
+
+    private async Task SellItem(Guid itemId)
+    {
+        if (_accountId == Guid.Empty) { _message = "Please login first."; return; }
+        
+        if (!_sellPrices.TryGetValue(itemId, out int price) || price <= 0)
+        {
+            _message = "Please enter a valid price.";
+            return;
+        }
+
+        _message = "Listing item...";
+        var err = await MarketplaceService.ListItemAsync(_accountId, itemId, price);
+        if (err != null) _message = err;
+        else 
+        {
+            _message = "Item listed successfully!";
+            await LoadData();
+        }
+    }
+}

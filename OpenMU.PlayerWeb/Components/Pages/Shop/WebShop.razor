@@ -1,0 +1,137 @@
+@page "/webshop"
+@using Microsoft.AspNetCore.Components.Authorization
+@using OpenMU.PlayerWeb.Data
+@using OpenMU.PlayerWeb.Services
+@inject ShopService ShopService
+@inject AuthenticationStateProvider AuthStateProvider
+@inject AccountService AccountService
+@rendermode InteractiveServer
+
+<PageTitle>WebShop</PageTitle>
+
+<div class="container mt-4">
+    <h1 class="mb-4">Official WebShop</h1>
+
+    @if (!string.IsNullOrEmpty(_message))
+    {
+        <div class="alert alert-info">@_message</div>
+    }
+
+    <div class="row">
+        <div class="col-md-3">
+            <div class="card mb-3">
+                <div class="card-header">Your WCoin</div>
+                <div class="card-body">
+                    <h3 class="card-title">@_wcoin</h3>
+                    <a href="/payment" class="btn btn-sm btn-outline-warning w-100 mt-2">Top Up</a>
+                </div>
+            </div>
+            
+            <div class="list-group">
+                <button class="list-group-item list-group-item-action @(FilterGroup == null ? "active" : "")" @onclick="() => SetFilter(null)">All Items</button>
+                <button class="list-group-item list-group-item-action @(FilterGroup == 0 ? "active" : "")" @onclick="() => SetFilter(0)">Swords</button>
+                <button class="list-group-item list-group-item-action @(FilterGroup == 7 ? "active" : "")" @onclick="() => SetFilter(7)">Helms</button>
+                <button class="list-group-item list-group-item-action @(FilterGroup == 8 ? "active" : "")" @onclick="() => SetFilter(8)">Armors</button>
+                <button class="list-group-item list-group-item-action @(FilterGroup == 9 ? "active" : "")" @onclick="() => SetFilter(9)">Pants</button>
+                <button class="list-group-item list-group-item-action @(FilterGroup == 10 ? "active" : "")" @onclick="() => SetFilter(10)">Gloves</button>
+                <button class="list-group-item list-group-item-action @(FilterGroup == 11 ? "active" : "")" @onclick="() => SetFilter(11)">Boots</button>
+                <button class="list-group-item list-group-item-action @(FilterGroup == 12 ? "active" : "")" @onclick="() => SetFilter(12)">Wings/Jewels</button>
+            </div>
+        </div>
+        
+        <div class="col-md-9">
+            <div class="row row-cols-1 row-cols-md-3 g-4">
+                @if (_items == null)
+                {
+                    <p>Loading...</p>
+                }
+                else if (!_items.Any())
+                {
+                    <p>No items found.</p>
+                }
+                else
+                {
+                    foreach (var item in FilteredItems)
+                    {
+                        <div class="col">
+                            <div class="card h-100 bg-dark text-light border-secondary">
+                                <div class="card-body text-center">
+                                    <h5 class="card-title text-warning">Group @item.ItemGroup : @item.ItemNumber</h5>
+                                    <p class="card-text">
+                                        Level: @item.Level <br/>
+                                        Option: @item.OptionName <br/>
+                                        Stock: @item.Stock
+                                    </p>
+                                    <h4 class="text-success mb-3">@item.PriceWCoin WCoin</h4>
+                                    <button class="btn btn-primary" @onclick="() => BuyItem(item.Id)">Buy Now</button>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    private List<ShopItem>? _items;
+    private int _wcoin = 0;
+    private Guid _accountId;
+    private string? _message;
+    private byte? FilterGroup = null;
+
+    private IEnumerable<ShopItem> FilteredItems => FilterGroup == null 
+        ? _items ?? Enumerable.Empty<ShopItem>()
+        : (_items ?? Enumerable.Empty<ShopItem>()).Where(i => i.ItemGroup == FilterGroup);
+
+    protected override async Task OnInitializedAsync()
+    {
+        var authState = await AuthStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+        if (user.Identity?.IsAuthenticated == true)
+        {
+            var idClaim = user.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier);
+            if (idClaim != null && Guid.TryParse(idClaim.Value, out _accountId))
+            {
+                await LoadData();
+            }
+        }
+    }
+
+    private async Task LoadData()
+    {
+        _items = await ShopService.GetShopItemsAsync();
+        var account = await AccountService.GetAccountByIdAsync(_accountId);
+        if (account != null)
+        {
+            _wcoin = account.WCoin;
+        }
+    }
+
+    private void SetFilter(byte? group)
+    {
+        FilterGroup = group;
+    }
+
+    private async Task BuyItem(Guid shopItemId)
+    {
+        if (_accountId == Guid.Empty)
+        {
+            _message = "Please login first.";
+            return;
+        }
+
+        _message = "Processing...";
+        var error = await ShopService.BuyShopItemAsync(_accountId, shopItemId);
+        if (error != null)
+        {
+            _message = error;
+        }
+        else
+        {
+            _message = "Successfully purchased item! It is now in your vault.";
+            await LoadData();
+        }
+    }
+}
