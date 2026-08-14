@@ -36,15 +36,31 @@ public class AddBotsChatCommandPlugIn : IChatCommandPlugIn
 
         if (parts.Length > 1 && int.TryParse(parts[1], out var parsedCount) && parsedCount > 0)
         {
-            count = Math.Min(parsedCount, 50);
+            // The engine clamps the population to the servers' bot capacity (see BotServerPartition);
+            // no artificial command-level cap here, so the operator can target the full capacity.
+            count = parsedCount;
         }
 
         await player.ShowBlueMessageAsync($"[BotManager] Generating {count} AI bots...").ConfigureAwait(false);
 
         try
         {
+            var botPlugin = player.GameContext.FeaturePlugIns.GetPlugIn<BotFeaturePlugIn>();
+            var charactersPerAccount = botPlugin?.Configuration?.GetEffectiveCharactersPerAccount()
+                ?? BotConfiguration.MaxCharactersPerAccountLimit;
+
+            // Generate with the SAME characters-per-account the spawn loop uses (see BotFeaturePlugIn),
+            // not a hard-coded 1, so every account gets its full, spawnable set of characters.
             var generator = new BotGenerator(player.GameContext, player.Logger);
-            var created = await generator.EnsureBotsAsync(count, 1).ConfigureAwait(false);
+            var created = await generator.EnsureBotsAsync(count, charactersPerAccount).ConfigureAwait(false);
+
+            if (botPlugin is not null)
+            {
+                botPlugin.Configuration ??= new BotConfiguration();
+                botPlugin.Configuration.Enabled = true;
+                botPlugin.Configuration.NumberOfAccounts = Math.Max(botPlugin.Configuration.NumberOfAccounts, count);
+                botPlugin.ForceStart();
+            }
 
             await player.ShowBlueMessageAsync($"[BotManager] Spawned AI bots (Created {created} new accounts).").ConfigureAwait(false);
         }

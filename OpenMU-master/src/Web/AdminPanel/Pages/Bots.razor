@@ -31,11 +31,27 @@
         <button class="btn btn-success text-white" @onclick="() => SpawnBotsAsync(100)" disabled="@_isProcessing">
             <span class="oi oi-bolt" aria-hidden="true"></span> Spawn 100
         </button>
+        <button class="btn btn-outline-success" @onclick="() => SpawnBotsAsync(200)" disabled="@_isProcessing">
+            <span class="oi oi-bolt" aria-hidden="true"></span> Spawn 200
+        </button>
+        <button class="btn btn-outline-success" @onclick="() => SpawnBotsAsync(300)" disabled="@_isProcessing">
+            <span class="oi oi-bolt" aria-hidden="true"></span> Spawn 300
+        </button>
         <button class="btn btn-warning text-dark" @onclick="KillAllFaultedAsync" disabled="@_isProcessing">
             <span class="oi oi-action-undo" aria-hidden="true"></span> Kill Faulted (@_stats.FaultedCount)
         </button>
         <button class="btn btn-danger" @onclick="PurgeAllBotsAsync" disabled="@_isProcessing">
             <span class="oi oi-trash" aria-hidden="true"></span> Purge All
+        </button>
+    </div>
+</div>
+
+<div class="card shadow-sm mb-3">
+    <div class="card-body py-2 d-flex align-items-center gap-2">
+        <span class="text-muted small">Spawn custom count (accounts):</span>
+        <input type="number" class="form-control form-control-sm" style="max-width: 140px" min="1" max="1000" @bind="_customSpawnCount" />
+        <button class="btn btn-sm btn-primary" @onclick="() => SpawnBotsAsync(_customSpawnCount)" disabled="@_isProcessing">
+            <span class="oi oi-plus" aria-hidden="true"></span> Spawn Custom
         </button>
     </div>
 </div>
@@ -283,6 +299,8 @@
     private string _mapFilter = "All";
     private bool _autoRefresh = true;
     private Timer? _timer;
+
+    private int _customSpawnCount = 100;
 
     private string _statsCardFaultedBg => _stats.FaultedCount > 0 ? "bg-danger" : "bg-secondary";
 
@@ -585,23 +603,29 @@
     private async Task PurgeAllBotsAsync()
     {
         _isProcessing = true;
-        _message = "Deleting all bot accounts from database...";
+        _message = "Requesting full bot purge (stops all online bots, deletes every bot account, disables the feature)...";
         StateHasChanged();
 
         try
         {
-            var gameContext = GetGameContext();
-            if (gameContext == null)
+            var botPlugin = GetBotPlugin();
+            if (botPlugin == null)
             {
-                _message = "GameServer is currently initializing or not available. Please wait a few seconds and try again.";
+                _message = "Bot plugin is not available. Please wait a few seconds and try again.";
                 return;
             }
 
-            var generator = new BotGenerator(gameContext, Logger);
-            var deleted = await generator.DeleteAllBotsAsync();
-            _message = $"Successfully deleted {deleted} bot accounts.";
-            await LoadBotsAsync();
-            await RefreshLiveStateAsync();
+            // Route the purge through the engine's own PurgeBots flow instead of deleting accounts
+            // directly: deleting while bots are still online races their periodic save and leaves the
+            // accounts re-created or the deletion conflicting. The engine stops every bot first, then
+            // deletes, then switches the feature off (see BotFeaturePlugIn.PurgeAsync). ForceStart makes
+            // the next game-server tick (~1s) carry it out, and PersistConfiguration keeps it applied
+            // across a restart in case the tick is delayed.
+            botPlugin.Configuration ??= new BotConfiguration();
+            botPlugin.Configuration.PurgeBots = true;
+            botPlugin.ForceStart();
+
+            _message = "Purge requested. It runs on the next game-server tick (~1 second). Refresh to see the bots disappear.";
         }
         catch (Exception ex)
         {
