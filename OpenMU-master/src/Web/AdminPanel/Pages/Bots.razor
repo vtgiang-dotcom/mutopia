@@ -116,6 +116,38 @@
     </div>
 </div>
 
+<!-- Top Farmer + Map Distribution -->
+<div class="row g-3 mb-4">
+    <div class="col-md-6">
+        <div class="card shadow-sm h-100">
+            <div class="card-header bg-dark text-white py-2">
+                <h6 class="mb-0">🏆 Top Farmer</h6>
+            </div>
+            <div class="card-body py-2">
+                <div class="d-flex justify-content-between align-items-center">
+                    <span class="fw-bold">@_stats.TopFarmerName</span>
+                    <span class="badge bg-success fs-6">@_stats.TopFarmerExpPerHour.ToString("N0") EXP/h</span>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card shadow-sm h-100">
+            <div class="card-header bg-dark text-white py-2">
+                <h6 class="mb-0">🗺️ Bots per Map</h6>
+            </div>
+            <div class="card-body py-2">
+                <div class="d-flex flex-wrap gap-2">
+                    @foreach (var map in _stats.MapCounts.OrderByDescending(kv => kv.Value))
+                    {
+                        <span class="badge bg-secondary">@map.Key: <strong>@map.Value</strong></span>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
 <!-- Personality Archetype Stats Bar -->
 <div class="card shadow-sm mb-3 bg-dark text-white">
     <div class="card-body py-2">
@@ -214,8 +246,11 @@
                             <th>Character</th>
                             <th>Level / Reset</th>
                             <th>Map</th>
+                            <th>Pos</th>
+                            <th>HP / MP</th>
                             <th>EXP / Hour</th>
                             <th>Party</th>
+                            <th>Personality</th>
                             <th>Uptime</th>
                             <th>Status</th>
                             <th>Action</th>
@@ -236,6 +271,13 @@
                                     }
                                 </td>
                                 <td><span class="badge bg-secondary">@bot.MapName</span></td>
+                                <td class="font-monospace small text-muted">@bot.PositionX,@bot.PositionY</td>
+                                <td>
+                                    <div class="d-flex flex-column" style="min-width: 90px">
+                                        <small class="text-success">HP @bot.HealthPercent%</small>
+                                        <small class="text-primary">MP @bot.ManaPercent%</small>
+                                    </div>
+                                </td>
                                 <td>
                                     <strong class="@(bot.ExperiencePerHour > 5_000_000 ? "text-danger" : "text-success")">
                                         @bot.ExperiencePerHour.ToString("N0") /h
@@ -244,13 +286,14 @@
                                 <td>
                                     @if (bot.PartySize > 0)
                                     {
-                                        <span class="badge bg-success">👥 Party (@bot.PartySize/5)</span>
+                                        <span class="badge bg-success">👥 @bot.PartySize/5</span>
                                     }
                                     else
                                     {
                                         <span class="badge bg-outline-secondary text-muted">Solo</span>
                                     }
                                 </td>
+                                <td><span class="small">@GetPersonalityEmoji(bot.Personality) @bot.Personality</span></td>
                                 <td class="font-monospace fs-7">@FormatUptime(bot.UptimeSeconds)</td>
                                 <td>
                                     @if (bot.StatusTag == "Faulted")
@@ -267,7 +310,7 @@
                                     }
                                     else
                                     {
-                                        <span class="badge bg-success">✅ Normal</span>
+                                        <span class="badge bg-success">✅ @(bot.IsWalking ? "Moving" : "Idle")</span>
                                     }
                                 </td>
                                 <td>
@@ -433,6 +476,11 @@
                         IsFaulted = bot.AwaitsFaultRestart,
                         Personality = BotPersonalityResolver.Resolve(charName).ToString(),
                         StatusTag = statusTag,
+                        PositionX = bot.Position.X,
+                        PositionY = bot.Position.Y,
+                        HealthPercent = CalcPercent(bot.Attributes?[Stats.CurrentHealth], bot.Attributes?[Stats.MaximumHealth]),
+                        ManaPercent = CalcPercent(bot.Attributes?[Stats.CurrentMana], bot.Attributes?[Stats.MaximumMana]),
+                        IsWalking = bot.IsWalking,
                     };
                 }).ToList();
 
@@ -448,6 +496,7 @@
                     TopFarmerName = topFarmer?.CharacterName ?? "N/A",
                     TopFarmerExpPerHour = topFarmer?.ExperiencePerHour ?? 0,
                     PersonalityCounts = _liveBots.GroupBy(b => b.Personality).ToDictionary(g => g.Key, g => g.Count()),
+                    MapCounts = _liveBots.GroupBy(b => b.MapName).ToDictionary(g => g.Key, g => g.Count()),
                 };
             }
             else
@@ -678,6 +727,30 @@
             return $"{(int)ts.TotalHours}h {ts.Minutes}m";
         }
         return $"{ts.Minutes}m {ts.Seconds}s";
+    }
+
+    private static int CalcPercent(float? current, float? max)
+    {
+        if (max is null or <= 0 || current is null)
+        {
+            return 0;
+        }
+
+        return (int)Math.Clamp(current.Value / max.Value * 100, 0, 100);
+    }
+
+    private static string GetPersonalityEmoji(string personality)
+    {
+        return personality switch
+        {
+            "Balanced" => "⚖️",
+            "Greedy" => "💰",
+            "Warrior" => "⚔️",
+            "Loner" => "🐺",
+            "Guardian" => "🛡️",
+            "Reckless" => "💥",
+            _ => "🎭",
+        };
     }
 
     public void Dispose()
