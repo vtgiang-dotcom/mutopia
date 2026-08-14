@@ -271,7 +271,7 @@
 <div class="card shadow-sm mb-4">
     <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center">
         <h5 class="mb-0">Live Active Bots (@FilteredLiveBots.Count() / @_liveBots.Count)</h5>
-        <span class="badge bg-secondary">Updated: @_lastUpdated.ToString("HH:mm:ss")</span>
+        <span class="badge bg-secondary">Updated: @_lastUpdated.ToString("HH:mm:ss") (UTC+7)</span>
     </div>    <div class="card-body p-0">
         @if (_isLoading)
         {
@@ -410,7 +410,7 @@
     private bool _isLoading = true;
     private bool _isProcessing = false;
     private string? _message;
-    private DateTime _lastUpdated = DateTime.Now;
+    private DateTime _lastUpdated = BotFeaturePlugIn.GetPlayerNow();
 
     private string _searchQuery = string.Empty;
     private string _statusFilter = "All";
@@ -621,7 +621,7 @@
                 _stats = new BotDashboardStats();
             }
 
-            _lastUpdated = DateTime.Now;
+            _lastUpdated = BotFeaturePlugIn.GetPlayerNow();
         }
         catch (Exception ex)
         {

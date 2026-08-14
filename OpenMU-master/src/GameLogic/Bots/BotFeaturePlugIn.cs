@@ -57,6 +57,12 @@ public class BotFeaturePlugIn : IFeaturePlugIn, IPeriodicTaskPlugIn, ISupportCus
     public static int GetPlayerHour() => DateTimeOffset.UtcNow.ToOffset(PlayerUtcOffset).Hour;
 
     /// <summary>
+    /// Gets the current wall-clock time in the player base's local time (UTC+7, see <see cref="PlayerUtcOffset"/>),
+    /// used wherever the dashboard displays a human-facing timestamp.
+    /// </summary>
+    public static DateTime GetPlayerNow() => DateTimeOffset.UtcNow.ToOffset(PlayerUtcOffset).DateTime;
+
+    /// <summary>
     /// The state of the feature, per game server: the plugin instance is shared by all game servers of
     /// the process, while <see cref="ExecuteTaskAsync"/> is called by each of them separately. One shared
     /// state would mean the server whose timer fires first animates the whole population (which is how
