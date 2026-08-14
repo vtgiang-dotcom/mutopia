@@ -98,4 +98,13 @@ public record BotDashboardStats
 
     /// <summary>Gets breakdown of active bots per map.</summary>
     public Dictionary<string, int> MapCounts { get; init; } = new();
+
+    /// <summary>Gets the target online count for the current player-local hour (presence curve).</summary>
+    public int TargetOnline { get; init; }
+
+    /// <summary>Gets the current hour in the player base's local time (UTC+7, 0-23).</summary>
+    public int CurrentPlayerHour { get; init; }
+
+    /// <summary>Gets the 24 target-online values (index 0 = player-local midnight) for the curve chart.</summary>
+    public int[] TargetByHour { get; init; } = [];
 }

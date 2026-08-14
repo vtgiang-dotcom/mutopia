@@ -148,6 +148,59 @@
     </div>
 </div>
 
+<!-- Presence Curve: Online now vs Scheduled (rotation) -->
+<div class="card shadow-sm mb-4">
+    <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center py-2">
+        <h6 class="mb-0">🌗 Presence Curve (UTC+7) — Online now vs Scheduled</h6>
+        <span class="badge bg-info text-dark">Player hour: @_stats.CurrentPlayerHour:00</span>
+    </div>
+    <div class="card-body py-2">
+        <div class="row g-2 mb-2">
+            <div class="col-md-3">
+                <div class="border rounded p-2 text-center">
+                    <small class="text-muted d-block">🟢 Online now</small>
+                    <h4 class="mb-0 text-success">@_stats.TotalActive</h4>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="border rounded p-2 text-center">
+                    <small class="text-muted d-block">🎯 Target this hour</small>
+                    <h4 class="mb-0 text-info">@_stats.TargetOnline</h4>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="border rounded p-2 text-center">
+                    <small class="text-muted d-block">🗄️ Total created</small>
+                    <h4 class="mb-0">@_stats.TotalInDatabase</h4>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="border rounded p-2 text-center">
+                    <small class="text-muted d-block">💤 Scheduled to return</small>
+                    <h4 class="mb-0 text-warning">@(Math.Max(0, _stats.TotalInDatabase - _stats.TotalActive))</h4>
+                </div>
+            </div>
+        </div>
+        <div class="d-flex align-items-end gap-0" style="height: 120px">
+            @for (var h = 0; h < 24; h++)
+            {
+                var pct = _stats.TotalInDatabase > 0
+                    ? (int)(_stats.TargetByHour[h] * 100.0 / _stats.TotalInDatabase)
+                    : 0;
+                var isNow = h == _stats.CurrentPlayerHour;
+                <div class="d-flex flex-column align-items-center" style="flex: 1">
+                    <div class="w-75 @(isNow ? "bg-warning" : "bg-primary") rounded-top" style="height: @(Math.Max(2, pct))px" title="@h:00 → @_stats.TargetByHour[h] bots"></div>
+                    @if (h % 3 == 0)
+                    {
+                        <small class="text-muted mt-1" style="font-size: 9px">@h</small>
+                    }
+                </div>
+            }
+        </div>
+        <div class="text-muted small mt-1">Each bar = target online count at that hour (yellow = current hour). Bots rotate on/off to follow the curve.</div>
+    </div>
+</div>
+
 <!-- Personality Archetype Stats Bar -->
 <div class="card shadow-sm mb-3 bg-dark text-white">
     <div class="card-body py-2">
@@ -202,7 +255,7 @@
             <div class="col-md-3 d-flex align-items-center">
                 <div class="form-check form-switch mb-0">
                     <input class="form-check-input" type="checkbox" id="autoRefreshSwitch" @bind="_autoRefresh" @bind:after="OnAutoRefreshToggled" />
-                    <label class="form-check-label ms-1" for="autoRefreshSwitch">Live 5s Auto-refresh</label>
+                    <label class="form-check-label ms-1" for="autoRefreshSwitch">Live 10s Auto-refresh</label>
                 </div>
             </div>
             <div class="col-md-2 text-end">
@@ -219,8 +272,7 @@
     <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center">
         <h5 class="mb-0">Live Active Bots (@FilteredLiveBots.Count() / @_liveBots.Count)</h5>
         <span class="badge bg-secondary">Updated: @_lastUpdated.ToString("HH:mm:ss")</span>
-    </div>
-    <div class="card-body p-0">
+    </div>    <div class="card-body p-0">
         @if (_isLoading)
         {
             <div class="p-4 text-center">
@@ -385,6 +437,20 @@
         }
     }
 
+    private const int PageSize = 50;
+
+    private int _currentPage = 1;
+
+    private int TotalPages => Math.Max(1, (int)Math.Ceiling(FilteredLiveBots.Count() / (double)PageSize));
+
+    private IEnumerable<BotLiveDto> PagedLiveBots =>
+        FilteredLiveBots.Skip((_currentPage - 1) * PageSize).Take(PageSize);
+
+    private void GoToPage(int page)
+    {
+        _currentPage = Math.Clamp(page, 1, TotalPages);
+    }
+
     protected override async Task OnInitializedAsync()
     {
         await LoadBotsAsync();
@@ -406,7 +472,7 @@
                 await RefreshLiveStateAsync();
                 StateHasChanged();
             });
-        }, null, 5000, 5000);
+        }, null, 10000, 10000);
     }
 
     private void StopTimer()
@@ -486,6 +552,19 @@
 
                 var topFarmer = _liveBots.OrderByDescending(b => b.ExperiencePerHour).FirstOrDefault();
 
+                // Presence curve: the rotation targets a count per player-local hour (UTC+7). Build the
+                // 24-value target curve plus the current target so the dashboard can show the operator
+                // both "how many are online now" and "how many are scheduled to return".
+                var config = botPlugin.Configuration;
+                var totalPopulation = _botAccounts.Count > 0
+                    ? _botAccounts.Count * (config?.GetEffectiveCharactersPerAccount() ?? BotConfiguration.MaxCharactersPerAccountLimit)
+                    : _liveBots.Count;
+                var minShare = config?.MinOnlineSharePercent ?? 60;
+                var currentHour = BotFeaturePlugIn.GetPlayerHour();
+                var targetByHour = Enumerable.Range(0, 24)
+                    .Select(h => BotFeaturePlugIn.GetTargetOnlineForHour(h, totalPopulation, minShare))
+                    .ToArray();
+
                 _stats = new BotDashboardStats
                 {
                     TotalActive = _liveBots.Count,
@@ -497,6 +576,10 @@
                     TopFarmerExpPerHour = topFarmer?.ExperiencePerHour ?? 0,
                     PersonalityCounts = _liveBots.GroupBy(b => b.Personality).ToDictionary(g => g.Key, g => g.Count()),
                     MapCounts = _liveBots.GroupBy(b => b.MapName).ToDictionary(g => g.Key, g => g.Count()),
+                    TotalInDatabase = _botAccounts.Count,
+                    TargetOnline = BotFeaturePlugIn.GetTargetOnlineForHour(currentHour, totalPopulation, minShare),
+                    CurrentPlayerHour = currentHour,
+                    TargetByHour = targetByHour,
                 };
             }
             else

@@ -43,6 +43,20 @@ public class BotFeaturePlugIn : IFeaturePlugIn, IPeriodicTaskPlugIn, ISupportCus
     ];
 
     /// <summary>
+    /// The fixed UTC offset of the player base (UTC+7, Vietnam). The presence curve follows the players'
+    /// local day, not the host container's clock - a Docker container defaults to UTC, which would
+    /// otherwise shift the busy evening into the middle of the night for the players. A fixed offset is
+    /// used (rather than a time zone id) because UTC+7 has no daylight saving, so the offset is constant,
+    /// and it never throws across hosts with different time zone databases.
+    /// </summary>
+    private static readonly TimeSpan PlayerUtcOffset = TimeSpan.FromHours(7);
+
+    /// <summary>
+    /// Gets the current hour of day in the player base's local time (UTC+7, see <see cref="PlayerUtcOffset"/>).
+    /// </summary>
+    public static int GetPlayerHour() => DateTimeOffset.UtcNow.ToOffset(PlayerUtcOffset).Hour;
+
+    /// <summary>
     /// The state of the feature, per game server: the plugin instance is shared by all game servers of
     /// the process, while <see cref="ExecuteTaskAsync"/> is called by each of them separately. One shared
     /// state would mean the server whose timer fires first animates the whole population (which is how
@@ -90,6 +104,31 @@ public class BotFeaturePlugIn : IFeaturePlugIn, IPeriodicTaskPlugIn, ISupportCus
         return this._states.Values
             .SelectMany(s => s.Manager.Bots)
             .ToList();
+    }
+
+    /// <summary>
+    /// Gets the 24-hour activity curve (0..1 per hour of the player base's local day, UTC+7). The
+    /// dashboard renders it so the operator can see at a glance when the population is at its quietest
+    /// and busiest.
+    /// </summary>
+    /// <returns>The 24 activity values, index 0 = midnight (player local time).</returns>
+    public static double[] GetActivityCurve() => (double[])ActivityByHour.Clone();
+
+    /// <summary>
+    /// Computes how many bots should be online at the given hour of the player base's local day (UTC+7)
+    /// for a population of the given size, using the configured minimum online share. Mirrors the exact
+    /// formula in <see cref="RotatePresenceAsync"/> so the dashboard's target matches the rotation's target.
+    /// </summary>
+    /// <param name="hour">The player-local hour (0-23).</param>
+    /// <param name="totalPopulation">The total bot population (accounts x characters per account).</param>
+    /// <param name="minOnlineSharePercent">The configured minimum online share (0-100).</param>
+    /// <returns>The target online count for that hour.</returns>
+    public static int GetTargetOnlineForHour(int hour, int totalPopulation, int minOnlineSharePercent)
+    {
+        var clampedHour = Math.Clamp(hour, 0, 23);
+        var minShare = Math.Clamp(minOnlineSharePercent, 0, 100) / 100.0;
+        var activity = ActivityByHour[clampedHour];
+        return (int)Math.Round(totalPopulation * (minShare + ((1.0 - minShare) * activity)));
     }
 
     /// <summary>
@@ -613,11 +652,11 @@ public class BotFeaturePlugIn : IFeaturePlugIn, IPeriodicTaskPlugIn, ISupportCus
 
         var minShare = Math.Clamp(configuration.MinOnlineSharePercent, 0, 100) / 100.0;
 
-        // Local wall-clock time on purpose (the rest of the class uses UtcNow for durations): this curve
-        // models human presence - fewest in the early morning, most in the evening - so it has to follow
-        // the players' day, which is the host's local time, not UTC. On a UTC-configured host the two
-        // coincide; on a host set to the player base's zone, local time keeps the peak in their evening.
-        var activity = ActivityByHour[DateTime.Now.Hour];
+        // The curve models human presence - fewest in the early morning, most in the evening - so it
+        // follows the PLAYERS' local day (UTC+7, see PlayerUtcOffset), never the container's clock. A
+        // Docker container defaults to UTC, which would otherwise shift the busy evening into the middle
+        // of the night for the players.
+        var activity = ActivityByHour[GetPlayerHour()];
         var targetOnline = (int)Math.Round(totalPopulation * (minShare + ((1.0 - minShare) * activity)));
         var online = state.Manager.Bots.Count;
 
