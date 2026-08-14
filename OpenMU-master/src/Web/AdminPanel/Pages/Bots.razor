@@ -182,7 +182,7 @@
             </div>
         </div>
         <div class="d-flex align-items-end gap-0" style="height: 120px">
-            @for (var h = 0; h < 24; h++)
+            @for (var h = 0; h < 24 && h < _stats.TargetByHour.Length; h++)
             {
                 var pct = _stats.TotalInDatabase > 0
                     ? (int)(_stats.TargetByHour[h] * 100.0 / _stats.TotalInDatabase)

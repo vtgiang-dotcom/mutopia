@@ -106,5 +106,5 @@ public record BotDashboardStats
     public int CurrentPlayerHour { get; init; }
 
     /// <summary>Gets the 24 target-online values (index 0 = player-local midnight) for the curve chart.</summary>
-    public int[] TargetByHour { get; init; } = [];
+    public int[] TargetByHour { get; init; } = new int[24];
 }
