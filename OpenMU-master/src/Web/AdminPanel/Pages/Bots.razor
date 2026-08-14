@@ -48,7 +48,7 @@
 
 <div class="card shadow-sm mb-3">
     <div class="card-body py-2 d-flex align-items-center gap-2">
-        <span class="text-muted small">Spawn custom count (accounts):</span>
+        <span class="text-muted small">Spawn custom count (bots):</span>
         <input type="number" class="form-control form-control-sm" style="max-width: 140px" min="1" max="1000" @bind="_customSpawnCount" />
         <button class="btn btn-sm btn-primary" @onclick="() => SpawnBotsAsync(_customSpawnCount)" disabled="@_isProcessing">
             <span class="oi oi-plus" aria-hidden="true"></span> Spawn Custom
@@ -511,23 +511,29 @@
             var charactersPerAccount = botPlugin?.Configuration?.GetEffectiveCharactersPerAccount()
                 ?? BotConfiguration.MaxCharactersPerAccountLimit;
 
+            // The button counts ONLINE BOTS (characters), not accounts: every account brings
+            // charactersPerAccount bots online. Convert to the account count the generator maintains,
+            // rounding up so a partial request still yields at least the asked number.
+            var accountCount = (int)Math.Ceiling(count / (double)charactersPerAccount);
+            var onlineBots = accountCount * charactersPerAccount;
+
             // Generate with the SAME characters-per-account the spawn loop uses (the plugin's configured
             // value, not a hard-coded 1): generating one character per account while the spawn pass asks
             // for all slots is what produces the "could not be loaded or has no character" warning flood.
             var generator = new BotGenerator(gameContext, Logger);
-            var created = await generator.EnsureBotsAsync(count, charactersPerAccount);
+            var created = await generator.EnsureBotsAsync(accountCount, charactersPerAccount);
 
             if (botPlugin != null)
             {
                 botPlugin.Configuration ??= new BotConfiguration();
                 botPlugin.Configuration.Enabled = true;
-                botPlugin.Configuration.NumberOfAccounts = Math.Max(botPlugin.Configuration.NumberOfAccounts, count);
+                botPlugin.Configuration.NumberOfAccounts = Math.Max(botPlugin.Configuration.NumberOfAccounts, accountCount);
                 botPlugin.Configuration.MinOnlineSharePercent = 100;
                 botPlugin.Configuration.PresenceRotation = false;
                 botPlugin.ForceStart();
             }
 
-            _message = $"Successfully generated {count} AI bots & activated Bot Plugin in-game (Created {created} new accounts).";
+            _message = $"Successfully generated {onlineBots} AI bots across {accountCount} account(s) (Created {created} new accounts).";
             await LoadBotsAsync();
             await RefreshLiveStateAsync();
         }
