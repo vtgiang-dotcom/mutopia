@@ -388,8 +388,9 @@
                         </li>
                         @for (var p = 1; p <= TotalPages; p++)
                         {
-                            <li class="page-item @(p == _currentPage ? "active" : "")">
-                                <button class="page-link" @onclick="() => GoToPage(p)">@p</button>
+                            var pageNum = p;
+                            <li class="page-item @(pageNum == _currentPage ? "active" : "")">
+                                <button class="page-link" @onclick="() => GoToPage(pageNum)">@pageNum</button>
                             </li>
                         }
                         <li class="page-item @(_currentPage >= TotalPages ? "disabled" : "")">
