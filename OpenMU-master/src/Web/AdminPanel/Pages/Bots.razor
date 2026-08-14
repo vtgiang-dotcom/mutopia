@@ -309,7 +309,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach (var (bot, index) in FilteredLiveBots.Select((b, i) => (b, i + 1)))
+                        @foreach (var (bot, index) in PagedLiveBots.Select((b, i) => (b, (_currentPage - 1) * PageSize + i + 1)))
                         {
                             <tr class="@GetRowCssClass(bot)">
                                 <td>@index</td>
@@ -375,6 +375,29 @@
                     </tbody>
                 </table>
             </div>
+
+            @if (TotalPages > 1)
+            {
+                <nav class="d-flex justify-content-between align-items-center p-2 border-top">
+                    <small class="text-muted">
+                        Page @_currentPage of @TotalPages — showing @PagedLiveBots.Count() of @FilteredLiveBots.Count() bots
+                    </small>
+                    <ul class="pagination pagination-sm mb-0">
+                        <li class="page-item @(_currentPage <= 1 ? "disabled" : "")">
+                            <button class="page-link" @onclick="() => GoToPage(_currentPage - 1)">« Prev</button>
+                        </li>
+                        @for (var p = 1; p <= TotalPages; p++)
+                        {
+                            <li class="page-item @(p == _currentPage ? "active" : "")">
+                                <button class="page-link" @onclick="() => GoToPage(p)">@p</button>
+                            </li>
+                        }
+                        <li class="page-item @(_currentPage >= TotalPages ? "disabled" : "")">
+                            <button class="page-link" @onclick="() => GoToPage(_currentPage + 1)">Next »</button>
+                        </li>
+                    </ul>
+                </nav>
+            }
         }
     </div>
 </div>
@@ -443,8 +466,17 @@
 
     private int TotalPages => Math.Max(1, (int)Math.Ceiling(FilteredLiveBots.Count() / (double)PageSize));
 
-    private IEnumerable<BotLiveDto> PagedLiveBots =>
-        FilteredLiveBots.Skip((_currentPage - 1) * PageSize).Take(PageSize);
+    private IEnumerable<BotLiveDto> PagedLiveBots
+    {
+        get
+        {
+            // Clamp the page to the filter result so a search/filter never leaves the viewer on an
+            // empty page beyond the last one.
+            var clampedPage = Math.Clamp(_currentPage, 1, TotalPages);
+            _currentPage = clampedPage;
+            return FilteredLiveBots.Skip((clampedPage - 1) * PageSize).Take(PageSize);
+        }
+    }
 
     private void GoToPage(int page)
     {
