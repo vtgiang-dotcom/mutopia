@@ -1,0 +1,10 @@
+MinLevel,MaxLevel,ZoneName,MonsterLevel,MonsterHP,BaseExpUnpenalized,KillsPerHour
+1,30,"Lorencia (Elite Bull Fighter lv12)",12,190,185.00,900
+31,60,"Devias (Elite Yeti lv36)",36,1200,915.00,850
+61,100,"Atlans (Lizard King lv70)",70,8500,2902.08,750
+101,150,"Atlans (Lizard King lv70)",70,8500,2902.08,750
+151,200,"Kanturu Ruins (Splinter Wolf lv85)",85,25000,4453.65,650
+201,260,"Karutan 2 (Condra lv117)",117,90000,8860.31,500
+261,320,"Raklion (Iron Knight lv142)",142,95000,13342.08,380
+321,360,"Raklion (Iron Knight lv142)",142,95000,13342.08,380
+361,400,"Raklion (Iron Knight lv142)",142,95000,13342.08,380

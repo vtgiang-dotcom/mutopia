@@ -1,0 +1,10 @@
+level_range,representative_monster,monster_level,base_exp_code,rate_applied_gold,effective_exp_per_kill_gold,kills_per_hour,exp_per_hour_gold,rate_applied_dynamic,effective_exp_per_kill_dynamic,exp_per_hour_dynamic
+1-30,Bull Fighter (Lorencia/Noria),12,185,50,9250,900,8325000,400,74000,66600000
+31-60,Elite Yeti (Devias/Dungeon 1),36,915,50,45750,850,38887500,400,366000,311100000
+61-100,Devil (Dungeon 3/LostTower 1-3),52,1668,50,83400,800,66720000,400,667200,533760000
+101-150,Death Knight (LostTower 7/Atlans 2),72,3090,30,92700,750,69525000,250,772500,579375000
+151-200,Bloody Wolf (Atlans 3/Tarkan 1),84,4340,30,130200,700,91140000,250,1085000,759500000
+201-260,Iron Wheel (Tarkan 2/Icarus),102,6585,15,98775,650,64203750,100,658500,428025000
+261-320,Splinter Wolf (Aida 2/Kanturu 1),118,8988,15,134820,580,78195600,100,898800,521304000
+321-360,Persona (Kanturu Relics/Karutan 1),138,12518,8,100144,500,50072000,50,625900,312950000
+361-400,Condor (Karutan 2/Raklion/Swamp),156,16250,5,81250,420,34125000,35,568750,238875000

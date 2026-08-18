@@ -1,0 +1,32 @@
+services:
+
+  openmu-startup:
+    build:
+      context: ../../src
+      dockerfile: Startup/Dockerfile
+    restart: always
+    ports:
+      - "8081:8080"
+    environment:
+      RESOLVE_IP: loopback
+
+  openmu-web:
+    build:
+      context: ../../../open-mu-web-master
+      dockerfile: Dockerfile
+    container_name: openmu-web
+    restart: always
+    ports:
+      - "3007:3000"
+    environment:
+      DATABASE_URL: "postgresql://postgres:admin@database:5432/openmu"
+      NEXTAUTH_SECRET: "secret"
+      NEXT_PUBLIC_URL: "http://localhost:3007"
+      GAMESERVER_URL: "http://openmu-startup:8080"
+    depends_on:
+      - database
+      - openmu-startup
+
+  database:
+    ports:
+      - "5438:5432"

@@ -1,0 +1,26 @@
+{
+  "servers": [
+    {
+      "id": "s6",
+      "name": "Classic [Season 6]",
+      "description": "Server cổ điển Season 6 Episode 3 — OpenMU Engine",
+      "host": "127.0.0.1",
+      "port": 55901,
+      "clientPath": "D:\\Project\\mutopia\\client-s6\\Main.exe",
+      "arguments": "connect /u127.0.0.1 /p55901",
+      "badge": "S6 Classic",
+      "color": "#3B82F6"
+    },
+    {
+      "id": "s16",
+      "name": "Modern [Season 16]",
+      "description": "Server kỷ nguyên mới Season 16 Episode 1 — Lgd C++ Native",
+      "host": "127.0.0.1",
+      "port": 55902,
+      "clientPath": "D:\\Project\\mutopia\\client-s16\\main.exe",
+      "arguments": "connect /u127.0.0.1 /p55902",
+      "badge": "S16 Modern",
+      "color": "#10B981"
+    }
+  ]
+}

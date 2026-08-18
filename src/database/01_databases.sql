@@ -1,0 +1,4 @@
+﻿CREATE DATABASE IF NOT EXISTS `database_login` CHARACTER SET utf8 COLLATE utf8_general_ci;
+CREATE DATABASE IF NOT EXISTS `database_game` CHARACTER SET utf8 COLLATE utf8_general_ci;
+CREATE DATABASE IF NOT EXISTS `database_characters` CHARACTER SET utf8 COLLATE utf8_general_ci;
+CREATE DATABASE IF NOT EXISTS `database_log` CHARACTER SET utf8 COLLATE utf8_general_ci;

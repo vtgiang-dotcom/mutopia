@@ -4,6 +4,8 @@ __pycache__/
 *.pyo
 .pytest_cache/
 .ruff_cache/
+.coverage
+coverage.json
 .venv/
 venv/
 *.egg-info/
@@ -43,7 +45,64 @@ Thumbs.db
 !.vscode/settings.json
 !.vscode/mcp.json
 .idea/
+deepseek-harness-master/
+mysql-s16-data/
 
-# .NET build artifacts
+# ============================================================
+# BẢN QUYỀN WEBZEN — KHÔNG ĐẨY LÊN GITHUB (NHÓM A)
+# Binary + asset gốc của Webzen. Chỉ loại các file này;
+# source code (C++ LgdMu, C# OpenMU, code tự viết) vẫn được push.
+# ============================================================
+
+# Client & server binary (main.exe, Main.dll, GameServer.exe, ...)
+*.exe
+*.dll
+*.pdb
+
+# 3D model & texture client (Webzen proprietary format)
+*.bmd
+*.smd
+*.ozj
+*.ozt
+*.ozd
+*.ozg
+*.ozp
+*.ozb
+*.OZJ
+*.OZT
+*.OZD
+*.OZG
+*.OZP
+*.OZB
+
+# Map / terrain data
+*.att
+*.obj
+*.map
+*.cws
+
+# Sound & music asset
+*.wav
+*.mp3
+*.ogg
+
+# Archive chứa data & binary
+*.zip
+*.rar
+*.7z
+
+# Thư mục data client & build artifact & reference
+src/client-s6/src/Data/
+src/client-s6/build/
+src/client-s6/out/
+reference/
+src/server-s16/Release/World/
+
+# File rác / backup
+*.bak
+*.log
+*.wtf
+
+# .NET build artifact
 bin/
 obj/

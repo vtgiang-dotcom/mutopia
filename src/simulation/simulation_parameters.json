@@ -1,0 +1,198 @@
+{
+  "Metadata": {
+    "Project": "OpenMU Season 6 Episode 3 Simulation",
+    "Version": "1.1",
+    "GeneratedAt": "2026-08-17T15:58:00Z",
+    "Description": "Calibrated parameters and baseline data for Economic & Reset Progression Simulation"
+  },
+  "ExperienceSystem": {
+    "MaximumLevel": 400,
+    "MaximumMasterLevel": 200,
+    "FormulaWebzen": "if(level == 0, 0, if(level < 256, 10 * (level + 8) * (level - 1) * (level - 1), (10 * (level + 8) * (level - 1) * (level - 1)) + (1000 * (level - 247) * (level - 256) * (level - 256))))",
+    "DefaultServerExpRate": 1.0,
+    "DynamicExpScale": {
+      "Level1_100": 400.0,
+      "Level101_200": 250.0,
+      "Level201_300": 100.0,
+      "Level301_350": 50.0,
+      "Level351_400": 35.0
+    }
+  },
+  "CharacterClasses": {
+    "DarkWizard": { "PointsPerLevel": 5, "StatColumns": 4, "IsSpecial": false },
+    "DarkKnight": { "PointsPerLevel": 5, "StatColumns": 4, "IsSpecial": false },
+    "FairyElf": { "PointsPerLevel": 5, "StatColumns": 4, "IsSpecial": false },
+    "Summoner": { "PointsPerLevel": 5, "StatColumns": 4, "IsSpecial": false },
+    "MagicGladiator": { "PointsPerLevel": 7, "StatColumns": 4, "IsSpecial": true },
+    "DarkLord": { "PointsPerLevel": 7, "StatColumns": 5, "IsSpecial": true },
+    "RageFighter": { "PointsPerLevel": 7, "StatColumns": 4, "IsSpecial": true }
+  },
+  "ResetSystemDefaults": {
+    "LevelAfterReset": 10,
+    "ResetLimit": null,
+    "ResetStats": true,
+    "ReplacePointsPerReset": true,
+    "MultiplyPointsByResetCount": false,
+    "PointsPerReset": 1500,
+    "DefaultRequiredLevel": 400,
+    "DefaultLadderFormula": "200 + ((currentReset / 5) * 10)",
+    "ProposedLevelProgression": {
+      "StartLevel": 50,
+      "StepLevel": 10,
+      "MaxLevel": 400,
+      "TotalResets": 36,
+      "Formula": "5 * RequiredLevel"
+    }
+  },
+  "DropSystem": {
+    "BaseMoneyDrop": 7,
+    "DropChanceMoney": 0.50,
+    "DropChanceRandomItem": 0.30,
+    "DropChanceJewels": 0.001,
+    "DropChanceExcellent": 0.0001,
+    "SkillDropChancePercent": 50,
+    "LuckDropChancePercent": 25,
+    "MoneyFormula": "GainedExperience + BaseMoneyDrop",
+    "GainedExperienceIncludesServerRate": true,
+    "DefaultPickupEfficiency": 0.70
+  },
+  "FarmingZones": [
+    {
+      "MinLevel": 1,
+      "MaxLevel": 30,
+      "MapName": "Lorencia",
+      "RepresentativeMonster": "Elite Bull Fighter",
+      "MonsterNumber": 4,
+      "MonsterLevel": 12,
+      "MonsterHp": 190,
+      "BaseMonsterExp": 185.0,
+      "KillsPerHour": 900
+    },
+    {
+      "MinLevel": 31,
+      "MaxLevel": 60,
+      "MapName": "Devias",
+      "RepresentativeMonster": "Elite Yeti",
+      "MonsterNumber": 20,
+      "MonsterLevel": 36,
+      "MonsterHp": 1200,
+      "BaseMonsterExp": 915.0,
+      "KillsPerHour": 850
+    },
+    {
+      "MinLevel": 61,
+      "MaxLevel": 100,
+      "MapName": "Lost Tower",
+      "RepresentativeMonster": "Cursed Wizard",
+      "MonsterNumber": 36,
+      "MonsterLevel": 56,
+      "MonsterHp": 4500,
+      "BaseMonsterExp": 1890.0,
+      "KillsPerHour": 800
+    },
+    {
+      "MinLevel": 101,
+      "MaxLevel": 150,
+      "MapName": "Atlans",
+      "RepresentativeMonster": "Lizard King",
+      "MonsterNumber": 48,
+      "MonsterLevel": 70,
+      "MonsterHp": 8500,
+      "BaseMonsterExp": 3450.42,
+      "KillsPerHour": 750
+    },
+    {
+      "MinLevel": 151,
+      "MaxLevel": 200,
+      "MapName": "Tarkan",
+      "RepresentativeMonster": "Tantallos",
+      "MonsterNumber": 58,
+      "MonsterLevel": 83,
+      "MonsterHp": 21000,
+      "BaseMonsterExp": 4976.98,
+      "KillsPerHour": 700
+    },
+    {
+      "MinLevel": 201,
+      "MaxLevel": 260,
+      "MapName": "Kanturu Ruins",
+      "RepresentativeMonster": "Splinter Wolf",
+      "MonsterNumber": 351,
+      "MonsterLevel": 85,
+      "MonsterHp": 25000,
+      "BaseMonsterExp": 5240.10,
+      "KillsPerHour": 650
+    },
+    {
+      "MinLevel": 261,
+      "MaxLevel": 320,
+      "MapName": "Kanturu Relics",
+      "RepresentativeMonster": "Persona",
+      "MonsterNumber": 358,
+      "MonsterLevel": 118,
+      "MonsterHp": 68000,
+      "BaseMonsterExp": 9946.88,
+      "KillsPerHour": 580
+    },
+    {
+      "MinLevel": 321,
+      "MaxLevel": 360,
+      "MapName": "Karutan 2",
+      "RepresentativeMonster": "Condra",
+      "MonsterNumber": 575,
+      "MonsterLevel": 117,
+      "MonsterHp": 90000,
+      "BaseMonsterExp": 9779.69,
+      "KillsPerHour": 500
+    },
+    {
+      "MinLevel": 361,
+      "MaxLevel": 400,
+      "MapName": "Raklion",
+      "RepresentativeMonster": "Iron Knight",
+      "MonsterNumber": 458,
+      "MonsterLevel": 142,
+      "MonsterHp": 95000,
+      "BaseMonsterExp": 14757.29,
+      "KillsPerHour": 380
+    }
+  ],
+  "ZenSinks": [
+    {
+      "Type": "PotionSupplies",
+      "Description": "Health & Mana Potions consumption during farming",
+      "EstimatedZenPerHour": 350000,
+      "Scaling": "ConstantToTier"
+    },
+    {
+      "Type": "GearRepair",
+      "Description": "Durability repair per hour of combat",
+      "EstimatedZenPerHour": 450000,
+      "Scaling": "IncreasesWithGearLevel"
+    },
+    {
+      "Type": "WarpFee",
+      "Description": "Map teleport fees (1k to 60k per warp)",
+      "EstimatedZenPerHour": 50000,
+      "Scaling": "MapDependent"
+    },
+    {
+      "Type": "ChaosMachineCrafting",
+      "Description": "Wings, +10..+15 upgrades, Ticket crafting",
+      "EstimatedZenPerCycle": 15000000,
+      "Scaling": "EventDriven"
+    },
+    {
+      "Type": "ResetCostLinear",
+      "Description": "Standard reset fee = 10,000,000 * resetCount",
+      "Formula": "10000000 * k",
+      "Scaling": "Linear"
+    },
+    {
+      "Type": "ResetCostExpProportional",
+      "Description": "Dynamic reset fee = 15% of total gained EXP in cycle",
+      "Formula": "0.15 * TotalExpInCycle",
+      "Scaling": "ExpProportional"
+    }
+  ]
+}
