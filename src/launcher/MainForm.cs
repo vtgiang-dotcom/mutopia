@@ -1,4 +1,4 @@
-﻿using System.Diagnostics;
+using System.Diagnostics;
 using System.Net.Sockets;
 using System.Text.Json;
 
@@ -336,15 +336,17 @@ public class MainForm : Form
 
         try
         {
+            var workDir = Path.GetDirectoryName(clientPath) ?? "";
+
             var startInfo = new ProcessStartInfo
             {
                 FileName = clientPath,
                 Arguments = _selectedServer.Arguments,
-                WorkingDirectory = Path.GetDirectoryName(clientPath) ?? "",
+                WorkingDirectory = workDir,
                 UseShellExecute = true
             };
-
             Process.Start(startInfo);
+
             _statusLabel.Text = $"Đang chạy: {_selectedServer.Name}";
         }
         catch (Exception ex)
@@ -366,6 +368,126 @@ public class MainForm : Form
         catch (Exception ex)
         {
             MessageBox.Show($"Không thể mở trình duyệt: {ex.Message}", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        }
+    }
+}
+
+internal static class NativeInjector
+{
+    [System.Runtime.InteropServices.DllImport("kernel32.dll", SetLastError = true)]
+    private static extern bool CreateProcess(
+        string? lpApplicationName,
+        string lpCommandLine,
+        IntPtr lpProcessAttributes,
+        IntPtr lpThreadAttributes,
+        bool bInheritHandles,
+        uint dwCreationFlags,
+        IntPtr lpEnvironment,
+        string lpCurrentDirectory,
+        ref STARTUPINFO lpStartupInfo,
+        out PROCESS_INFORMATION lpProcessInformation);
+
+    [System.Runtime.InteropServices.DllImport("kernel32.dll", SetLastError = true, ExactSpelling = true)]
+    private static extern IntPtr VirtualAllocEx(IntPtr hProcess, IntPtr lpAddress, uint dwSize, uint flAllocationType, uint flProtect);
+
+    [System.Runtime.InteropServices.DllImport("kernel32.dll", SetLastError = true)]
+    private static extern bool WriteProcessMemory(IntPtr hProcess, IntPtr lpBaseAddress, byte[] lpBuffer, uint nSize, out UIntPtr lpNumberOfBytesWritten);
+
+    [System.Runtime.InteropServices.DllImport("kernel32.dll", SetLastError = true)]
+    private static extern IntPtr GetProcAddress(IntPtr hModule, string lpProcName);
+
+    [System.Runtime.InteropServices.DllImport("kernel32.dll", SetLastError = true)]
+    private static extern IntPtr GetModuleHandle(string lpModuleName);
+
+    [System.Runtime.InteropServices.DllImport("kernel32.dll", SetLastError = true)]
+    private static extern IntPtr CreateRemoteThread(IntPtr hProcess, IntPtr lpThreadAttributes, uint dwStackSize, IntPtr lpStartAddress, IntPtr lpParameter, uint dwCreationFlags, out IntPtr lpThreadId);
+
+    [System.Runtime.InteropServices.DllImport("kernel32.dll", SetLastError = true)]
+    private static extern uint ResumeThread(IntPtr hThread);
+
+    [System.Runtime.InteropServices.DllImport("kernel32.dll", SetLastError = true)]
+    private static extern uint WaitForSingleObject(IntPtr hHandle, uint dwMilliseconds);
+
+    [System.Runtime.InteropServices.DllImport("kernel32.dll", SetLastError = true)]
+    private static extern bool CloseHandle(IntPtr hObject);
+
+    [System.Runtime.InteropServices.StructLayout(System.Runtime.InteropServices.LayoutKind.Sequential)]
+    private struct STARTUPINFO
+    {
+        public uint cb;
+        public string lpReserved;
+        public string lpDesktop;
+        public string lpTitle;
+        public uint dwX;
+        public uint dwY;
+        public uint dwXSize;
+        public uint dwYSize;
+        public uint dwXCountChars;
+        public uint dwYCountChars;
+        public uint dwFillAttribute;
+        public uint dwFlags;
+        public short wShowWindow;
+        public short cbReserved2;
+        public IntPtr lpReserved2;
+        public IntPtr hStdInput;
+        public IntPtr hStdOutput;
+        public IntPtr hStdError;
+    }
+
+    [System.Runtime.InteropServices.StructLayout(System.Runtime.InteropServices.LayoutKind.Sequential)]
+    private struct PROCESS_INFORMATION
+    {
+        public IntPtr hProcess;
+        public IntPtr hThread;
+        public uint dwProcessId;
+        public uint dwThreadId;
+    }
+
+    private const uint CREATE_SUSPENDED = 0x00000004;
+    private const uint MEM_COMMIT = 0x00001000;
+    private const uint MEM_RESERVE = 0x00002000;
+    private const uint PAGE_READWRITE = 0x04;
+
+    public static bool LaunchWithDll(string exePath, string dllPath, string workDir, string args)
+    {
+        try
+        {
+            var si = new STARTUPINFO();
+            si.cb = (uint)System.Runtime.InteropServices.Marshal.SizeOf(si);
+            var pi = new PROCESS_INFORMATION();
+
+            string cmdLine = "\"" + exePath + "\" " + args;
+            bool created = CreateProcess(null, cmdLine, IntPtr.Zero, IntPtr.Zero, false, CREATE_SUSPENDED, IntPtr.Zero, workDir, ref si, out pi);
+            if (!created) return false;
+
+            byte[] dllBytes = System.Text.Encoding.ASCII.GetBytes(dllPath + "\0");
+            IntPtr allocAddr = VirtualAllocEx(pi.hProcess, IntPtr.Zero, (uint)dllBytes.Length, MEM_COMMIT | MEM_RESERVE, PAGE_READWRITE);
+            if (allocAddr == IntPtr.Zero)
+            {
+                ResumeThread(pi.hThread);
+                CloseHandle(pi.hThread);
+                CloseHandle(pi.hProcess);
+                return false;
+            }
+
+            WriteProcessMemory(pi.hProcess, allocAddr, dllBytes, (uint)dllBytes.Length, out _);
+
+            IntPtr loadLibAddr = GetProcAddress(GetModuleHandle("kernel32.dll"), "LoadLibraryA");
+            IntPtr hRemoteThread = CreateRemoteThread(pi.hProcess, IntPtr.Zero, 0, loadLibAddr, allocAddr, 0, out _);
+            if (hRemoteThread != IntPtr.Zero)
+            {
+                WaitForSingleObject(hRemoteThread, 2000);
+                CloseHandle(hRemoteThread);
+            }
+
+            ResumeThread(pi.hThread);
+            CloseHandle(pi.hThread);
+            CloseHandle(pi.hProcess);
+            return true;
+        }
+        catch
+        {
+            return false;
         }
     }
 }

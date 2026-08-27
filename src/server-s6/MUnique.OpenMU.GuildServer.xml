@@ -1,0 +1,251 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>MUnique.OpenMU.GuildServer</name>
+    </assembly>
+    <members>
+        <member name="T:MUnique.OpenMU.GuildServer.GuildChangeToGameServerPublisher">
+            <summary>
+            A <see cref="T:MUnique.OpenMU.GuildServer.IGuildChangePublisher"/> which directly notifies the game server objects.
+            </summary>
+        </member>
+        <member name="M:MUnique.OpenMU.GuildServer.GuildChangeToGameServerPublisher.#ctor(System.Collections.Generic.IDictionary{System.Int32,MUnique.OpenMU.Interfaces.IGameServer})">
+            <summary>
+            Initializes a new instance of the <see cref="T:MUnique.OpenMU.GuildServer.GuildChangeToGameServerPublisher"/> class.
+            </summary>
+            <param name="gameServers">The game servers.</param>
+        </member>
+        <member name="M:MUnique.OpenMU.GuildServer.GuildChangeToGameServerPublisher.GuildPlayerKickedAsync(System.String)">
+            <inheritdoc />
+        </member>
+        <member name="M:MUnique.OpenMU.GuildServer.GuildChangeToGameServerPublisher.GuildDeletedAsync(System.UInt32)">
+            <inheritdoc />
+        </member>
+        <member name="M:MUnique.OpenMU.GuildServer.GuildChangeToGameServerPublisher.AssignGuildToPlayerAsync(System.Byte,System.String,MUnique.OpenMU.Interfaces.GuildMemberStatus)">
+            <inheritdoc />
+        </member>
+        <member name="M:MUnique.OpenMU.GuildServer.GuildChangeToGameServerPublisher.AllianceCreatedAsync(System.UInt32,System.UInt32)">
+            <inheritdoc />
+        </member>
+        <member name="M:MUnique.OpenMU.GuildServer.GuildChangeToGameServerPublisher.AllianceDisbandedAsync(System.UInt32,System.UInt32)">
+            <inheritdoc />
+        </member>
+        <member name="M:MUnique.OpenMU.GuildServer.GuildChangeToGameServerPublisher.GuildHostilityChangedAsync(System.UInt32,System.Collections.Generic.IReadOnlyList{System.UInt32},System.UInt32,System.Collections.Generic.IReadOnlyList{System.UInt32},System.Boolean)">
+            <inheritdoc />
+        </member>
+        <member name="T:MUnique.OpenMU.GuildServer.GuildContainer">
+            <summary>
+            This is a container Class which holds a Guild object, and a list of all guild members
+            including their online-state.
+            </summary>
+        </member>
+        <member name="M:MUnique.OpenMU.GuildServer.GuildContainer.#ctor(MUnique.OpenMU.DataModel.Entities.Guild,System.UInt32,MUnique.OpenMU.Persistence.IGuildServerContext)">
+            <summary>
+            Initializes a new instance of the <see cref="T:MUnique.OpenMU.GuildServer.GuildContainer" /> class.
+            </summary>
+            <param name="guild">The guild.</param>
+            <param name="id">The short identifier.</param>
+            <param name="databaseContext">The database context.</param>
+        </member>
+        <member name="P:MUnique.OpenMU.GuildServer.GuildContainer.DatabaseContext">
+            <summary>
+            Gets the database context of the guild.
+            </summary>
+            <remarks>Each guild holds its own database context.</remarks>
+        </member>
+        <member name="P:MUnique.OpenMU.GuildServer.GuildContainer.Guild">
+            <summary>
+            Gets the guild.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.GuildServer.GuildContainer.Id">
+            <summary>
+            Gets the identifier.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.GuildServer.GuildContainer.Members">
+            <summary>
+            Gets the members.
+            </summary>
+        </member>
+        <member name="M:MUnique.OpenMU.GuildServer.GuildContainer.SetServerId(System.Guid,System.Byte)">
+            <summary>
+            Sets the server identifier of the member.
+            </summary>
+            <param name="memberId">Id of the member.</param>
+            <param name="serverId">The server identifier.</param>
+        </member>
+        <member name="M:MUnique.OpenMU.GuildServer.GuildContainer.LoadMemberNamesAsync">
+            <summary>
+            Loads the member names from the database.
+            </summary>
+        </member>
+        <member name="T:MUnique.OpenMU.GuildServer.GuildServer">
+            <summary>
+            GuildServer which is managing the guilds. All Guilds of online guild members will be cached here.
+            The server needs to be aware when characters leave or enter the world, so a connection to a
+            GameServer is required.
+            </summary>
+        </member>
+        <member name="F:MUnique.OpenMU.GuildServer.GuildServer.OfflineServerId">
+            <summary>
+            The server id value that is used to indicate that the guild member is offline.
+            </summary>
+        </member>
+        <member name="M:MUnique.OpenMU.GuildServer.GuildServer.#ctor(MUnique.OpenMU.GuildServer.IGuildChangePublisher,MUnique.OpenMU.Persistence.IPersistenceContextProvider,Microsoft.Extensions.Logging.ILogger{MUnique.OpenMU.GuildServer.GuildServer})">
+            <summary>
+            Initializes a new instance of the <see cref="T:MUnique.OpenMU.GuildServer.GuildServer" /> class.
+            </summary>
+            <param name="changePublisher">The change publisher.</param>
+            <param name="persistenceContextProvider">The persistence context provider.</param>
+            <param name="logger">The logger.</param>
+        </member>
+        <member name="M:MUnique.OpenMU.GuildServer.GuildServer.GuildExistsAsync(System.String)">
+            <inheritdoc/>
+        </member>
+        <member name="M:MUnique.OpenMU.GuildServer.GuildServer.GetGuildAsync(System.UInt32)">
+            <inheritdoc/>
+        </member>
+        <member name="M:MUnique.OpenMU.GuildServer.GuildServer.GetPersistentGuildIdAsync(System.UInt32)">
+            <inheritdoc/>
+        </member>
+        <member name="M:MUnique.OpenMU.GuildServer.GuildServer.GetPersistentAllianceMasterGuildIdAsync(System.UInt32)">
+            <inheritdoc/>
+        </member>
+        <member name="M:MUnique.OpenMU.GuildServer.GuildServer.GetGuildIdByNameAsync(System.String)">
+            <inheritdoc/>
+        </member>
+        <member name="M:MUnique.OpenMU.GuildServer.GuildServer.IncreaseGuildScoreAsync(System.UInt32)">
+            <inheritdoc />
+        </member>
+        <member name="M:MUnique.OpenMU.GuildServer.GuildServer.CreateGuildAsync(System.String,System.String,System.Guid,System.Byte[],System.Byte)">
+            <inheritdoc/>
+        </member>
+        <member name="M:MUnique.OpenMU.GuildServer.GuildServer.CreateGuildMemberAsync(System.UInt32,System.Guid,System.String,MUnique.OpenMU.Interfaces.GuildPosition,System.Byte)">
+            <inheritdoc/>
+        </member>
+        <member name="M:MUnique.OpenMU.GuildServer.GuildServer.ChangeGuildMemberPositionAsync(System.UInt32,System.Guid,MUnique.OpenMU.Interfaces.GuildPosition)">
+            <inheritdoc/>
+        </member>
+        <member name="M:MUnique.OpenMU.GuildServer.GuildServer.PlayerEnteredGameAsync(System.Guid,System.String,System.Byte)">
+            <inheritdoc />
+        </member>
+        <member name="M:MUnique.OpenMU.GuildServer.GuildServer.GuildMemberLeftGameAsync(System.UInt32,System.Guid,System.Byte)">
+            <inheritdoc/>
+        </member>
+        <member name="M:MUnique.OpenMU.GuildServer.GuildServer.GetGuildListAsync(System.UInt32)">
+            <inheritdoc/>
+        </member>
+        <member name="M:MUnique.OpenMU.GuildServer.GuildServer.KickMemberAsync(System.UInt32,System.String)">
+            <inheritdoc/>
+        </member>
+        <member name="M:MUnique.OpenMU.GuildServer.GuildServer.GetGuildPositionAsync(System.Guid)">
+            <inheritdoc />
+        </member>
+        <member name="M:MUnique.OpenMU.GuildServer.GuildServer.CreateAllianceAsync(System.UInt32,System.UInt32)">
+            <inheritdoc />
+        </member>
+        <member name="M:MUnique.OpenMU.GuildServer.GuildServer.RemoveAllianceAsync(System.UInt32)">
+            <inheritdoc />
+        </member>
+        <member name="M:MUnique.OpenMU.GuildServer.GuildServer.DisbandAllianceAsync(System.UInt32)">
+            <summary>
+            Disbands the alliance of the specified master guild, removing all alliance relationships for all members of the alliance.
+            </summary>
+            <param name="masterGuildId">The ID of the master guild.</param>
+            <returns>True if the alliance was disbanded, false otherwise.</returns>
+        </member>
+        <member name="M:MUnique.OpenMU.GuildServer.GuildServer.GetAllianceGuildsAsync(System.UInt32)">
+            <inheritdoc />
+        </member>
+        <member name="M:MUnique.OpenMU.GuildServer.GuildServer.IsAllianceMasterAsync(System.UInt32)">
+            <inheritdoc />
+        </member>
+        <member name="M:MUnique.OpenMU.GuildServer.GuildServer.SetHostilityAsync(System.UInt32,System.UInt32,System.Boolean)">
+            <inheritdoc />
+        </member>
+        <member name="M:MUnique.OpenMU.GuildServer.GuildServer.GetGuildRelationshipAsync(System.UInt32,System.UInt32)">
+            <inheritdoc />
+        </member>
+        <member name="M:MUnique.OpenMU.GuildServer.GuildServer.DeleteGuildAsync(MUnique.OpenMU.GuildServer.GuildContainer)">
+            <summary>
+            Removes a guild from the server and the database.
+            First we are trying to get the guild out of our dictionary.
+            We are assuming that all guilds are in the dictionary, because
+            we are holding all guilds of all ingame-characters in it.
+            So this method is only called usefully from the gameserver itself,
+            by player interaction.
+            </summary>
+            <param name="guildContainer">The container of the guild which should be deleted.</param>
+        </member>
+        <member name="M:MUnique.OpenMU.GuildServer.GuildServer.AreAlliancesStillHostile(System.Collections.Generic.IReadOnlyList{System.UInt32},System.Collections.Generic.IReadOnlyList{System.UInt32})">
+            <summary>
+            Returns <c>true</c> if any guild in <paramref name="allianceIdsA"/> still has a
+            hostility relationship pointing to any guild in <paramref name="allianceIdsB"/>,
+            or vice versa.  Used to avoid sending a spurious "no longer rivals" notification
+            when only one of several cross-alliance hostilities has been removed.
+            </summary>
+        </member>
+        <member name="M:MUnique.OpenMU.GuildServer.GuildServer.GetAllianceMemberIds(System.UInt32)">
+            <summary>
+            Gets the runtime uint IDs of all guilds in the alliance of the given guild.
+            If the guild is not in an alliance, returns a list containing only the guild's own ID.
+            </summary>
+            <remarks>
+            Note: this iterates all entries in <see cref="F:MUnique.OpenMU.GuildServer.GuildServer._guildDictionary"/> to find alliance members.
+            For the expected number of online guilds this is acceptable; a separate alliance-to-members index
+            could be introduced in the future if profiling shows this to be a bottleneck.
+            </remarks>
+        </member>
+        <member name="T:MUnique.OpenMU.GuildServer.IGuildChangePublisher">
+            <summary>
+            Interface for a publisher of guild related events.
+            </summary>
+        </member>
+        <member name="M:MUnique.OpenMU.GuildServer.IGuildChangePublisher.GuildPlayerKickedAsync(System.String)">
+            <summary>
+            Notifies the game server that a guild member got removed from a guild.
+            </summary>
+            <param name="playerName">Name of the player which got removed from a guild.</param>
+        </member>
+        <member name="M:MUnique.OpenMU.GuildServer.IGuildChangePublisher.GuildDeletedAsync(System.UInt32)">
+            <summary>
+            Notifies the game server that a guild got deleted.
+            </summary>
+            <param name="guildId">The guild identifier.</param>
+        </member>
+        <member name="M:MUnique.OpenMU.GuildServer.IGuildChangePublisher.AssignGuildToPlayerAsync(System.Byte,System.String,MUnique.OpenMU.Interfaces.GuildMemberStatus)">
+            <summary>
+            Assigns a guild to a player.
+            </summary>
+            <param name="serverId">The server identifier.</param>
+            <param name="characterName">Name of the character.</param>
+            <param name="status">The status.</param>
+        </member>
+        <member name="M:MUnique.OpenMU.GuildServer.IGuildChangePublisher.AllianceCreatedAsync(System.UInt32,System.UInt32)">
+            <summary>
+            Notifies game servers that an alliance was created (or a guild was added to an existing alliance).
+            </summary>
+            <param name="masterGuildId">The identifier of the alliance master guild.</param>
+            <param name="memberGuildId">The identifier of the newly added member guild.</param>
+        </member>
+        <member name="M:MUnique.OpenMU.GuildServer.IGuildChangePublisher.AllianceDisbandedAsync(System.UInt32,System.UInt32)">
+            <summary>
+            Notifies game servers that a guild was removed from an alliance.
+            When master and member guild are the same, the whole alliance got disbanded.
+            </summary>
+            <param name="masterGuildId">The identifier of the alliance master guild.</param>
+            <param name="memberGuildId">The identifier of the removed member guild.</param>
+        </member>
+        <member name="M:MUnique.OpenMU.GuildServer.IGuildChangePublisher.GuildHostilityChangedAsync(System.UInt32,System.Collections.Generic.IReadOnlyList{System.UInt32},System.UInt32,System.Collections.Generic.IReadOnlyList{System.UInt32},System.Boolean)">
+            <summary>
+            Notifies game servers that the hostility between two guilds (or alliances) has changed.
+            </summary>
+            <param name="guildIdA">The identifier of the first guild.</param>
+            <param name="allianceGuildIdsA">All guild IDs in the alliance of guild A (or just [guildIdA] if not in an alliance).</param>
+            <param name="guildIdB">The identifier of the second guild.</param>
+            <param name="allianceGuildIdsB">All guild IDs in the alliance of guild B (or just [guildIdB] if not in an alliance).</param>
+            <param name="created"><c>true</c> if the hostility was created; <c>false</c> if it was removed.</param>
+        </member>
+    </members>
+</doc>

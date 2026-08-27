@@ -11,6 +11,12 @@ services:
     volumes:
       - dbdata:/var/lib/postgresql/data
     restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
 
   openmu-server:
     build:
@@ -18,9 +24,7 @@ services:
       dockerfile: Startup/Dockerfile
     container_name: openmu-server
     ports:
-      - "8081:8080"
       - "8080:8080"
-      - "44405:44405"
       - "44406:44406"
       - "55901:55901"
       - "55902:55902"
@@ -39,6 +43,12 @@ services:
     depends_on:
       - database
     restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
 
   openmu-playerweb:
     build:
@@ -55,6 +65,12 @@ services:
       - database
       - openmu-server
     restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
 
 volumes:
   dbdata:

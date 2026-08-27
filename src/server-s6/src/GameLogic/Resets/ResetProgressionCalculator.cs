@@ -4,18 +4,32 @@
 
 namespace MUnique.OpenMU.GameLogic.Resets;
 
+using System;
+using System.Collections.Generic;
+using System.Linq;
+
 /// <summary>
-/// Calculates costs and rewards for the next character reset.
+/// Calculates costs and rewards for the character reset using the verified Hybrid Milestone Model.
 /// </summary>
 public static class ResetProgressionCalculator
 {
     /// <summary>
-    /// Calculates the required level for the current reset count (progressive ladder starting at 200, +10 levels per 5 resets, capped at configuration max).
+    /// Calculates the required level for the next character reset.
+    /// Stage 1 (Resets 1-15): Progressive ladder Level 50 -> 330 (+20 levels/reset).
+    /// Stage 2 (Resets 16-50): Fixed Level 400.
     /// </summary>
+    /// <param name="configuration">The reset configuration.</param>
+    /// <param name="currentResetCount">The current reset count.</param>
+    /// <returns>The required level.</returns>
     public static int GetRequiredLevel(ResetConfiguration configuration, int currentResetCount)
     {
-        var level = 200 + ((currentResetCount / 5) * 10);
-        return Math.Min(400, Math.Max(200, level));
+        if (currentResetCount < 15)
+        {
+            var ladderLevel = 50 + (currentResetCount * 20);
+            return Math.Min(400, Math.Max(50, ladderLevel));
+        }
+
+        return 400;
     }
 
     /// <summary>
@@ -28,17 +42,29 @@ public static class ResetProgressionCalculator
     public static ResetProgression Calculate(int currentResetCount, int pointsPerResetOverride, ResetConfiguration configuration)
     {
         var nextResetCount = currentResetCount + 1;
-        var requiredZen = Math.Max(0, configuration.RequiredMoney);
-        if (configuration.MultiplyRequiredMoneyByResetCount)
+        long requiredZen;
+        if (nextResetCount <= 3)
         {
-            requiredZen *= nextResetCount;
+            requiredZen = 0; // Free for starter resets (Resets 1-3)
+        }
+        else if (nextResetCount <= 5)
+        {
+            requiredZen = 200_000L * (nextResetCount - 3);
+        }
+        else if (nextResetCount <= 15)
+        {
+            requiredZen = 1_000_000L + ((nextResetCount - 5) * 500_000L);
+        }
+        else
+        {
+            requiredZen = 10_000_000L + ((nextResetCount - 15) * 1_000_000L);
         }
 
         var pointsForReset = GetPointsForReset(configuration, pointsPerResetOverride, nextResetCount);
         var totalPointsAfterReset = GetTotalPointsAfterReset(configuration, pointsPerResetOverride, nextResetCount, pointsForReset);
         var requiredItemAmount = GetRequiredItemAmount(configuration, nextResetCount);
 
-        return new ResetProgression(nextResetCount, requiredZen, requiredItemAmount, pointsForReset, totalPointsAfterReset);
+        return new ResetProgression(nextResetCount, (int)Math.Min(int.MaxValue, requiredZen), requiredItemAmount, pointsForReset, totalPointsAfterReset);
     }
 
     private static int GetPointsForReset(ResetConfiguration configuration, int pointsPerResetOverride, int nextResetCount)
@@ -48,13 +74,19 @@ public static class ResetProgressionCalculator
             return Math.Max(0, tier.PointsGranted);
         }
 
-        var pointsPerReset = pointsPerResetOverride == 0 ? configuration.PointsPerReset : pointsPerResetOverride;
-        if (configuration.MultiplyPointsByResetCount)
+        if (pointsPerResetOverride > 0)
         {
-            pointsPerReset *= nextResetCount;
+            return pointsPerResetOverride;
         }
 
-        return Math.Max(0, pointsPerReset);
+        if (nextResetCount <= 15)
+        {
+            // Resets 1-15: +250, +300, +350 ... +950 Points
+            return 250 + ((nextResetCount - 1) * 50);
+        }
+
+        // Resets 16-50: +1,000 Points per reset
+        return 1000;
     }
 
     private static int GetRequiredItemAmount(ResetConfiguration configuration, int nextResetCount)
@@ -74,11 +106,6 @@ public static class ResetProgressionCalculator
 
     private static int GetTotalPointsAfterReset(ResetConfiguration configuration, int pointsPerResetOverride, int nextResetCount, int pointsForReset)
     {
-        if (configuration.PointsTiers.Count == 0)
-        {
-            return pointsForReset;
-        }
-
         long total = 0;
         for (var resetCount = 1; resetCount <= nextResetCount; resetCount++)
         {

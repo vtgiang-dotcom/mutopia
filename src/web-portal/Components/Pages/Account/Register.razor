@@ -1,7 +1,4 @@
 @page "/register"
-@rendermode InteractiveServer
-@inject AccountService AccountService
-@inject NavigationManager Navigation
 
 <PageTitle>Register — MU Online</PageTitle>
 
@@ -10,43 +7,35 @@
         <h1 class="font-headline-lg text-secondary-fixed uppercase tracking-wider mb-8 text-center">Create Account</h1>
 
         <div class="panel-metallic p-8">
-            <EditForm Model="_model" OnValidSubmit="HandleRegister" FormName="register">
-                <DataAnnotationsValidator />
-
+            <form action="/api/auth/register" method="post">
                 <div class="space-y-4">
-                    <div>
-                        <label class="font-label-caps uppercase text-on-surface-variant">Username</label>
-                        <InputText @bind-Value="_model.LoginName" class="input-recessed" placeholder="4-10 characters" />
-                        <ValidationMessage For="() => _model.LoginName" class="text-sm" style="color: var(--on-error-container);" />
-                    </div>
-                    <div>
-                        <label class="font-label-caps uppercase text-on-surface-variant">Email</label>
-                        <InputText @bind-Value="_model.Email" class="input-recessed" placeholder="you@example.com" />
-                        <ValidationMessage For="() => _model.Email" class="text-sm" style="color: var(--on-error-container);" />
-                    </div>
-                    <div>
-                        <label class="font-label-caps uppercase text-on-surface-variant">Password</label>
-                        <InputText type="password" @bind-Value="_model.Password" class="input-recessed" placeholder="8-20 characters" />
-                        <ValidationMessage For="() => _model.Password" class="text-sm" style="color: var(--on-error-container);" />
-                    </div>
-                    <div>
-                        <label class="font-label-caps uppercase text-on-surface-variant">Repeat Password</label>
-                        <InputText type="password" @bind-Value="_model.RepeatPassword" class="input-recessed" />
-                        <ValidationMessage For="() => _model.RepeatPassword" class="text-sm" style="color: var(--on-error-container);" />
-                    </div>
-
-                    @if (!string.IsNullOrEmpty(_error))
+                    @if (!string.IsNullOrEmpty(Error))
                     {
-                        <div class="alert-error">@_error</div>
-                    }
-                    @if (!string.IsNullOrEmpty(_success))
-                    {
-                        <div class="alert-success">@_success</div>
+                        <div class="p-4 rounded bg-red-950/80 border border-red-500 text-red-300 text-sm font-medium mb-4">
+                            ⚠️ @Error
+                        </div>
                     }
 
-                    <button type="submit" class="btn-ornate w-full justify-center py-3">Register</button>
+                    <div>
+                        <label class="font-label-caps uppercase text-on-surface-variant block mb-1">Username</label>
+                        <input type="text" name="loginName" class="input-recessed w-full" placeholder="4-10 characters" minlength="4" maxlength="10" required autofocus />
+                    </div>
+                    <div>
+                        <label class="font-label-caps uppercase text-on-surface-variant block mb-1">Email</label>
+                        <input type="email" name="email" class="input-recessed w-full" placeholder="you@example.com" required />
+                    </div>
+                    <div>
+                        <label class="font-label-caps uppercase text-on-surface-variant block mb-1">Password</label>
+                        <input type="password" name="password" class="input-recessed w-full" placeholder="8-20 characters" minlength="8" maxlength="20" required />
+                    </div>
+                    <div>
+                        <label class="font-label-caps uppercase text-on-surface-variant block mb-1">Repeat Password</label>
+                        <input type="password" name="repeatPassword" class="input-recessed w-full" placeholder="Repeat Password" minlength="8" maxlength="20" required />
+                    </div>
+
+                    <button type="submit" class="btn-ornate w-full justify-center py-3 mt-2">Register</button>
                 </div>
-            </EditForm>
+            </form>
         </div>
 
         <p class="text-center mt-6 text-on-surface-variant">
@@ -56,41 +45,6 @@
 </section>
 
 @code {
-    private RegisterModel _model = new();
-    private string? _error;
-    private string? _success;
-
-    private async Task HandleRegister()
-    {
-        _error = null;
-        _success = null;
-
-        var error = await AccountService.RegisterAsync(_model.LoginName, _model.Email, _model.Password, _model.RepeatPassword);
-        if (error is not null)
-        {
-            _error = error;
-            return;
-        }
-
-        _success = "Account created successfully! You can now sign in.";
-        Navigation.NavigateTo("/login");
-    }
-
-    private class RegisterModel
-    {
-        [System.ComponentModel.DataAnnotations.Required(ErrorMessage = "Username is required.")]
-        [System.ComponentModel.DataAnnotations.StringLength(10, MinimumLength = 4, ErrorMessage = "Username must be 4-10 characters.")]
-        public string LoginName { get; set; } = string.Empty;
-
-        [System.ComponentModel.DataAnnotations.Required(ErrorMessage = "Email is required.")]
-        [System.ComponentModel.DataAnnotations.EmailAddress(ErrorMessage = "Invalid email.")]
-        public string Email { get; set; } = string.Empty;
-
-        [System.ComponentModel.DataAnnotations.Required(ErrorMessage = "Password is required.")]
-        [System.ComponentModel.DataAnnotations.StringLength(20, MinimumLength = 8, ErrorMessage = "Password must be 8-20 characters.")]
-        public string Password { get; set; } = string.Empty;
-
-        [System.ComponentModel.DataAnnotations.Required(ErrorMessage = "Please confirm your password.")]
-        public string RepeatPassword { get; set; } = string.Empty;
-    }
+    [SupplyParameterFromQuery(Name = "error")]
+    public string? Error { get; set; }
 }

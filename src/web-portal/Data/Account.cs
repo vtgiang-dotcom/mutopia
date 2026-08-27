@@ -55,6 +55,9 @@ public class Account
     [Column("WCoin")]
     public int WCoin { get; set; }
 
+    [Column("GoblinPoints")]
+    public int GoblinPoints { get; set; }
+
     [Column("VaultId")]
     public Guid? VaultId { get; set; }
 

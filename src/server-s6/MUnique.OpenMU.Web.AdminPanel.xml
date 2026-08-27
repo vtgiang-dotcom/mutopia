@@ -1,0 +1,2428 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>MUnique.OpenMU.Web.AdminPanel</name>
+    </assembly>
+    <members>
+        <member name="T:MUnique.OpenMU.Web.AdminPanel.AdminPanelEnvironment">
+            <summary>
+            Environment information about the admin panel.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.AdminPanelEnvironment.IsHostingEmbedded">
+            <summary>
+            Gets a value indicating whether the hosting of the admin panel is embedded into an all-in-one deployment.
+            </summary>
+        </member>
+        <member name="T:MUnique.OpenMU.Web.AdminPanel.Components.ConnectServer.ConnectServerConfiguration">
+            <summary>
+            Edit component for the <see cref="T:MUnique.OpenMU.DataModel.Configuration.ConnectServerDefinition"/>.
+            </summary>
+            <seealso cref="T:Microsoft.AspNetCore.Components.ComponentBase" />
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Components.ConnectServer.ConnectServerConfiguration.OnValidSubmit">
+            <summary>
+            Gets or sets the <see cref="P:Microsoft.AspNetCore.Components.Forms.EditForm.OnValidSubmit"/> event callback.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Components.ConnectServer.ConnectServerConfiguration.OnCancel">
+            <summary>
+            Gets or sets the task which should be executed when the cancel button gets clicked. If null, no cancel button is shown.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Components.ConnectServer.ConnectServerConfiguration.Model">
+            <summary>
+            Gets or sets the model.
+            </summary>
+        </member>
+        <member name="M:MUnique.OpenMU.Web.AdminPanel.Components.ConnectServer.ConnectServerConfiguration.OnInitialized">
+            <inheritdoc/>
+        </member>
+        <member name="T:MUnique.OpenMU.Web.AdminPanel.Components.ConnectServer.ConnectServerConfigurationViewItem">
+            <summary>
+            A view item for the <see cref="T:MUnique.OpenMU.DataModel.Configuration.ConnectServerDefinition"/>.
+            </summary>
+        </member>
+        <member name="M:MUnique.OpenMU.Web.AdminPanel.Components.ConnectServer.ConnectServerConfigurationViewItem.#ctor(MUnique.OpenMU.DataModel.Configuration.ConnectServerDefinition)">
+            <summary>
+            Initializes a new instance of the <see cref="T:MUnique.OpenMU.Web.AdminPanel.Components.ConnectServer.ConnectServerConfigurationViewItem"/> class.
+            </summary>
+            <param name="config">The configuration.</param>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Components.ConnectServer.ConnectServerConfigurationViewItem.Id">
+            <summary>
+            Gets the internal id of the configuration.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Components.ConnectServer.ConnectServerConfigurationViewItem.Configuration">
+            <summary>
+            Gets the underlying configuration object.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Components.ConnectServer.ConnectServerConfigurationViewItem.Description">
+            <summary>
+            Gets or sets the description of the server.
+            </summary>
+            <remarks>
+            Will be displayed in the server list in the admin panel as <see cref="P:MUnique.OpenMU.Interfaces.IManageableServer.Description" />.
+            </remarks>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Components.ConnectServer.ConnectServerConfigurationViewItem.GameClientDefinition">
+            <summary>
+            Gets or sets the game client definition.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Components.ConnectServer.ConnectServerConfigurationViewItem.DisconnectOnUnknownPacket">
+            <summary>
+            Gets or sets a value indicating whether the client should get disconnected when a unknown packet is getting received.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Components.ConnectServer.ConnectServerConfigurationViewItem.MaximumReceiveSize">
+            <summary>
+            Gets or sets the maximum size of the packets which should be received from the client. If this size is exceeded, the client will be disconnected.
+            </summary>
+            <remarks>
+            DOS protection.
+            </remarks>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Components.ConnectServer.ConnectServerConfigurationViewItem.ClientListenerPort">
+            <summary>
+            Gets or sets the network port on which the server is listening.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Components.ConnectServer.ConnectServerConfigurationViewItem.PatchAddress">
+            <summary>
+            Gets or sets the patch address.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Components.ConnectServer.ConnectServerConfigurationViewItem.MaxConnectionsPerAddress">
+            <summary>
+            Gets or sets the maximum connections per ip.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Components.ConnectServer.ConnectServerConfigurationViewItem.CheckMaxConnectionsPerAddress">
+            <summary>
+            Gets or sets a value indicating whether the <see cref="P:MUnique.OpenMU.DataModel.Configuration.ConnectServerDefinition.MaxConnectionsPerAddress" /> should be checked.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Components.ConnectServer.ConnectServerConfigurationViewItem.MaxConnections">
+            <summary>
+            Gets or sets the maximum connections the connect server should handle.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Components.ConnectServer.ConnectServerConfigurationViewItem.ListenerBacklog">
+            <summary>
+            Gets or sets the listener backlog for the client listener.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Components.ConnectServer.ConnectServerConfigurationViewItem.MaxFtpRequests">
+            <summary>
+            Gets or sets the maximum FTP requests per connection.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Components.ConnectServer.ConnectServerConfigurationViewItem.MaxIpRequests">
+            <summary>
+            Gets or sets the maximum ip requests per connection.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Components.ConnectServer.ConnectServerConfigurationViewItem.MaxServerListRequests">
+            <summary>
+            Gets or sets the maximum server list requests per connection.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Components.ConnectServer.ConnectServerConfigurationViewItem.TimeoutSeconds">
+            <summary>
+            Gets or sets the timeout in seconds.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Components.ConnectServer.ConnectServerConfigurationViewItem.CurrentVersionMajor">
+            <summary>
+            Gets or sets the current version major.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Components.ConnectServer.ConnectServerConfigurationViewItem.CurrentVersionMinor">
+            <summary>
+            Gets or sets the current version minor.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Components.ConnectServer.ConnectServerConfigurationViewItem.CurrentVersionPatch">
+            <summary>
+            Gets or sets the current version patch.
+            </summary>
+        </member>
+        <member name="T:MUnique.OpenMU.Web.AdminPanel.Components.Install">
+            <summary>
+            The component which allows to initialize the database.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Components.Install.SelectedVersion">
+            <summary>
+            Gets or sets the selected version.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Components.Install.GameServerCount">
+            <summary>
+            Gets or sets the game server count.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Components.Install.CreateTestAccounts">
+            <summary>
+            Gets or sets a value indicating whether to create test accounts.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Components.Install.IsInstalling">
+            <summary>
+            Gets a value indicating whether this instance is installing.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Components.Install.IsInstalled">
+            <summary>
+            Gets a value indicating whether this instance has installed.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Components.Install.InstallationFinished">
+            <summary>
+            Gets or sets the installation finished callback.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Components.Install.SetupService">
+            <summary>
+            Gets or sets the setup service.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Components.Install.ServerProvider">
+            <summary>
+            Gets or sets the server provider.
+            </summary>
+        </member>
+        <member name="M:MUnique.OpenMU.Web.AdminPanel.Components.Install.OnParametersSet">
+            <inheritdoc />
+        </member>
+        <member name="M:MUnique.OpenMU.Web.AdminPanel.Components.Install.StartInstallationAsync">
+            <summary>
+            Starts the installation.
+            </summary>
+        </member>
+        <member name="T:MUnique.OpenMU.Web.AdminPanel.Components.Layout.ConfigNavMenu">
+            <summary>
+            Navigation menu of the admin panel.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Components.Layout.ConfigNavMenu.GameConfigurationId">
+            <summary>
+            Gets or sets the game configuration identifier.
+            </summary>
+        </member>
+        <member name="T:MUnique.OpenMU.Web.AdminPanel.Components.Layout.ConfigurationSearch">
+            <summary>
+            Header search for configuration properties.
+            </summary>
+        </member>
+        <member name="M:MUnique.OpenMU.Web.AdminPanel.Components.Layout.ConfigurationSearch.Dispose">
+            <inheritdoc />
+        </member>
+        <member name="M:MUnique.OpenMU.Web.AdminPanel.Components.Layout.ConfigurationSearch.OnInitializedAsync">
+            <inheritdoc />
+        </member>
+        <member name="T:MUnique.OpenMU.Web.AdminPanel.Components.Layout.NavMenu">
+            <summary>
+            Navigation menu of the admin panel.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Components.Layout.NavMenu.NavMenuCssClass">
+            <summary>
+            Gets the class for the entries of the navigation menu.
+            "collapse" is a class of bootstrap which hides it.
+            In our CSS we also define to show it anyway, if the width sufficient.
+            </summary>
+        </member>
+        <member name="M:MUnique.OpenMU.Web.AdminPanel.Components.Layout.NavMenu.Dispose">
+            <inheritdoc />
+        </member>
+        <member name="M:MUnique.OpenMU.Web.AdminPanel.Components.Layout.NavMenu.OnInitializedAsync">
+            <inheritdoc />
+        </member>
+        <member name="M:MUnique.OpenMU.Web.AdminPanel.Components.Layout.CreationPanel.OnInitialized">
+            <inheritdoc />
+        </member>
+        <member name="M:MUnique.OpenMU.Web.AdminPanel.Components.Layout.CreationPanel.Dispose">
+            <inheritdoc />
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Components.ServerItem.Server">
+            <summary>
+            Gets or sets the server which is shown in this component.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Components.ServerItem.GameServerInstanceManager">
+            <summary>
+            Gets or sets the <see cref="T:MUnique.OpenMU.Interfaces.IGameServerInstanceManager"/>.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Components.ServerItem.ConnectServerInstanceManager">
+            <summary>
+            Gets or sets the <see cref="T:MUnique.OpenMU.Interfaces.IConnectServerInstanceManager"/>.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Components.ServerItem.ContextProvider">
+            <summary>
+            Gets or sets the <see cref="T:MUnique.OpenMU.Persistence.IPersistenceContextProvider"/>.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Components.ServerItem.DataSource">
+            <summary>
+            Gets or sets the data source for the game configuration.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Components.ServerItem.ModalService">
+            <summary>
+            Gets or sets the modal service.
+            </summary>
+        </member>
+        <member name="M:MUnique.OpenMU.Web.AdminPanel.Components.ServerItem.Dispose">
+            <inheritdoc />
+        </member>
+        <member name="M:MUnique.OpenMU.Web.AdminPanel.Components.ServerItem.OnInitialized">
+            <inheritdoc />
+        </member>
+        <member name="M:MUnique.OpenMU.Web.AdminPanel.Components.ServerItem.OnParametersSet">
+            <inheritdoc />
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Components.TotalOnlineCounter.Servers">
+            <summary>
+            Gets or sets the servers.
+            </summary>
+        </member>
+        <member name="M:MUnique.OpenMU.Web.AdminPanel.Components.TotalOnlineCounter.Dispose">
+            <inheritdoc />
+        </member>
+        <member name="M:MUnique.OpenMU.Web.AdminPanel.Components.TotalOnlineCounter.OnParametersSet">
+            <inheritdoc />
+        </member>
+        <member name="T:MUnique.OpenMU.Web.AdminPanel.Exports">
+            <summary>
+            Class that holds the script exports of this project.
+            </summary>
+            <remarks>
+            TODO: Instead of a static class, create an interface, so we can inject an instance into the layout.
+                  For example, we could further add some common Components which render the Scripts, Stylesheets, etc.
+            </remarks>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Exports.Scripts">
+            <summary>
+            Gets the scripts.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Exports.ScriptMappings">
+            <summary>
+            Gets the script mappings.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Exports.Stylesheets">
+            <summary>
+            Gets the stylesheets.
+            </summary>
+        </member>
+        <member name="T:MUnique.OpenMU.Web.AdminPanel.Pages.ChatCommands">
+            <summary>
+            Code-behind for the <see cref="T:MUnique.OpenMU.Web.AdminPanel.Pages.ChatCommands"/> page.
+            </summary>
+        </member>
+        <member name="T:MUnique.OpenMU.Web.AdminPanel.Pages.CreateConnectServerConfig">
+            <summary>
+            Razor page which shows objects of the specified type in a grid.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Pages.CreateConnectServerConfig.ContextProvider">
+            <summary>
+            Gets or sets the context provider.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Pages.CreateConnectServerConfig.ServerInstanceManager">
+            <summary>
+            Gets or sets the server initializer.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Pages.CreateConnectServerConfig.DataSource">
+            <summary>
+            Gets or sets the data source.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Pages.CreateConnectServerConfig.ToastService">
+            <summary>
+            Gets or sets the toast service.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Pages.CreateConnectServerConfig.NavigationManager">
+            <summary>
+            Gets or sets the navigation manager.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Pages.CreateConnectServerConfig.LoadingService">
+            <summary>
+            Gets or sets the loading overlay service.
+            </summary>
+        </member>
+        <member name="M:MUnique.OpenMU.Web.AdminPanel.Pages.CreateConnectServerConfig.DisposeAsync">
+            <inheritdoc />
+        </member>
+        <member name="M:MUnique.OpenMU.Web.AdminPanel.Pages.CreateConnectServerConfig.OnParametersSetAsync">
+            <inheritdoc />
+        </member>
+        <member name="T:MUnique.OpenMU.Web.AdminPanel.Pages.CreateConnectServerConfig.ConnectServerViewModel">
+            <summary>
+            The view model for a <see cref="T:MUnique.OpenMU.DataModel.Configuration.ConnectServerDefinition"/>.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Pages.CreateConnectServerConfig.ConnectServerViewModel.ServerId">
+            <summary>
+            Gets or sets the server identifier.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Pages.CreateConnectServerConfig.ConnectServerViewModel.Description">
+            <summary>
+            Gets or sets the description.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Pages.CreateConnectServerConfig.ConnectServerViewModel.Client">
+            <summary>
+            Gets or sets the client which is expected to connect.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Pages.CreateConnectServerConfig.ConnectServerViewModel.NetworkPort">
+            <summary>
+            Gets or sets the network port on which the server is listening.
+            </summary>
+        </member>
+        <member name="T:MUnique.OpenMU.Web.AdminPanel.Pages.CreateGameServerConfig">
+            <summary>
+            Razor page that shows objects of the specified type in a grid.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Pages.CreateGameServerConfig.ContextProvider">
+            <summary>
+            Gets or sets the context provider.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Pages.CreateGameServerConfig.ServerInstanceManager">
+            <summary>
+            Gets or sets the server initializer.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Pages.CreateGameServerConfig.DataSource">
+            <summary>
+            Gets or sets the data source.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Pages.CreateGameServerConfig.ModalService">
+            <summary>
+            Gets or sets the modal service.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Pages.CreateGameServerConfig.ToastService">
+            <summary>
+            Gets or sets the toast service.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Pages.CreateGameServerConfig.NavigationManager">
+            <summary>
+            Gets or sets the navigation manager.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Pages.CreateGameServerConfig.LoadingService">
+            <summary>
+            Gets or sets the loading overlay service.
+            </summary>
+        </member>
+        <member name="M:MUnique.OpenMU.Web.AdminPanel.Pages.CreateGameServerConfig.DisposeAsync">
+            <inheritdoc />
+        </member>
+        <member name="M:MUnique.OpenMU.Web.AdminPanel.Pages.CreateGameServerConfig.OnParametersSetAsync">
+            <inheritdoc />
+        </member>
+        <member name="T:MUnique.OpenMU.Web.AdminPanel.Pages.CreateGameServerConfig.GameServerViewModel">
+            <summary>
+            The view model for a <see cref="T:MUnique.OpenMU.DataModel.Configuration.GameServerDefinition"/>.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Pages.CreateGameServerConfig.GameServerViewModel.ServerId">
+            <summary>
+            Gets or sets the server identifier.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Pages.CreateGameServerConfig.GameServerViewModel.Description">
+            <summary>
+            Gets or sets the description.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Pages.CreateGameServerConfig.GameServerViewModel.ExperienceRate">
+            <summary>
+            Gets or sets the experience rate.
+            </summary>
+            <value>
+            The experience rate.
+            </value>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Pages.CreateGameServerConfig.GameServerViewModel.PvpEnabled">
+            <summary>
+            Gets or sets a value indicating whether PVP is enabled on this server.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Pages.CreateGameServerConfig.GameServerViewModel.ServerConfiguration">
+            <summary>
+            Gets or sets the server configuration.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Pages.CreateGameServerConfig.GameServerViewModel.Client">
+            <summary>
+            Gets or sets the client which is expected to connect.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Pages.CreateGameServerConfig.GameServerViewModel.NetworkPort">
+            <summary>
+            Gets or sets the network port on which the server is listening.
+            </summary>
+        </member>
+        <member name="T:MUnique.OpenMU.Web.AdminPanel.Pages.EditAccount">
+            <summary>
+            The edit page for account data.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Pages.EditAccount.AccountId">
+            <summary>
+            Gets or sets the identifier of the account which should be edited.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Pages.EditAccount.AccountData">
+            <summary>
+            Gets or sets the data source for account data.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Pages.EditAccount.EditDataSource">
+            <inheritdoc />
+        </member>
+        <member name="M:MUnique.OpenMU.Web.AdminPanel.Pages.EditAccount.LoadOwnerAsync(System.Threading.CancellationToken)">
+            <inheritdoc />
+        </member>
+        <member name="M:MUnique.OpenMU.Web.AdminPanel.Pages.EditAccount.AddFormToRenderTree(Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder,System.Int32@)">
+            <inheritdoc />
+        </member>
+        <member name="T:MUnique.OpenMU.Web.AdminPanel.Pages.EditBase">
+            <summary>
+            Abstract common base class for an edit page.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Pages.EditBase.Id">
+            <summary>
+            Gets or sets the identifier of the object which should be edited.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Pages.EditBase.TypeString">
+            <summary>
+            Gets or sets the <see cref="P:System.Type.FullName"/> of the object which should be edited.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Pages.EditBase.PersistenceContextProvider">
+            <summary>
+            Gets or sets the persistence context provider which loads and saves the object.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Pages.EditBase.ModalService">
+            <summary>
+            Gets or sets the modal service.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Pages.EditBase.ToastService">
+            <summary>
+            Gets or sets the toast service.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Pages.EditBase.LoadingOverlay">
+            <summary>
+            Gets or sets the loading overlay service.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Pages.EditBase.ConfigDataSource">
+            <summary>
+            Gets or sets the configuration data source.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Pages.EditBase.NavigationManager">
+            <summary>
+            Gets or sets the navigation manager.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Pages.EditBase.NavigationHistory">
+            <summary>
+            Gets or sets the navigation history.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Pages.EditBase.JavaScript">
+            <summary>
+            Gets or sets the java script runtime.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Pages.EditBase.Logger">
+            <summary>
+            Gets or sets the logger.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Pages.EditBase.EditDataSource">
+            <summary>
+            Gets the data source of the type which is edited.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Pages.EditBase.Model">
+            <summary>
+            Gets the model which should be edited.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Pages.EditBase.Type">
+            <summary>
+            Gets the type.
+            </summary>
+        </member>
+        <member name="M:MUnique.OpenMU.Web.AdminPanel.Pages.EditBase.DisposeAsync">
+            <inheritdoc />
+        </member>
+        <member name="M:MUnique.OpenMU.Web.AdminPanel.Pages.EditBase.SetParametersAsync(Microsoft.AspNetCore.Components.ParameterView)">
+            <inheritdoc />
+        </member>
+        <member name="M:MUnique.OpenMU.Web.AdminPanel.Pages.EditBase.OnParametersSetAsync">
+            <inheritdoc />
+        </member>
+        <member name="M:MUnique.OpenMU.Web.AdminPanel.Pages.EditBase.BuildRenderTree(Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:MUnique.OpenMU.Web.AdminPanel.Pages.EditBase.OnInitializedAsync">
+            <inheritdoc />
+        </member>
+        <member name="M:MUnique.OpenMU.Web.AdminPanel.Pages.EditBase.AddFormToRenderTree(Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder,System.Int32@)">
+            <summary>
+            Adds the form to the render tree.
+            </summary>
+            <param name="builder">The builder.</param>
+            <param name="currentSequence">The current sequence.</param>
+        </member>
+        <member name="M:MUnique.OpenMU.Web.AdminPanel.Pages.EditBase.OnAfterRenderAsync(System.Boolean)">
+            <inheritdoc />
+        </member>
+        <member name="M:MUnique.OpenMU.Web.AdminPanel.Pages.EditBase.SaveChangesAsync">
+            <summary>
+            Saves the changes.
+            </summary>
+        </member>
+        <member name="M:MUnique.OpenMU.Web.AdminPanel.Pages.EditBase.RefreshAsync">
+            <summary>
+            Refreshes the data by discarding changes and reloading it from the database.
+            </summary>
+        </member>
+        <member name="M:MUnique.OpenMU.Web.AdminPanel.Pages.EditBase.GetEditorsMarkup">
+            <summary>
+            Gets the optional editors markup for the current type.
+            </summary>
+            <returns>The optional editors markup for the current type.</returns>
+        </member>
+        <member name="M:MUnique.OpenMU.Web.AdminPanel.Pages.EditBase.LoadOwnerAsync(System.Threading.CancellationToken)">
+            <summary>
+            It loads the owner of the <see cref="P:MUnique.OpenMU.Web.AdminPanel.Pages.EditBase.EditDataSource" />.
+            </summary>
+            <param name="cancellationToken">The cancellation token.</param>
+        </member>
+        <member name="T:MUnique.OpenMU.Web.AdminPanel.Pages.EditConfig">
+            <summary>
+            A generic edit page, which shows an <see cref="T:MUnique.OpenMU.Web.Shared.Components.Form.AutoForm`1"/> for the given <see cref="P:MUnique.OpenMU.Web.AdminPanel.Pages.EditBase.TypeString"/> and <see cref="P:MUnique.OpenMU.Web.AdminPanel.Pages.EditBase.Id"/>.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Pages.EditConfig.SearchTerm">
+            <summary>
+            Gets or sets the optional search term to pre-filter fields.
+            </summary>
+        </member>
+        <member name="M:MUnique.OpenMU.Web.AdminPanel.Pages.EditConfig.AddFormToRenderTree(Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder,System.Int32@)">
+            <inheritdoc />
+        </member>
+        <member name="M:MUnique.OpenMU.Web.AdminPanel.Pages.EditConfig.GetEditorsMarkup">
+            <inheritdoc />
+        </member>
+        <member name="T:MUnique.OpenMU.Web.AdminPanel.Pages.EditConfigGrid">
+            <summary>
+            Razor page which shows objects of the specified type in a grid.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Pages.EditConfigGrid.TypeString">
+            <summary>
+            Gets or sets the <see cref="P:System.Type.FullName"/> of the object which should be edited.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Pages.EditConfigGrid.DataSource">
+            <summary>
+            Gets or sets the data source.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Pages.EditConfigGrid.NavigationManager">
+            <summary>
+            Gets or sets the navigation manager.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Pages.EditConfigGrid.PersistenceContextProvider">
+            <summary>
+            Gets or sets the persistence context provider which loads and saves the object.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Pages.EditConfigGrid.ModalService">
+            <summary>
+            Gets or sets the modal service.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Pages.EditConfigGrid.CreationPanelService">
+            <summary>
+            Gets or sets the creation panel service which hosts the "create new" form in a persistent side panel.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Pages.EditConfigGrid.ToastService">
+            <summary>
+            Gets or sets the toast service.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Pages.EditConfigGrid.Logger">
+            <summary>
+            Gets or sets the logger.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Pages.EditConfigGrid.LoadingService">
+            <summary>
+            Gets or sets the loading overlay service.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Pages.EditConfigGrid.Type">
+            <summary>
+            Gets or sets the type.
+            </summary>
+        </member>
+        <member name="M:MUnique.OpenMU.Web.AdminPanel.Pages.EditConfigGrid.DisposeAsync">
+            <inheritdoc />
+        </member>
+        <member name="M:MUnique.OpenMU.Web.AdminPanel.Pages.EditConfigGrid.OnInitialized">
+            <inheritdoc />
+        </member>
+        <member name="M:MUnique.OpenMU.Web.AdminPanel.Pages.EditConfigGrid.OnParametersSetAsync">
+            <inheritdoc />
+        </member>
+        <member name="T:MUnique.OpenMU.Web.AdminPanel.Pages.EditConfigGrid.ViewModel">
+            <summary>
+            The view model for the grid.
+            We use this instead of the objects, because it makes the code simpler.
+            Creating generic components is a bit complicated when you don't
+            have the type as generic type parameter.
+            </summary>
+        </member>
+        <member name="M:MUnique.OpenMU.Web.AdminPanel.Pages.EditConfigGrid.ViewModel.#ctor(System.Object)">
+            <summary>
+            Initializes a new instance of the <see cref="T:MUnique.OpenMU.Web.AdminPanel.Pages.EditConfigGrid.ViewModel"/> class.
+            </summary>
+            <param name="parent">The parent.</param>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Pages.EditConfigGrid.ViewModel.Parent">
+            <summary>
+            Gets the parent object, which is displayed.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Pages.EditConfigGrid.ViewModel.Id">
+            <summary>
+            Gets or sets the identifier of the object.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Pages.EditConfigGrid.ViewModel.Name">
+            <summary>
+            Gets or sets the name of the object.
+            </summary>
+        </member>
+        <member name="T:MUnique.OpenMU.Web.AdminPanel.Pages.EditConnectionServer">
+            <summary>
+            Edit page for the <see cref="T:MUnique.OpenMU.Web.AdminPanel.Components.ConnectServer.ConnectServerConfiguration"/>.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Pages.EditConnectionServer.Type">
+            <inheritdoc />
+        </member>
+        <member name="M:MUnique.OpenMU.Web.AdminPanel.Pages.EditConnectionServer.AddFormToRenderTree(Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder,System.Int32@)">
+            <inheritdoc />
+        </member>
+        <member name="T:MUnique.OpenMU.Web.AdminPanel.Pages.EditMap">
+            <summary>
+            A page, which shows an <see cref="T:MUnique.OpenMU.Web.Shared.Components.MapEditor.MapEditor"/> for all <see cref="P:MUnique.OpenMU.DataModel.Configuration.GameConfiguration.Maps"/>.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Pages.EditMap.SelectedMapId">
+            <summary>
+            Gets or sets the selected map identifier.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Pages.EditMap.ModalService">
+            <summary>
+            Gets or sets the modal service.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Pages.EditMap.LoadingOverlay">
+            <summary>
+            Gets or sets the loading overlay service.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Pages.EditMap.ToastService">
+            <summary>
+            Gets or sets the toast service.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Pages.EditMap.GameConfigurationSource">
+            <summary>
+            Gets or sets the game configuration source.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Pages.EditMap.Logger">
+            <summary>
+            Gets or sets the logger.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Pages.EditMap.NavigationManager">
+            <summary>
+            Gets or sets the navigation manager.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Pages.EditMap.JavaScript">
+            <summary>
+            Gets or sets the JavaScript runtime.
+            </summary>
+        </member>
+        <member name="M:MUnique.OpenMU.Web.AdminPanel.Pages.EditMap.Dispose">
+            <inheritdoc />
+        </member>
+        <member name="M:MUnique.OpenMU.Web.AdminPanel.Pages.EditMap.BuildRenderTree(Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:MUnique.OpenMU.Web.AdminPanel.Pages.EditMap.OnParametersSetAsync">
+            <inheritdoc />
+        </member>
+        <member name="M:MUnique.OpenMU.Web.AdminPanel.Pages.EditMap.OnAfterRenderAsync(System.Boolean)">
+            <inheritdoc />
+        </member>
+        <member name="M:MUnique.OpenMU.Web.AdminPanel.Pages.EditMap.OnInitializedAsync">
+            <inheritdoc />
+        </member>
+        <member name="T:MUnique.OpenMU.Web.AdminPanel.Pages.Merchants">
+            <summary>
+            Razor page which shows objects of the specified type in a grid.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Pages.Merchants.DataSource">
+            <summary>
+            Gets or sets the data source.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Pages.Merchants.ContextProvider">
+            <summary>
+            Gets or sets the context provider.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Pages.Merchants.ToastService">
+            <summary>
+            Gets or sets the toast service.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Pages.Merchants.NavigationManager">
+            <summary>
+            Gets or sets the navigation manager.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Pages.Merchants.JavaScript">
+            <summary>
+            Gets or sets the java script runtime.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Pages.Merchants.Logger">
+            <summary>
+            Gets or sets the logger.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Pages.Merchants.LoadingService">
+            <summary>
+            Gets or sets the loading overlay service.
+            </summary>
+        </member>
+        <member name="M:MUnique.OpenMU.Web.AdminPanel.Pages.Merchants.DisposeAsync">
+            <inheritdoc />
+        </member>
+        <member name="M:MUnique.OpenMU.Web.AdminPanel.Pages.Merchants.OnInitializedAsync">
+            <inheritdoc />
+        </member>
+        <member name="M:MUnique.OpenMU.Web.AdminPanel.Pages.Merchants.OnParametersSetAsync">
+            <inheritdoc />
+        </member>
+        <member name="T:MUnique.OpenMU.Web.AdminPanel.Pages.Merchants.MerchantStorageViewModel">
+            <summary>
+            The view model for a merchant store.
+            </summary>
+        </member>
+        <member name="M:MUnique.OpenMU.Web.AdminPanel.Pages.Merchants.MerchantStorageViewModel.#ctor(MUnique.OpenMU.DataModel.Configuration.MonsterDefinition)">
+            <summary>
+            Initializes a new instance of the <see cref="T:MUnique.OpenMU.Web.AdminPanel.Pages.Merchants.MerchantStorageViewModel"/> class.
+            </summary>
+            <param name="merchant">The merchant.</param>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Pages.Merchants.MerchantStorageViewModel.Id">
+            <summary>
+            Gets the identifier.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Pages.Merchants.MerchantStorageViewModel.Merchant">
+            <summary>
+            Gets the merchant definition.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Pages.Merchants.MerchantStorageViewModel.Name">
+            <summary>
+            Gets the name of the merchant.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Pages.Merchants.MerchantStorageViewModel.Items">
+            <summary>
+            Gets the items of the merchant.
+            </summary>
+        </member>
+        <member name="T:MUnique.OpenMU.Web.AdminPanel.Pages.Plugins">
+            <summary>
+            Code-behind for the <see cref="T:MUnique.OpenMU.Web.AdminPanel.Pages.Plugins"/> page.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Pages.Plugins.PlugInId">
+            <summary>
+            Gets or sets the plug-in identifier.
+            </summary>
+        </member>
+        <member name="M:MUnique.OpenMU.Web.AdminPanel.Pages.Plugins.OnParametersSetAsync">
+            <inheritdoc />
+        </member>
+        <member name="T:MUnique.OpenMU.Web.AdminPanel.Pages.Setup">
+            <summary>
+            The set up page.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Pages.Setup.ShowInstall">
+            <summary>
+            Gets or sets a value indicating whether to show the <see cref="T:MUnique.OpenMU.Web.AdminPanel.Components.Install"/> component.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Pages.Setup.SetupService">
+            <summary>
+            Gets or sets the setup service.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Pages.Setup.JsRuntime">
+            <summary>
+            Gets or sets the javascript runtime.
+            </summary>
+        </member>
+        <member name="M:MUnique.OpenMU.Web.AdminPanel.Pages.Setup.OnInitializedAsync">
+            <inheritdoc />
+        </member>
+        <member name="T:MUnique.OpenMU.Web.AdminPanel.Pages.Updates">
+            <summary>
+            The set-up page.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Pages.Updates.SetupService">
+            <summary>
+            Gets or sets the setup service.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Pages.Updates.UpdateService">
+            <summary>
+            Gets or sets the update manager.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Pages.Updates.JsRuntime">
+            <summary>
+            Gets or sets the JavaScript runtime.
+            </summary>
+        </member>
+        <member name="M:MUnique.OpenMU.Web.AdminPanel.Pages.Updates.OnInitializedAsync">
+            <inheritdoc />
+        </member>
+        <member name="T:MUnique.OpenMU.Web.AdminPanel.Pages.Updates.UpdateViewModel">
+            <summary>
+            The view model for an update.
+            </summary>
+        </member>
+        <member name="M:MUnique.OpenMU.Web.AdminPanel.Pages.Updates.UpdateViewModel.#ctor(MUnique.OpenMU.Persistence.Initialization.Updates.IConfigurationUpdatePlugIn)">
+            <summary>
+            Initializes a new instance of the <see cref="T:MUnique.OpenMU.Web.AdminPanel.Pages.Updates.UpdateViewModel"/> class.
+            </summary>
+            <param name="updatePlugIn">The update plugin.</param>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Pages.GameServer.Servers">
+            <summary>
+            Gets or sets the server id on which the map is hosted.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Pages.GameServer.GameServerId">
+            <summary>
+            Gets or sets the 0-based game server id/index.
+            </summary>
+        </member>
+        <member name="M:MUnique.OpenMU.Web.AdminPanel.Pages.GameServer.Dispose">
+            <inheritdoc />
+        </member>
+        <member name="M:MUnique.OpenMU.Web.AdminPanel.Pages.GameServer.OnInitializedAsync">
+            <inheritdoc />
+        </member>
+        <member name="M:MUnique.OpenMU.Web.AdminPanel.Pages.LogFiles.DisposeAsync">
+            <inheritdoc />
+        </member>
+        <member name="M:MUnique.OpenMU.Web.AdminPanel.Pages.LogFiles.OnInitialized">
+            <inheritdoc />
+        </member>
+        <member name="M:MUnique.OpenMU.Web.AdminPanel.Pages.LogFiles.OnAfterRenderAsync(System.Boolean)">
+            <inheritdoc />
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Pages.MapPage.Servers">
+            <summary>
+            Gets or sets the server id on which the map is hosted.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Pages.MapPage.MapId">
+            <summary>
+            Gets or sets the map id.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Pages.MapPage.GameServerId">
+            <summary>
+            Gets or sets the game server id/index.
+            </summary>
+        </member>
+        <member name="M:MUnique.OpenMU.Web.AdminPanel.Pages.MapPage.Dispose">
+            <inheritdoc />
+        </member>
+        <member name="M:MUnique.OpenMU.Web.AdminPanel.Pages.MapPage.OnInitializedAsync">
+            <inheritdoc />
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Pages.Servers.ServerProvider">
+            <summary>
+            Gets or sets the <see cref="T:MUnique.OpenMU.Interfaces.IServerProvider"/>.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Pages.Servers.ServerInstanceManager">
+            <summary>
+            Gets or sets the <see cref="T:MUnique.OpenMU.Interfaces.IGameServerInstanceManager"/>.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Pages.Servers.ServiceProvider">
+            <summary>
+            Gets or sets the service provider, used to optionally resolve the game server dictionary.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Pages.Servers.ToastService">
+            <summary>
+            Gets or sets the toast service.
+            </summary>
+        </member>
+        <member name="F:MUnique.OpenMU.Web.AdminPanel.Pages.Servers._gameServers">
+            <summary>
+            The game servers, resolved optionally: the dictionary is only registered in the
+            single-process host, so it is null on the distributed (Dapr) admin panel host. When
+            null, the global message card is not rendered (graceful degradation).
+            </summary>
+        </member>
+        <member name="M:MUnique.OpenMU.Web.AdminPanel.Pages.Servers.Dispose">
+            <inheritdoc />
+        </member>
+        <member name="M:MUnique.OpenMU.Web.AdminPanel.Pages.Servers.OnInitialized">
+            <inheritdoc />
+        </member>
+        <member name="T:MUnique.OpenMU.Web.AdminPanel.Program">
+            <summary>
+            The class of the entry point.
+            </summary>
+        </member>
+        <member name="M:MUnique.OpenMU.Web.AdminPanel.Program.Main(System.String[])">
+            <summary>
+            Defines the entry point of the application.
+            </summary>
+            <param name="args">The arguments.</param>
+        </member>
+        <member name="T:MUnique.OpenMU.Web.AdminPanel.Properties.Resources">
+            <summary>
+              A strongly-typed resource class, for looking up localized strings, etc.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Properties.Resources.ResourceManager">
+            <summary>
+              Returns the cached ResourceManager instance used by this class.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Properties.Resources.Culture">
+            <summary>
+              Overrides the current thread's CurrentUICulture property for all
+              resource lookups using this strongly typed resource class.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Properties.Resources.About">
+            <summary>
+              Looks up a localized string similar to About.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Properties.Resources.Accounts">
+            <summary>
+              Looks up a localized string similar to Accounts.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Properties.Resources.Action">
+            <summary>
+              Looks up a localized string similar to Action.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Properties.Resources.Actions">
+            <summary>
+              Looks up a localized string similar to Actions.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Properties.Resources.Activate">
+            <summary>
+              Looks up a localized string similar to Activate.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Properties.Resources.ActiveOfflinePlayer">
+            <summary>
+              Looks up a localized string similar to Active Offline Player.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Properties.Resources.AddNew">
+            <summary>
+              Looks up a localized string similar to Add New.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Properties.Resources.AdminUsers">
+            <summary>
+              Looks up a localized string similar to Admin Users.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Properties.Resources.All">
+            <summary>
+              Looks up a localized string similar to All.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Properties.Resources.AllGameServers">
+            <summary>
+              Looks up a localized string similar to All Game Servers.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Properties.Resources.AnErrorOccurredWhileProcessingYourRequest">
+            <summary>
+              Looks up a localized string similar to An error occurred while processing your request.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Properties.Resources.ApplyingUpdates">
+            <summary>
+              Looks up a localized string similar to Applying updates ....
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Properties.Resources.ApplySelectedUpdates">
+            <summary>
+              Looks up a localized string similar to Apply selected updates.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Properties.Resources.AvailableUpdates">
+            <summary>
+              Looks up a localized string similar to available updates.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Properties.Resources.Back">
+            <summary>
+              Looks up a localized string similar to Back.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Properties.Resources.Cancel">
+            <summary>
+              Looks up a localized string similar to Cancel.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Properties.Resources.CantConnectToTheDatabaseProbablyNotCreatedYet">
+            <summary>
+              Looks up a localized string similar to Can&apos;t connect to the database. Probably not created yet..
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Properties.Resources.ChangePassword">
+            <summary>
+              Looks up a localized string similar to Change password.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Properties.Resources.Character">
+            <summary>
+              Looks up a localized string similar to Character.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Properties.Resources.CharacterClasses">
+            <summary>
+              Looks up a localized string similar to Character classes.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Properties.Resources.ChatCommands">
+            <summary>
+              Looks up a localized string similar to Chat commands.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Properties.Resources.Close">
+            <summary>
+              Looks up a localized string similar to Close.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Properties.Resources.CommandColumn">
+            <summary>
+              Looks up a localized string similar to Command.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Properties.Resources.CommandDescription">
+            <summary>
+              Looks up a localized string similar to Description.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Properties.Resources.CommandUsage">
+            <summary>
+              Looks up a localized string similar to Usage.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Properties.Resources.ConnectionServerConfigurationSaved">
+            <summary>
+              Looks up a localized string similar to The connection server configuration has been saved. Initializing connect server ....
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Properties.Resources.ConnectServer">
+            <summary>
+              Looks up a localized string similar to Connect Server.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Properties.Resources.CouldNotFindToDelete">
+            <summary>
+              Looks up a localized string similar to Couldn&apos;t find &apos;{0}&apos; to delete..
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Properties.Resources.CouldNotFindToDuplicate">
+            <summary>
+              Looks up a localized string similar to Couldn&apos;t find &apos;{0}&apos; to duplicate..
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Properties.Resources.CouldNotLoadMapDataCheckTheLogs">
+            <summary>
+              Looks up a localized string similar to Could not load the map data. Check the logs for details..
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Properties.Resources.Create">
+            <summary>
+              Looks up a localized string similar to Create.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Properties.Resources.CreateConnectServer">
+            <summary>
+              Looks up a localized string similar to Create Connect Server.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Properties.Resources.CreatedSuccessfully">
+            <summary>
+              Looks up a localized string similar to New object successfully created..
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Properties.Resources.CreateGameServer">
+            <summary>
+              Looks up a localized string similar to Create Game Server.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Properties.Resources.CreateUser">
+            <summary>
+              Looks up a localized string similar to Create User.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Properties.Resources.CreatingConfigurationInfo">
+            <summary>
+              Looks up a localized string similar to Creating Configuration ....
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Properties.Resources.CurrentState">
+            <summary>
+              Looks up a localized string similar to Current State.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Properties.Resources.DatabaseStatus">
+            <summary>
+              Looks up a localized string similar to Database status.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Properties.Resources.Deactivate">
+            <summary>
+              Looks up a localized string similar to Deactivate.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Properties.Resources.Delete">
+            <summary>
+              Looks up a localized string similar to Delete.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Properties.Resources.DeleteFailedReferenced">
+            <summary>
+              Looks up a localized string similar to Couldn&apos;t delete &apos;{0}&apos;, probably because it&apos;s referenced by another object. For details, see log.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Properties.Resources.DevelopmentEnvironmentWarning">
+            <summary>
+              Looks up a localized string similar to &lt;strong&gt;The Development environment shouldn&apos;t be enabled for deployed applications.&lt;/strong&gt;
+               It can result in displaying sensitive information from exceptions to end users.
+               For local debugging, enable the &lt;strong&gt;Development&lt;/strong&gt; environment by setting the &lt;strong&gt;ASPNETCORE_ENVIRONMENT&lt;/strong&gt; environment variable to &lt;strong&gt;Development&lt;/strong&gt;
+               and restarting the app..
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Properties.Resources.DevelopmentMode">
+            <summary>
+              Looks up a localized string similar to Development Mode.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Properties.Resources.DiscardChanges">
+            <summary>
+              Looks up a localized string similar to Discard changes.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Properties.Resources.Disconnect">
+            <summary>
+              Looks up a localized string similar to Disconnect.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Properties.Resources.DownloadAsJson">
+            <summary>
+              Looks up a localized string similar to Download as JSON.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Properties.Resources.DownloadFile">
+            <summary>
+              Looks up a localized string similar to Download File.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Properties.Resources.DropItemGroups">
+            <summary>
+              Looks up a localized string similar to Drop item groups.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Properties.Resources.Duplicate">
+            <summary>
+              Looks up a localized string similar to Duplicate.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Properties.Resources.DuplicatedSuccessfully">
+            <summary>
+              Looks up a localized string similar to Duplicated &apos;{0}&apos; successfully..
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Properties.Resources.Edit">
+            <summary>
+              Looks up a localized string similar to Edit.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Properties.Resources.Error">
+            <summary>
+              Looks up a localized string similar to Error.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Properties.Resources.ErrorDuplicating">
+            <summary>
+              Looks up a localized string similar to Error duplicating &apos;{0}&apos;: {1}.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Properties.Resources.ExtensionPoint">
+            <summary>
+              Looks up a localized string similar to Extension Point.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Properties.Resources.FailedByUninitializedContext">
+            <summary>
+              Looks up a localized string similar to Failed, context not initialized.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Properties.Resources.FailedToClone">
+            <summary>
+              Looks up a localized string similar to Failed to clone &apos;{0}&apos;..
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Properties.Resources.FileName">
+            <summary>
+              Looks up a localized string similar to File name.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Properties.Resources.FilterLogEntries">
+            <summary>
+              Looks up a localized string similar to Filter log entries....
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Properties.Resources.FinishedHaveFun">
+            <summary>
+              Looks up a localized string similar to Finished! Have fun :).
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Properties.Resources.FirstCloseAllConnectionsToTheServer">
+            <summary>
+              Looks up a localized string similar to First, close all connections to the server..
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Properties.Resources.FullConfiguration">
+            <summary>
+              Looks up a localized string similar to Full configuration.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Properties.Resources.GameClients">
+            <summary>
+              Looks up a localized string similar to Game clients.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Properties.Resources.GameConfiguration">
+            <summary>
+              Looks up a localized string similar to Game configuration.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Properties.Resources.GameMaps">
+            <summary>
+              Looks up a localized string similar to Game maps.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Properties.Resources.GameServer">
+            <summary>
+              Looks up a localized string similar to Game Server.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Properties.Resources.GameServerConfigurationSavedInfo">
+            <summary>
+              Looks up a localized string similar to The game server configuration has been saved. Initializing game server ....
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Properties.Resources.GameServerCount">
+            <summary>
+              Looks up a localized string similar to Game server count.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Properties.Resources.General">
+            <summary>
+              Looks up a localized string similar to General.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Properties.Resources.GlobalMessage">
+            <summary>
+              Looks up a localized string similar to Global Message.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Properties.Resources.GlobalMessageNoTarget">
+            <summary>
+              Looks up a localized string similar to No running game server to send the message to..
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Properties.Resources.GlobalMessageSendFailed">
+            <summary>
+              Looks up a localized string similar to Failed to send the message to {0}: {1}.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Properties.Resources.GlobalMessageSent">
+            <summary>
+              Looks up a localized string similar to Message sent..
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Properties.Resources.HideEntryForm">
+            <summary>
+              Looks up a localized string similar to Hide entry form.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Properties.Resources.Home">
+            <summary>
+              Looks up a localized string similar to Home.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Properties.Resources.HowManyGameServersQuestion">
+            <summary>
+              Looks up a localized string similar to How many game servers do you want?.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Properties.Resources.InitializedGameVersion">
+            <summary>
+              Looks up a localized string similar to Initialized game version.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Properties.Resources.InitializingConnectServerInfo">
+            <summary>
+              Looks up a localized string similar to Initializing Connect Server ....
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Properties.Resources.InitializingGameServerInfo">
+            <summary>
+              Looks up a localized string similar to Initializing Game Server ....
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Properties.Resources.InstallingPleaseWait">
+            <summary>
+              Looks up a localized string similar to Installing, please wait ....
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Properties.Resources.Items">
+            <summary>
+              Looks up a localized string similar to Items.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Properties.Resources.JewelMixes">
+            <summary>
+              Looks up a localized string similar to Jewel mixes.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Properties.Resources.LastUpdate">
+            <summary>
+              Looks up a localized string similar to Last update.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Properties.Resources.Live">
+            <summary>
+              Looks up a localized string similar to Live.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Properties.Resources.LiveMap">
+            <summary>
+              Looks up a localized string similar to Live Map.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Properties.Resources.Loading">
+            <summary>
+              Looks up a localized string similar to Loading ....
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Properties.Resources.LoadingErrorCheckLog">
+            <summary>
+              Looks up a localized string similar to Could not load the data. Check the logs for details..
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Properties.Resources.LogFiles">
+            <summary>
+              Looks up a localized string similar to Log Files.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Properties.Resources.Logs">
+            <summary>
+              Looks up a localized string similar to Logs.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Properties.Resources.LogViewer">
+            <summary>
+              Looks up a localized string similar to Log Viewer.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Properties.Resources.MajorVersion">
+            <summary>
+              Looks up a localized string similar to Major.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Properties.Resources.MandatoryUpdatesAreAlwaysAppliedAndCannotBeDeselected">
+            <summary>
+              Looks up a localized string similar to Mandatory updates are always applied and cannot be deselected..
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Properties.Resources.MapEditor">
+            <summary>
+              Looks up a localized string similar to Map Editor.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Properties.Resources.Merchants">
+            <summary>
+              Looks up a localized string similar to Merchants.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Properties.Resources.MerchantStores">
+            <summary>
+              Looks up a localized string similar to Merchant stores.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Properties.Resources.MessagePlaceholder">
+            <summary>
+              Looks up a localized string similar to Enter message....
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Properties.Resources.Metrics">
+            <summary>
+              Looks up a localized string similar to Metrics.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Properties.Resources.MiniGames">
+            <summary>
+              Looks up a localized string similar to Mini games.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Properties.Resources.MinimumCharacterStatus">
+            <summary>
+              Looks up a localized string similar to Required status.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Properties.Resources.MinorVersion">
+            <summary>
+              Looks up a localized string similar to Minor.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Properties.Resources.Monsters">
+            <summary>
+              Looks up a localized string similar to Monsters.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Properties.Resources.NewConfigurationUpdatesAvailable">
+            <summary>
+              Looks up a localized string similar to New updates for the configuration data are available. You can select the ones which should be applied to your configuration..
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Properties.Resources.No">
+            <summary>
+              Looks up a localized string similar to No.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Properties.Resources.NoChangesSaved">
+            <summary>
+              Looks up a localized string similar to No changes have been saved..
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Properties.Resources.NoChangesToSave">
+            <summary>
+              Looks up a localized string similar to There were no changes to save..
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Properties.Resources.NoConfigurationDataUpdateAvailable">
+            <summary>
+              Looks up a localized string similar to No configuration data update available..
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Properties.Resources.NoInitializedDataFound">
+            <summary>
+              Looks up a localized string similar to No initialized data found!.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Properties.Resources.NoLogEntriesFound">
+            <summary>
+              Looks up a localized string similar to No log entries found..
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Properties.Resources.NoLogEntriesMatchFilter">
+            <summary>
+              Looks up a localized string similar to No log entries match your filter..
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Properties.Resources.NoParameters">
+            <summary>
+              Looks up a localized string similar to This command has no parameters..
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Properties.Resources.NotCreated">
+            <summary>
+              Looks up a localized string similar to Not created.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Properties.Resources.OK">
+            <summary>
+              Looks up a localized string similar to OK.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Properties.Resources.OnlineAccounts">
+            <summary>
+              Looks up a localized string similar to Online Accounts.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Properties.Resources.OnlineCount">
+            <summary>
+              Looks up a localized string similar to {0} online.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Properties.Resources.OpenMUAdminPanel">
+            <summary>
+              Looks up a localized string similar to OpenMU AdminPanel.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Properties.Resources.ParameterName">
+            <summary>
+              Looks up a localized string similar to Name.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Properties.Resources.ParameterShortName">
+            <summary>
+              Looks up a localized string similar to Short name.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Properties.Resources.ParametersOf">
+            <summary>
+              Looks up a localized string similar to Parameters of {0}.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Properties.Resources.ParameterType">
+            <summary>
+              Looks up a localized string similar to Type.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Properties.Resources.ParameterValidValues">
+            <summary>
+              Looks up a localized string similar to Valid values.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Properties.Resources.Patch">
+            <summary>
+              Looks up a localized string similar to Patch.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Properties.Resources.PatchAddress">
+            <summary>
+              Looks up a localized string similar to Patch-Address.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Properties.Resources.PatchVersion">
+            <summary>
+              Looks up a localized string similar to Patch-Version.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Properties.Resources.PlayerCount">
+            <summary>
+              Looks up a localized string similar to Players.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Properties.Resources.PleaseFirstInstallTheDatabaseUpdatesOnTheSetupPage">
+            <summary>
+              Looks up a localized string similar to Please, first install the database updates on the setup page..
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Properties.Resources.PleaseRestartTheConnectAndGameServerContainers">
+            <summary>
+              Looks up a localized string similar to Please restart the connect and game server containers..
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Properties.Resources.PluginName">
+            <summary>
+              Looks up a localized string similar to Plugin Name.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Properties.Resources.Plugins">
+            <summary>
+              Looks up a localized string similar to Plugins.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Properties.Resources.PluginType">
+            <summary>
+              Looks up a localized string similar to Plugin Type.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Properties.Resources.Refresh">
+            <summary>
+              Looks up a localized string similar to Refresh.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Properties.Resources.ReInstall">
+            <summary>
+              Looks up a localized string similar to Re-install.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Properties.Resources.ReinstallConfirmation">
+            <summary>
+              Looks up a localized string similar to Are you sure? All the current data is getting deleted and freshly installed..
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Properties.Resources.Reload">
+            <summary>
+              Looks up a localized string similar to Reload.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Properties.Resources.ReloadConfigurationAndRestartAllGameServers">
+            <summary>
+              Looks up a localized string similar to Reload configuration and restart all Game Servers.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Properties.Resources.ReloadFileList">
+            <summary>
+              Looks up a localized string similar to Reload File List.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Properties.Resources.Remove">
+            <summary>
+              Looks up a localized string similar to Remove.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Properties.Resources.RemoveServer">
+            <summary>
+              Looks up a localized string similar to Remove Server.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Properties.Resources.Required">
+            <summary>
+              Looks up a localized string similar to Required.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Properties.Resources.Save">
+            <summary>
+              Looks up a localized string similar to Save.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Properties.Resources.SaveChanges">
+            <summary>
+              Looks up a localized string similar to Save changes.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Properties.Resources.SavedChanges">
+            <summary>
+              Looks up a localized string similar to The changes have been saved..
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Properties.Resources.SavingConfigurationInfo">
+            <summary>
+              Looks up a localized string similar to Saving Configuration ....
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Properties.Resources.ScrollToBottom">
+            <summary>
+              Looks up a localized string similar to Scroll to Bottom.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Properties.Resources.Search">
+            <summary>
+              Looks up a localized string similar to Search.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Properties.Resources.Seconds">
+            <summary>
+              Looks up a localized string similar to seconds.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Properties.Resources.SelectTheGameVersion">
+            <summary>
+              Looks up a localized string similar to Select the game version.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Properties.Resources.Send">
+            <summary>
+              Looks up a localized string similar to Send.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Properties.Resources.ServerControl">
+            <summary>
+              Looks up a localized string similar to Server control.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Properties.Resources.ServerDeleteProceedQuestion">
+            <summary>
+              Looks up a localized string similar to The server will be deleted from the database. Are you sure to proceed?.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Properties.Resources.ServerID">
+            <summary>
+              Looks up a localized string similar to Server-ID.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Properties.Resources.ServerName">
+            <summary>
+              Looks up a localized string similar to Server Name.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Properties.Resources.Servers">
+            <summary>
+              Looks up a localized string similar to Servers.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Properties.Resources.ServerWithIdAlreadyExists">
+            <summary>
+              Looks up a localized string similar to Server with Id {0} already exists. Please use another value..
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Properties.Resources.ServerWithPortAlreadyExists">
+            <summary>
+              Looks up a localized string similar to A server with tcp port {0} already exists. Please use another tcp port..
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Properties.Resources.Setup">
+            <summary>
+              Looks up a localized string similar to Setup.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Properties.Resources.ShowEntryForm">
+            <summary>
+              Looks up a localized string similar to Show entry form.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Properties.Resources.ShowingXOfYLines">
+            <summary>
+              Looks up a localized string similar to Showing {0} of {1} lines (Last {2} lines loaded)..
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Properties.Resources.Size">
+            <summary>
+              Looks up a localized string similar to Size.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Properties.Resources.Skills">
+            <summary>
+              Looks up a localized string similar to Skills.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Properties.Resources.SocketNumber">
+            <summary>
+              Looks up a localized string similar to Socket {0}.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Properties.Resources.Start">
+            <summary>
+              Looks up a localized string similar to Start.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Properties.Resources.StartedAt">
+            <summary>
+              Looks up a localized string similar to Started At.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Properties.Resources.StartInstall">
+            <summary>
+              Looks up a localized string similar to Start install.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Properties.Resources.Stop">
+            <summary>
+              Looks up a localized string similar to Stop.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Properties.Resources.SwappingToDevForMoreInformation">
+            <summary>
+              Looks up a localized string similar to Swapping to &lt;strong&gt;Development&lt;/strong&gt; environment will display more detailed information about the error that occurred..
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Properties.Resources.System">
+            <summary>
+              Looks up a localized string similar to System.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Properties.Resources.Target">
+            <summary>
+              Looks up a localized string similar to Target.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Properties.Resources.TestAccountsQuestion">
+            <summary>
+              Looks up a localized string similar to Do you want test accounts?.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Properties.Resources.TheUpdatesRequireARestartOfTheServerProcessToTakeEffect">
+            <summary>
+              Looks up a localized string similar to The updates require a restart of the server process to take effect..
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Properties.Resources.TotalPlayers">
+            <summary>
+              Looks up a localized string similar to Total Players.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Properties.Resources.Tracing">
+            <summary>
+              Looks up a localized string similar to Tracing.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Properties.Resources.TypeDoesNotSupportCloning">
+            <summary>
+              Looks up a localized string similar to Type &apos;{0}&apos; does not support cloning..
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Properties.Resources.UnexpectedErrorCheckLogs">
+            <summary>
+              Looks up a localized string similar to An unexpected error occurred: {0}. See logs for more details..
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Properties.Resources.UnexpectedErrorOccurred">
+            <summary>
+              Looks up a localized string similar to An unexpected error occurred: {0}..
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Properties.Resources.UnhandledErrorOccurred">
+            <summary>
+              Looks up a localized string similar to An unhandled error has occurred..
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Properties.Resources.UnsavedChangesQuestion">
+            <summary>
+              Looks up a localized string similar to There are unsaved changes. Are you sure you want to discard them?.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Properties.Resources.Update">
+            <summary>
+              Looks up a localized string similar to Update.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Properties.Resources.UpdateFailed">
+            <summary>
+              Looks up a localized string similar to Update Failed!.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Properties.Resources.UpdateRequired">
+            <summary>
+              Looks up a localized string similar to Update required.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Properties.Resources.Updates">
+            <summary>
+              Looks up a localized string similar to Updates.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Properties.Resources.Updating">
+            <summary>
+              Looks up a localized string similar to Updating....
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Properties.Resources.UpToDate">
+            <summary>
+              Looks up a localized string similar to Up-to-date.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Properties.Resources.Users">
+            <summary>
+              Looks up a localized string similar to Users.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Properties.Resources.WarpList">
+            <summary>
+              Looks up a localized string similar to Warp list.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Properties.Resources.WelcomeMessage">
+            <summary>
+              Looks up a localized string similar to Welcome to the admin panel of OpenMU..
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Properties.Resources.Yes">
+            <summary>
+              Looks up a localized string similar to Yes.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Properties.Resources.YesCreateTestAccounts">
+            <summary>
+              Looks up a localized string similar to Yes, create test accounts.
+            </summary>
+        </member>
+        <member name="T:MUnique.OpenMU.Web.AdminPanel.Services.BotLiveDto">
+            <summary>
+            DTO representing live state of an active bot player.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Services.BotLiveDto.LoginName">
+            <summary>Gets the account login name.</summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Services.BotLiveDto.AccountId">
+            <summary>Gets the account id.</summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Services.BotLiveDto.CharacterName">
+            <summary>Gets the character name.</summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Services.BotLiveDto.CharacterId">
+            <summary>Gets the character id.</summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Services.BotLiveDto.Level">
+            <summary>Gets the character level.</summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Services.BotLiveDto.ResetCount">
+            <summary>Gets the character reset count.</summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Services.BotLiveDto.MapName">
+            <summary>Gets the current map name.</summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Services.BotLiveDto.PartySize">
+            <summary>Gets the current party size (0 if solo).</summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Services.BotLiveDto.ExperiencePerHour">
+            <summary>Gets estimated experience gained per hour.</summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Services.BotLiveDto.TotalExperience">
+            <summary>Gets total experience gained since spawn.</summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Services.BotLiveDto.UptimeSeconds">
+            <summary>Gets uptime in seconds.</summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Services.BotLiveDto.IsFaulted">
+            <summary>Gets a value indicating whether bot AI is faulted.</summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Services.BotLiveDto.AwaitsMasterRestart">
+            <summary>Gets a value indicating whether bot awaits master restart.</summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Services.BotLiveDto.Personality">
+            <summary>Gets personality description.</summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Services.BotLiveDto.StatusTag">
+            <summary>Gets status tag (Normal, Faulted, MasterWait, Overpowered).</summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Services.BotLiveDto.PositionX">
+            <summary>Gets the current map X coordinate.</summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Services.BotLiveDto.PositionY">
+            <summary>Gets the current map Y coordinate.</summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Services.BotLiveDto.HealthPercent">
+            <summary>Gets current health as a percentage of maximum (0-100).</summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Services.BotLiveDto.ManaPercent">
+            <summary>Gets current mana as a percentage of maximum (0-100).</summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Services.BotLiveDto.IsWalking">
+            <summary>Gets a value indicating whether the bot is currently walking.</summary>
+        </member>
+        <member name="T:MUnique.OpenMU.Web.AdminPanel.Services.BotDashboardStats">
+            <summary>
+            DTO representing overall stats for bot system.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Services.BotDashboardStats.TotalActive">
+            <summary>Gets total active bots in runtime.</summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Services.BotDashboardStats.TotalInDatabase">
+            <summary>Gets total bot accounts in database.</summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Services.BotDashboardStats.FaultedCount">
+            <summary>Gets faulted bot count.</summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Services.BotDashboardStats.InPartyCount">
+            <summary>Gets count of bots currently in a party.</summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Services.BotDashboardStats.AverageLevel">
+            <summary>Gets average level of active bots.</summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Services.BotDashboardStats.AverageExperiencePerHour">
+            <summary>Gets average EXP/h across all active bots.</summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Services.BotDashboardStats.TopFarmerName">
+            <summary>Gets name of highest EXP/h farmer bot.</summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Services.BotDashboardStats.TopFarmerExpPerHour">
+            <summary>Gets EXP/h rate of highest farmer bot.</summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Services.BotDashboardStats.TotalZenEarned">
+            <summary>Gets total zen earned by all active bots.</summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Services.BotDashboardStats.TotalZenSpent">
+            <summary>Gets total zen spent by all active bots.</summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Services.BotDashboardStats.TotalItemsPickedUp">
+            <summary>Gets total items picked up by all active bots.</summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Services.BotDashboardStats.TotalItemsConsumed">
+            <summary>Gets total items consumed by all active bots.</summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Services.BotDashboardStats.TotalItemsDropped">
+            <summary>Gets total items dropped by all active bots.</summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Services.BotDashboardStats.TotalJewelsPickedUp">
+            <summary>Gets total jewels picked up by all active bots.</summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Services.BotDashboardStats.TotalExperienceGained">
+            <summary>Gets total experience gained by all active bots since they started.</summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Services.BotDashboardStats.PersonalityCounts">
+            <summary>Gets breakdown of active bots per personality archetype.</summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Services.BotDashboardStats.MapCounts">
+            <summary>Gets breakdown of active bots per map.</summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Services.BotDashboardStats.TargetOnline">
+            <summary>Gets the target online count for the current player-local hour (presence curve).</summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Services.BotDashboardStats.CurrentPlayerHour">
+            <summary>Gets the current hour in the player base's local time (UTC+7, 0-23).</summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Services.BotDashboardStats.TargetByHour">
+            <summary>Gets the 24 target-online values (index 0 = player-local midnight) for the curve chart.</summary>
+        </member>
+        <member name="T:MUnique.OpenMU.Web.AdminPanel.Services.ConfigurationSearchEntry">
+            <summary>
+            A precomputed configuration-search entry.
+            </summary>
+            <param name="Caption">The display caption.</param>
+            <param name="Path">The full path in the configuration graph.</param>
+            <param name="Url">The target edit URL.</param>
+            <param name="NormalizedHaystack">The normalized searchable text.</param>
+            <param name="NormalizedCaption">The normalized caption.</param>
+        </member>
+        <member name="M:MUnique.OpenMU.Web.AdminPanel.Services.ConfigurationSearchEntry.#ctor(System.String,System.String,System.String,System.String,System.String)">
+            <summary>
+            A precomputed configuration-search entry.
+            </summary>
+            <param name="Caption">The display caption.</param>
+            <param name="Path">The full path in the configuration graph.</param>
+            <param name="Url">The target edit URL.</param>
+            <param name="NormalizedHaystack">The normalized searchable text.</param>
+            <param name="NormalizedCaption">The normalized caption.</param>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Services.ConfigurationSearchEntry.Caption">
+            <summary>The display caption.</summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Services.ConfigurationSearchEntry.Path">
+            <summary>The full path in the configuration graph.</summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Services.ConfigurationSearchEntry.Url">
+            <summary>The target edit URL.</summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Services.ConfigurationSearchEntry.NormalizedHaystack">
+            <summary>The normalized searchable text.</summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Services.ConfigurationSearchEntry.NormalizedCaption">
+            <summary>The normalized caption.</summary>
+        </member>
+        <member name="T:MUnique.OpenMU.Web.AdminPanel.Services.ConfigurationSearchIndexCache">
+            <summary>
+            Caches configuration search entries for fast header search navigation.
+            </summary>
+        </member>
+        <member name="M:MUnique.OpenMU.Web.AdminPanel.Services.ConfigurationSearchIndexCache.#ctor(MUnique.OpenMU.Persistence.IMigratableDatabaseContextProvider,MUnique.OpenMU.Persistence.IDataSource{MUnique.OpenMU.DataModel.Configuration.GameConfiguration},Microsoft.Extensions.Logging.ILogger{MUnique.OpenMU.Web.AdminPanel.Services.ConfigurationSearchIndexCache},MUnique.OpenMU.Web.AdminPanel.Services.SetupService)">
+            <summary>
+            Initializes a new instance of the <see cref="T:MUnique.OpenMU.Web.AdminPanel.Services.ConfigurationSearchIndexCache"/> class.
+            </summary>
+            <param name="persistenceContextProvider">The persistence context provider.</param>
+            <param name="configDataSource">The configuration data source.</param>
+            <param name="logger">The logger.</param>
+            <param name="setupService">The setup service.</param>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Services.ConfigurationSearchIndexCache.IsLoaded">
+            <summary>
+            Gets a value indicating whether the cache was loaded at least once.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Services.ConfigurationSearchIndexCache.Entries">
+            <summary>
+            Gets the cached entries.
+            </summary>
+        </member>
+        <member name="M:MUnique.OpenMU.Web.AdminPanel.Services.ConfigurationSearchIndexCache.Dispose">
+            <inheritdoc/>
+        </member>
+        <member name="M:MUnique.OpenMU.Web.AdminPanel.Services.ConfigurationSearchIndexCache.EnsureLoadedAsync(System.Threading.CancellationToken)">
+            <summary>
+            Ensures the cache is populated.
+            </summary>
+            <param name="cancellationToken">The cancellation token.</param>
+            <returns>A task.</returns>
+        </member>
+        <member name="T:MUnique.OpenMU.Web.AdminPanel.Services.ConfigurationSearchIndexer">
+            <summary>
+            Handles the heavy lifting of building the configuration search index.
+            </summary>
+        </member>
+        <member name="M:MUnique.OpenMU.Web.AdminPanel.Services.ConfigurationSearchIndexer.#ctor(System.String,System.String,System.Collections.Concurrent.ConcurrentDictionary{System.Object,System.Byte},System.Int32)">
+            <summary>
+            Initializes a new instance of the <see cref="T:MUnique.OpenMU.Web.AdminPanel.Services.ConfigurationSearchIndexer"/> class.
+            </summary>
+            <param name="rootPath">The root path.</param>
+            <param name="rootUrl">The root URL.</param>
+            <param name="sharedVisited">The shared visited dictionary.</param>
+            <param name="maxDepth">The maximum depth.</param>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Services.ConfigurationSearchIndexer.Visited">
+            <summary>
+            Gets the shared visited dictionary.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Services.ConfigurationSearchIndexer.Entries">
+            <summary>
+            Gets the collected entries.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Services.ConfigurationSearchIndexer.CollectionProperties">
+            <summary>
+            Gets the collection properties to traverse.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Services.ConfigurationSearchIndexer.ScalarProperties">
+            <summary>
+            Gets the scalar properties (non-collection).
+            </summary>
+        </member>
+        <member name="M:MUnique.OpenMU.Web.AdminPanel.Services.ConfigurationSearchIndexer.BuildSearchIndexAsync(MUnique.OpenMU.DataModel.Configuration.GameConfiguration,System.Guid)">
+            <summary>
+            Builds the search index for the specified configuration.
+            </summary>
+            <param name="gameConfiguration">The game configuration.</param>
+            <param name="gameConfigurationId">The game configuration identifier.</param>
+            <returns>The collected search entries.</returns>
+        </member>
+        <member name="T:MUnique.OpenMU.Web.AdminPanel.Services.SetupService">
+            <summary>
+            Service that allows set the server database up.
+            </summary>
+        </member>
+        <member name="M:MUnique.OpenMU.Web.AdminPanel.Services.SetupService.#ctor(MUnique.OpenMU.Persistence.IMigratableDatabaseContextProvider,MUnique.OpenMU.PlugIns.PlugInManager)">
+            <summary>
+            Initializes a new instance of the <see cref="T:MUnique.OpenMU.Web.AdminPanel.Services.SetupService"/> class.
+            </summary>
+            <param name="contextProvider">The context provider.</param>
+            <param name="plugInManager">The plugin manager.</param>
+        </member>
+        <member name="E:MUnique.OpenMU.Web.AdminPanel.Services.SetupService.DatabaseInitialized">
+            <summary>
+            Occurs when the database got initialized.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Services.SetupService.Versions">
+            <summary>
+            Gets the versions.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Services.SetupService.CanConnectToDatabase">
+            <summary>
+            Gets a value indicating whether this application can connect to a database.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Services.SetupService.IsInstalled">
+            <summary>
+            Gets a value indicating whether the data is installed.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Services.SetupService.IsUpdateRequired">
+            <summary>
+            Gets a value indicating whether the database requires an update.
+            </summary>
+        </member>
+        <member name="M:MUnique.OpenMU.Web.AdminPanel.Services.SetupService.IsDataInitializedAsync">
+            <summary>
+            Gets a value indicating whether the data is initialized.
+            </summary>
+        </member>
+        <member name="M:MUnique.OpenMU.Web.AdminPanel.Services.SetupService.GetCurrentGameClientVersionAsync">
+            <summary>
+            Gets the current game client definition.
+            </summary>
+        </member>
+        <member name="M:MUnique.OpenMU.Web.AdminPanel.Services.SetupService.InstallUpdatesAsync(System.Threading.CancellationToken)">
+            <summary>
+            Installs the updates asynchronous.
+            </summary>
+            <param name="cancellationToken">The cancellation token.</param>
+        </member>
+        <member name="M:MUnique.OpenMU.Web.AdminPanel.Services.SetupService.CreateDatabaseAsync(System.Func{System.Threading.Tasks.Task})">
+            <summary>
+            Creates the database.
+            </summary>
+            <param name="dataInitialization">The data initialization action.</param>
+        </member>
+        <member name="T:MUnique.OpenMU.Web.AdminPanel.Startup">
+            <summary>
+            The startup class for the blazor app.
+            </summary>
+            <remarks>
+            This class is only used when running as all-in-one deployment.
+            </remarks>
+        </member>
+        <member name="M:MUnique.OpenMU.Web.AdminPanel.Startup.#ctor(Microsoft.Extensions.Configuration.IConfiguration)">
+            <summary>
+            Initializes a new instance of the <see cref="T:MUnique.OpenMU.Web.AdminPanel.Startup"/> class.
+            </summary>
+            <param name="configuration">The configuration.</param>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.AdminPanel.Startup.Configuration">
+            <summary>
+            Gets the configuration.
+            </summary>
+            <value>
+            The configuration.
+            </value>
+        </member>
+        <member name="M:MUnique.OpenMU.Web.AdminPanel.Startup.ConfigureServices(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
+            <summary>
+            This method gets called by the runtime. Use this method to add services to the container.
+            For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940.
+            </summary>
+            <param name="services">The service collection.</param>
+        </member>
+        <member name="M:MUnique.OpenMU.Web.AdminPanel.Startup.Configure(Microsoft.AspNetCore.Builder.IApplicationBuilder,Microsoft.AspNetCore.Hosting.IWebHostEnvironment)">
+            <summary>
+            This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
+            </summary>
+            <param name="app">The app builder.</param>
+            <param name="env">The web host environment.</param>
+        </member>
+        <member name="T:MUnique.OpenMU.Web.AdminPanel.WebApplicationExtensions">
+            <summary>
+            Extensions for the <see cref="T:Microsoft.AspNetCore.Builder.WebApplicationBuilder"/>.
+            </summary>
+        </member>
+        <member name="M:MUnique.OpenMU.Web.AdminPanel.WebApplicationExtensions.AddAdminPanel(Microsoft.AspNetCore.Builder.WebApplicationBuilder,System.Boolean)">
+            <summary>
+            Adds the map application to the web app.
+            When using the DaprService, call the BuildAndConfigure-Method with the parameter to add Blazor.
+            </summary>
+            <param name="builder">The web application builder which should be configured.</param>
+            <param name="includeMapApp">If set to <c>true</c>, the map app is included.</param>
+            <returns>
+            The web application builder.
+            </returns>
+        </member>
+        <member name="M:MUnique.OpenMU.Web.AdminPanel.WebApplicationExtensions.ConfigureAdminPanel(Microsoft.AspNetCore.Builder.WebApplication)">
+            <summary>
+            Configures the admin panel.
+            </summary>
+            <param name="app">The application.</param>
+            <returns>The configured web application.</returns>
+        </member>
+        <member name="T:MUnique.OpenMU.Web.API.BotDashboardController">
+            <summary>
+            API controller providing live monitoring and administration endpoints for Bot AI.
+            </summary>
+        </member>
+        <member name="M:MUnique.OpenMU.Web.API.BotDashboardController.#ctor(System.Collections.Generic.IDictionary{System.Int32,MUnique.OpenMU.Interfaces.IGameServer})">
+            <summary>
+            Initializes a new instance of the <see cref="T:MUnique.OpenMU.Web.API.BotDashboardController"/> class.
+            </summary>
+            <param name="gameServers">The registered game servers.</param>
+        </member>
+        <member name="M:MUnique.OpenMU.Web.API.BotDashboardController.GetLiveBots">
+            <summary>
+            Gets a list of all currently active bots in runtime with live metrics.
+            </summary>
+            <returns>A collection of <see cref="T:MUnique.OpenMU.Web.AdminPanel.Services.BotLiveDto"/>.</returns>
+        </member>
+        <member name="M:MUnique.OpenMU.Web.API.BotDashboardController.GetStats">
+            <summary>
+            Gets overall system statistics for bot system.
+            </summary>
+        </member>
+        <member name="M:MUnique.OpenMU.Web.API.BotDashboardController.KillBotAsync(System.String)">
+            <summary>
+            Stops a specific bot by login name.
+            </summary>
+            <param name="loginName">The login name of the bot account.</param>
+        </member>
+        <member name="M:MUnique.OpenMU.Web.API.BotDashboardController.KillAllFaultedAsync">
+            <summary>
+            Kills all bots that are currently in faulted state.
+            </summary>
+        </member>
+        <member name="M:MUnique.OpenMU.Web.API.BotDashboardController.KillOverpoweredAsync(System.Int64)">
+            <summary>
+            Kills all bots whose EXP/h exceeds specified threshold (default 5,000,000 EXP/h).
+            </summary>
+        </member>
+        <member name="T:MUnique.OpenMU.Web.API.ServerController">
+            <summary>
+            Server API controller.
+            </summary>
+        </member>
+        <member name="M:MUnique.OpenMU.Web.API.ServerController.#ctor(System.Collections.Generic.IDictionary{System.Int32,MUnique.OpenMU.Interfaces.IGameServer})">
+            <summary>
+            Initializes a new instance of the <see cref="T:MUnique.OpenMU.Web.API.ServerController"/> class.
+            </summary>
+            <param name="gameServers">The game servers.</param>
+        </member>
+        <member name="M:MUnique.OpenMU.Web.API.ServerController.SendGlobalMessageAsync(System.Int32,System.String)">
+            <summary>
+            Sends a global message to the specified server.
+            </summary>
+            <param name="id">The server id.</param>
+            <param name="msg">The message.</param>
+        </member>
+        <member name="M:MUnique.OpenMU.Web.API.ServerController.GetIsOnlineAsync(System.String)">
+            <summary>
+            Gets a flag, if the specified account is currently online.
+            </summary>
+            <param name="accountName">Name of the account.</param>
+            <returns>True, when online.</returns>
+        </member>
+        <member name="M:MUnique.OpenMU.Web.API.ServerController.ServerState">
+            <summary>
+            Gets the server state.
+            </summary>
+        </member>
+    </members>
+</doc>

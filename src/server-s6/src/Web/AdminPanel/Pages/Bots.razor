@@ -20,7 +20,7 @@
 <Breadcrumb IsFirstFromRoot="true" Caption="Bot AI Controller & Dashboard" />
 
 <div class="d-flex justify-content-between align-items-center mb-3">
-    <h1>🤖 Bot AI Dashboard & Controller</h1>
+    <h1 tabindex="-1" style="outline: none;">🤖 Bot AI Dashboard & Controller</h1>
     <div class="btn-group">
         <button class="btn btn-primary" @onclick="() => SpawnBotsAsync(10)" disabled="@_isProcessing">
             <span class="oi oi-plus" aria-hidden="true"></span> Spawn 10
@@ -125,7 +125,7 @@
             </div>
             <div class="card-body py-2">
                 <div class="d-flex justify-content-between align-items-center">
-                    <span class="fw-bold">@_stats.TopFarmerName</span>
+                    <span class="fw-bold">@(_stats.TopFarmerName ?? "None")</span>
                     <span class="badge bg-success fs-6">@_stats.TopFarmerExpPerHour.ToString("N0") EXP/h</span>
                 </div>
             </div>
@@ -138,9 +138,16 @@
             </div>
             <div class="card-body py-2">
                 <div class="d-flex flex-wrap gap-2">
-                    @foreach (var map in _stats.MapCounts.OrderByDescending(kv => kv.Value))
+                    @if (_stats.MapCounts.Count == 0)
                     {
-                        <span class="badge bg-secondary">@map.Key: <strong>@map.Value</strong></span>
+                        <span class="text-muted small">No active bots on maps.</span>
+                    }
+                    else
+                    {
+                        @foreach (var map in _stats.MapCounts.OrderByDescending(kv => kv.Value))
+                        {
+                            <span class="badge bg-secondary">@map.Key: <strong>@map.Value</strong></span>
+                        }
                     }
                 </div>
             </div>
@@ -156,28 +163,28 @@
     </div>
     <div class="card-body py-2">
         <div class="row g-2 text-center">
-            <div class="col-md-2">
+            <div class="col-md-2 col-4">
                 <small class="text-muted d-block">Zen Earned</small>
                 <h5 class="mb-0 text-success">@_stats.TotalZenEarned.ToString("N0")</h5>
             </div>
-            <div class="col-md-2">
+            <div class="col-md-2 col-4">
                 <small class="text-muted d-block">Zen Spent</small>
                 <h5 class="mb-0 text-danger">@_stats.TotalZenSpent.ToString("N0")</h5>
             </div>
-            <div class="col-md-2">
-                <small class="text-muted d-block">Items Picked Up</small>
+            <div class="col-md-2 col-4">
+                <small class="text-muted d-block">Items Picked</small>
                 <h5 class="mb-0">@_stats.TotalItemsPickedUp.ToString("N0")</h5>
             </div>
-            <div class="col-md-2">
+            <div class="col-md-2 col-4">
                 <small class="text-muted d-block">Items Consumed</small>
                 <h5 class="mb-0">@_stats.TotalItemsConsumed.ToString("N0")</h5>
             </div>
-            <div class="col-md-2">
+            <div class="col-md-2 col-4">
                 <small class="text-muted d-block">Items Dropped</small>
                 <h5 class="mb-0">@_stats.TotalItemsDropped.ToString("N0")</h5>
             </div>
-            <div class="col-md-2">
-                <small class="text-muted d-block">Jewels Picked Up</small>
+            <div class="col-md-2 col-4">
+                <small class="text-muted d-block">Jewels Picked</small>
                 <h5 class="mb-0 text-warning">@_stats.TotalJewelsPickedUp.ToString("N0")</h5>
             </div>
         </div>
@@ -192,48 +199,57 @@
     </div>
     <div class="card-body py-2">
         <div class="row g-2 mb-2">
-            <div class="col-md-3">
+            <div class="col-md-3 col-6">
                 <div class="border rounded p-2 text-center">
                     <small class="text-muted d-block">🟢 Online now</small>
                     <h4 class="mb-0 text-success">@_stats.TotalActive</h4>
                 </div>
             </div>
-            <div class="col-md-3">
+            <div class="col-md-3 col-6">
                 <div class="border rounded p-2 text-center">
                     <small class="text-muted d-block">🎯 Target this hour</small>
                     <h4 class="mb-0 text-info">@_stats.TargetOnline</h4>
                 </div>
             </div>
-            <div class="col-md-3">
+            <div class="col-md-3 col-6">
                 <div class="border rounded p-2 text-center">
                     <small class="text-muted d-block">🗄️ Total created</small>
                     <h4 class="mb-0">@_stats.TotalInDatabase</h4>
                 </div>
             </div>
-            <div class="col-md-3">
+            <div class="col-md-3 col-6">
                 <div class="border rounded p-2 text-center">
                     <small class="text-muted d-block">💤 Scheduled to return</small>
                     <h4 class="mb-0 text-warning">@(Math.Max(0, _stats.TotalInDatabase - _stats.TotalActive))</h4>
                 </div>
             </div>
         </div>
-        <div class="d-flex align-items-end gap-0" style="height: 120px">
+        @{
+            var maxHourTarget = Math.Max(1, _stats.TargetByHour.Length > 0 ? _stats.TargetByHour.Max() : 1);
+        }
+        <div class="d-flex align-items-end gap-1 px-1 pt-3 pb-1 border-bottom" style="height: 100px; overflow: hidden;">
             @for (var h = 0; h < 24 && h < _stats.TargetByHour.Length; h++)
             {
-                var pct = _stats.TotalInDatabase > 0
-                    ? (int)(_stats.TargetByHour[h] * 100.0 / _stats.TotalInDatabase)
-                    : 0;
+                var targetCount = _stats.TargetByHour[h];
+                var barHeightPx = Math.Clamp((int)Math.Round(targetCount * 80.0 / maxHourTarget), 3, 80);
                 var isNow = h == _stats.CurrentPlayerHour;
-                <div class="d-flex flex-column align-items-center" style="flex: 1">
-                    <div class="w-75 @(isNow ? "bg-warning" : "bg-primary") rounded-top" style="height: @(Math.Max(2, pct))px" title="@h:00 → @_stats.TargetByHour[h] bots"></div>
-                    @if (h % 3 == 0)
-                    {
-                        <small class="text-muted mt-1" style="font-size: 9px">@h</small>
-                    }
+                <div class="d-flex flex-column align-items-center justify-content-end h-100" style="flex: 1" title="@h:00 → @targetCount bots">
+                    <div class="w-100 @(isNow ? "bg-warning" : "bg-primary") rounded-top" style="height: @(barHeightPx)px; min-height: 3px; max-height: 80px; transition: height 0.3s ease;"></div>
                 </div>
             }
         </div>
-        <div class="text-muted small mt-1">Each bar = target online count at that hour (yellow = current hour). Bots rotate on/off to follow the curve.</div>
+        <div class="d-flex justify-content-between text-muted px-1 mt-1" style="font-size: 10px;">
+            <span>00:00</span>
+            <span>03:00</span>
+            <span>06:00</span>
+            <span>09:00</span>
+            <span>12:00</span>
+            <span>15:00</span>
+            <span>18:00</span>
+            <span>21:00</span>
+            <span>23:00</span>
+        </div>
+        <div class="text-muted small mt-2">Each bar = target online count at that hour (yellow = current hour). Bots rotate on/off to follow the curve.</div>
     </div>
 </div>
 

@@ -106,3 +106,12 @@ src/server-s16/Release/World/
 # .NET build artifact
 bin/
 obj/
+
+# Misplaced Python virtualenv accidentally copied into wwwroot
+src/server-s6/wwwroot/site-packages/
+
+# Blazor/Razor Class Library static web assets (auto-generated on build)
+src/server-s6/wwwroot/_content/
+
+# CMake/MSBuild client build output directory
+src/client-s6/build-x86/

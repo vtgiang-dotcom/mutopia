@@ -1,4 +1,4 @@
-﻿// <copyright file="ShowCharacterListExtendedPlugIn.cs" company="MUnique">
+// <copyright file="ShowCharacterListExtendedPlugIn.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -16,11 +16,11 @@ using MUnique.OpenMU.Network.PlugIns;
 using MUnique.OpenMU.PlugIns;
 
 /// <summary>
-/// The default implementation of the <see cref="IShowCharacterListPlugIn"/> which is forwarding everything to the game client with specific data packets.
+/// The extended implementation of the <see cref="IShowCharacterListPlugIn"/> which is forwarding everything to the game client with specific data packets.
 /// </summary>
 [PlugIn]
 [Display(Name = nameof(PlugInResources.ShowCharacterListExtendedPlugIn_Name), Description = nameof(PlugInResources.ShowCharacterListExtendedPlugIn_Description), ResourceType = typeof(PlugInResources))]
-[Guid("DDDEED0A-9421-4A9B-9ED8-0691B7051666")]
+[Guid("098A7F41-5D34-4C7F-85E9-E2F5466A96C2")]
 [MinimumClient(106, 3, ClientLanguage.Invariant)]
 public class ShowCharacterListExtendedPlugIn : IShowCharacterListPlugIn
 {

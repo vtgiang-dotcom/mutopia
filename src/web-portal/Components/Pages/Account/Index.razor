@@ -1,14 +1,33 @@
 @page "/account"
 @rendermode InteractiveServer
 @attribute [Authorize]
+@using Microsoft.EntityFrameworkCore
+@using OpenMU.PlayerWeb.Data
 @inject CharacterService CharacterService
 @inject AuthenticationStateProvider AuthStateProvider
+@inject IDbContextFactory<AppDbContext> DbFactory
 
 <PageTitle>My Account — MU Online</PageTitle>
 
 <section class="py-16">
     <div class="container-page max-w-4xl mx-auto">
-        <h1 class="font-headline-lg text-secondary-fixed uppercase tracking-wider mb-8">My Characters</h1>
+        <div class="flex flex-wrap items-center justify-between gap-4 mb-8">
+            <h1 class="font-headline-lg text-secondary-fixed uppercase tracking-wider">My Account</h1>
+            @if (_account is not null)
+            {
+                <div class="flex items-center gap-4 bg-surface-variant/40 border border-outline-variant/30 px-5 py-3 rounded-lg">
+                    <div class="text-right">
+                        <span class="block text-xs uppercase tracking-wider text-on-surface-variant">Goblin Points</span>
+                        <span class="font-headline-md text-[#00FF88] font-bold">@_account.GoblinPoints.ToString("N0") <span class="text-xs text-on-surface-variant font-normal">GP</span></span>
+                    </div>
+                    <div class="h-8 w-px bg-outline-variant/40"></div>
+                    <div class="text-right">
+                        <span class="block text-xs uppercase tracking-wider text-on-surface-variant">WCoin</span>
+                        <span class="font-headline-md text-[#FFD700] font-bold">@_account.WCoin.ToString("N0") <span class="text-xs text-on-surface-variant font-normal">WC</span></span>
+                    </div>
+                </div>
+            }
+        </div>
 
         @if (_loading)
         {
@@ -111,6 +130,7 @@
 
 @code {
     private List<Character> _characters = new();
+    private OpenMU.PlayerWeb.Data.Account? _account;
     private bool _loading = true;
     private string? _selectedName;
     private string? _message;
@@ -126,10 +146,16 @@
         if (Guid.TryParse(idClaim, out var id))
         {
             _accountId = id;
-            await LoadCharactersAsync();
+            await Task.WhenAll(LoadCharactersAsync(), LoadAccountAsync());
         }
 
         _loading = false;
+    }
+
+    private async Task LoadAccountAsync()
+    {
+        await using var db = await DbFactory.CreateDbContextAsync();
+        _account = await db.Accounts.FirstOrDefaultAsync(a => a.Id == _accountId);
     }
 
     private async Task LoadCharactersAsync()

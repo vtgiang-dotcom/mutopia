@@ -73,4 +73,19 @@ internal static class InvasionMonsters
     /// The Destructive Ogre Archer monster.
     /// </summary>
     public const ushort DestructiveOgreArcher = 137;
+
+    /// <summary>
+    /// The Persona monster at Kanturu Relics (monster #358).
+    /// </summary>
+    public const ushort Persona = 358;
+
+    /// <summary>
+    /// The Iron Knight monster at Raklion (monster #458).
+    /// </summary>
+    public const ushort IronKnight = 458;
+
+    /// <summary>
+    /// The Sapi-Duo monster at Swamp of Calmness (monster #441).
+    /// </summary>
+    public const ushort SapiDuo = 441;
 }

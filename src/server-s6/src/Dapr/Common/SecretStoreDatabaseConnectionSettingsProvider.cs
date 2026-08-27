@@ -53,7 +53,7 @@ public class SecretStoreDatabaseConnectionSettingsProvider : IDatabaseConnection
                 {
                     try
                     {
-                        Console.WriteLine("trying to get secrets ...");
+                        this._logger.LogDebug("trying to get secrets ...");
                         var secrets = await this._daprClient.GetBulkSecretAsync(SecretStoreName, cancellationToken: cancellationToken).ConfigureAwait(false);
                         foreach (var secret in secrets.Where(kvp => string.Equals(kvp.Key.Split(':')[0], "connectionStrings", StringComparison.InvariantCultureIgnoreCase)))
                         {
@@ -68,7 +68,7 @@ public class SecretStoreDatabaseConnectionSettingsProvider : IDatabaseConnection
                             this._connectionSettings.Add(contextTypeName, setting);
                         }
 
-                        Console.WriteLine("secrets retrieved :)");
+                        this._logger.LogDebug("secrets retrieved");
 
                         this._isInitialized = true;
                     }
@@ -77,7 +77,6 @@ public class SecretStoreDatabaseConnectionSettingsProvider : IDatabaseConnection
                         // This should never happen - however, it may happen when we are using a Dapr secret store.
                         // It may not be started yet, and the implementation to get it does retrieve it in the constructor already.
                         this._logger.LogWarning(ex, "Error occurred when retrieving the connection strings from the secrets store. Trying again in 3 seconds...");
-                        Console.WriteLine("Error occurred when retrieving the connection strings from the secrets store. Trying again in 3 seconds...");
                         await Task.Delay(3000, cancellationToken).ConfigureAwait(false);
                     }
                 }

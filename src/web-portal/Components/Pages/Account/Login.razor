@@ -9,21 +9,30 @@
         <div class="panel-metallic p-8">
             <form action="/api/auth/login" method="post">
                 <div class="space-y-4">
-                    <div>
-                        <label class="font-label-caps uppercase text-on-surface-variant block mb-1">Username</label>
-                        <input type="text" name="loginName" class="input-recessed w-full" required autofocus />
-                    </div>
-                    <div>
-                        <label class="font-label-caps uppercase text-on-surface-variant block mb-1">Password</label>
-                        <input type="password" name="password" class="input-recessed w-full" required />
-                    </div>
+                    @if (Registered == "1" || Registered == "true")
+                    {
+                        <div class="p-4 rounded bg-emerald-950/80 border border-emerald-500 text-emerald-300 text-sm font-medium mb-4">
+                            ✅ Đăng ký tài khoản thành công! Vui lòng nhập mật khẩu để đăng nhập.
+                        </div>
+                    }
 
                     @if (!string.IsNullOrEmpty(Error))
                     {
-                        <div class="alert-error">@Error</div>
+                        <div class="p-4 rounded bg-red-950/80 border border-red-500 text-red-300 text-sm font-medium mb-4">
+                            ⚠️ @Error
+                        </div>
                     }
 
-                    <button type="submit" class="btn-ornate w-full justify-center py-3">Sign In</button>
+                    <div>
+                        <label class="font-label-caps uppercase text-on-surface-variant block mb-1">Username</label>
+                        <input type="text" name="loginName" value="@Username" class="input-recessed w-full" placeholder="Username" required autofocus />
+                    </div>
+                    <div>
+                        <label class="font-label-caps uppercase text-on-surface-variant block mb-1">Password</label>
+                        <input type="password" name="password" class="input-recessed w-full" placeholder="Password" required />
+                    </div>
+
+                    <button type="submit" class="btn-ornate w-full justify-center py-3 mt-2">Sign In</button>
                 </div>
             </form>
         </div>
@@ -35,6 +44,12 @@
 </section>
 
 @code {
-    [SupplyParameterFromQuery]
+    [SupplyParameterFromQuery(Name = "error")]
     public string? Error { get; set; }
+
+    [SupplyParameterFromQuery(Name = "registered")]
+    public string? Registered { get; set; }
+
+    [SupplyParameterFromQuery(Name = "username")]
+    public string? Username { get; set; }
 }

@@ -8,6 +8,83 @@
 #include "Render/RHI/RHI.h"
 #include "Core/Platform/PathResolve.h"
 
+#include <SDL3/SDL.h>
+#include <windows.h>
+#include <objidl.h>
+#include <gdiplus.h>
+#include <shlwapi.h>
+#pragma comment(lib, "gdiplus.lib")
+#pragma comment(lib, "shlwapi.lib")
+
+#define STB_IMAGE_STATIC
+#define STBI_NO_STDIO
+#define STB_IMAGE_IMPLEMENTATION
+#include "../../../ThirdParty/stb/stb_image.h"
+
+namespace
+{
+    static ULONG_PTR g_gdiplusToken = 0;
+    void EnsureGdiplus()
+    {
+        if (!g_gdiplusToken)
+        {
+            Gdiplus::GdiplusStartupInput gdiplusStartupInput;
+            Gdiplus::GdiplusStartup(&g_gdiplusToken, &gdiplusStartupInput, NULL);
+        }
+    }
+
+    bool LoadWithGdiplus(const unsigned char* data, size_t size, int& outWidth, int& outHeight, int& outChannels, std::vector<unsigned char>& outRgba)
+    {
+        EnsureGdiplus();
+        IStream* stream = SHCreateMemStream(data, static_cast<UINT>(size));
+        if (!stream) return false;
+
+        auto* bmp = new Gdiplus::Bitmap(stream);
+        stream->Release();
+
+        if (!bmp || bmp->GetLastStatus() != Gdiplus::Ok)
+        {
+            delete bmp;
+            return false;
+        }
+
+        outWidth = static_cast<int>(bmp->GetWidth());
+        outHeight = static_cast<int>(bmp->GetHeight());
+        if (outWidth <= 0 || outHeight <= 0)
+        {
+            delete bmp;
+            return false;
+        }
+
+        Gdiplus::Rect rect(0, 0, outWidth, outHeight);
+        Gdiplus::BitmapData bmpData;
+        if (bmp->LockBits(&rect, Gdiplus::ImageLockModeRead, PixelFormat32bppARGB, &bmpData) != Gdiplus::Ok)
+        {
+            delete bmp;
+            return false;
+        }
+
+        outRgba.resize(static_cast<size_t>(outWidth) * outHeight * 4u);
+        for (int y = 0; y < outHeight; ++y)
+        {
+            const unsigned char* srcRow = static_cast<const unsigned char*>(bmpData.Scan0) + y * bmpData.Stride;
+            unsigned char* dstRow = outRgba.data() + static_cast<size_t>(y) * outWidth * 4u;
+            for (int x = 0; x < outWidth; ++x)
+            {
+                dstRow[x * 4 + 0] = srcRow[x * 4 + 2]; // R
+                dstRow[x * 4 + 1] = srcRow[x * 4 + 1]; // G
+                dstRow[x * 4 + 2] = srcRow[x * 4 + 0]; // B
+                dstRow[x * 4 + 3] = srcRow[x * 4 + 3]; // A
+            }
+        }
+
+        bmp->UnlockBits(&bmpData);
+        delete bmp;
+        outChannels = 4;
+        return true;
+    }
+}
+
 #include <algorithm>
 #include <array>
 #include <cstdint>
@@ -592,115 +669,156 @@ bool CGlobalBitmap::OpenJpegTurbo(GLuint uiBitmapIndex, const std::wstring& file
     std::wstring filename_ozj;
     ExchangeExt(filename, L"OZJ", filename_ozj);
 
-    std::ifstream compressedFile(NarrowPath(filename_ozj), std::ios::binary);
-    if (!compressedFile)
+    FILE* fp = _wfopen(filename_ozj.c_str(), L"rb");
+    if (!fp)
     {
-        return false;
-    }
-
-    std::vector<unsigned char> jpegBuf((std::istreambuf_iterator<char>(compressedFile)), std::istreambuf_iterator<char>());
-    compressedFile.close();
-
-    if (jpegBuf.size() <= 24)
-    {
-        return false;
-    }
-
-    // Skip first 24 bytes (OZJ header)
-    const unsigned char* jpegData = jpegBuf.data() + 24;
-    const auto jpegSize = static_cast<unsigned long>(jpegBuf.size() - 24);
-
-    int jpegWidth = 0, jpegHeight = 0;
-    int jpegSubsamp = TJSAMP_444;
-    int jpegColorspace = TJCS_RGB;
-
-    TurboJpegHandle tjHandle;
-    if (!tjHandle.valid())
-    {
-        ReportTurboError(L"tjInitDecompress");
-        return false;
-    }
-
-    auto headerResult = tjDecompressHeader3(tjHandle.get(), jpegData, jpegSize, &jpegWidth, &jpegHeight, &jpegSubsamp, &jpegColorspace);
-    if (headerResult != 0 || jpegWidth <= 0 || jpegHeight <= 0 || jpegWidth > MAX_WIDTH || jpegHeight > MAX_HEIGHT)
-    {
-        ReportTurboError(L"tjDecompressHeader3");
-        return false;
-    }
-
-    std::vector<unsigned char> decompressedBuffer(static_cast<std::size_t>(jpegWidth) * static_cast<std::size_t>(jpegHeight) * 3u);
-    auto decompressResult = tjDecompress2(
-        tjHandle.get(),
-        jpegData,
-        jpegSize,
-        decompressedBuffer.data(),
-        jpegWidth,
-        0,
-        jpegHeight,
-        TJPF_RGB,
-        TJFLAG_FASTDCT);
-    if (decompressResult != 0)
-    {
-        ReportTurboError(L"tjDecompress2");
-        return false;
-    }
-
-    const int textureWidth = NextPowerOfTwo(jpegWidth, MAX_WIDTH);
-    const int textureHeight = NextPowerOfTwo(jpegHeight, MAX_HEIGHT);
-
-    auto pNewBitmap = std::make_unique<BITMAP_t>();
-
-    pNewBitmap->BitmapIndex = uiBitmapIndex;
-
-    wcsncpy(pNewBitmap->FileName, filename.c_str(), MAX_BITMAP_FILE_NAME - 1);
-    pNewBitmap->FileName[MAX_BITMAP_FILE_NAME - 1] = L'\0';
-
-    pNewBitmap->Width = static_cast<float>(textureWidth);
-    pNewBitmap->Height = static_cast<float>(textureHeight);
-    // DXP-12: RHI's texture format contract is RGBA8 always (DXGI has no 24-bit RGB format), so
-    // the RGB->RGBA expansion (alpha=255) that used to happen implicitly on the GL side (upload
-    // format=GL_RGB into an internalformat=GL_RGBA8 texture) now happens explicitly here, in the
-    // loader, so both backends receive identical RGBA8 payloads.
-    //
-    // Components stays 3, NOT 4, despite the buffer now being 4 bytes/pixel. Found the hard way
-    // (2026-08-03 runtime regression -- torch/particle effects went from additive-transparent to
-    // solid black squares): Components isn't just a byte count, it's a semantic "does this bitmap
-    // have a real per-pixel alpha channel" flag that ~8 render call sites branch on to pick blend
-    // mode / vertex color (ZzzEffectParticle.cpp:8939 EnableAlphaBlend vs EnableAlphaTest,
-    // ZzzOpenglUtil.cpp:1098, ZzzEffectPointer.cpp:96, ZzzBMD.cpp:1535/1551/1572,
-    // SideHair.cpp:55/72, EditObjects.cpp:274). JPEG source data has no alpha channel (every pixel
-    // would come out alpha=255 either way, implicit-fill or explicit) -- setting Components=4
-    // wrongly told all of those "this texture has real alpha," routing black background pixels
-    // through alpha-blend instead of additive. Components==3 for "no real alpha" / ==4 for "real
-    // alpha" is the existing tree-wide contract; RHI's buffer format is an internal upload detail
-    // that must NOT change it. (Memory accounting below no longer reads Components for this
-    // reason -- see UnloadImage's BufferStorage.size()-based fix.)
-    pNewBitmap->Components = 3;
-    pNewBitmap->Ref = 1;
-
-    const auto textureBufferSize = static_cast<std::size_t>(textureWidth) * static_cast<std::size_t>(textureHeight) * 4u;
-    pNewBitmap->BufferStorage.resize(textureBufferSize);
-    pNewBitmap->Buffer = pNewBitmap->BufferStorage.data();
-    m_dwUsedTextureMemory += static_cast<std::uint32_t>(textureBufferSize);
-
-    // Per-pixel expand (can't memcpy across differing bytes/pixel like the pre-RHI fast path
-    // did) -- textureWidth/Height are always >= jpegWidth/Height (NextPowerOfTwo rounds up, and
-    // jpegWidth/Height > MAX_WIDTH/HEIGHT was already rejected above), so cols/rows just guard
-    // the copy bounds; padding beyond them stays zero from BufferStorage's resize.
-    const int rows = std::min<int>(jpegHeight, textureHeight);
-    const int cols = std::min<int>(jpegWidth, textureWidth);
-    for (int row = 0; row < rows; ++row)
-    {
-        const unsigned char* srcRow = &decompressedBuffer[static_cast<std::size_t>(row) * jpegWidth * 3u];
-        unsigned char* dstRow = &pNewBitmap->Buffer[static_cast<std::size_t>(row) * textureWidth * 4u];
-        for (int col = 0; col < cols; ++col)
+        fp = _wfopen(filename.c_str(), L"rb");
+        if (!fp)
         {
-            dstRow[col * 4 + 0] = srcRow[col * 3 + 0];
-            dstRow[col * 4 + 1] = srcRow[col * 3 + 1];
-            dstRow[col * 4 + 2] = srcRow[col * 3 + 2];
-            dstRow[col * 4 + 3] = 255;
+            return false;
         }
     }
+
+    fseek(fp, 0, SEEK_END);
+    long fsize = ftell(fp);
+    fseek(fp, 0, SEEK_SET);
+
+    if (fsize < 4)
+    {
+        fclose(fp);
+        return false;
+    }
+
+    std::vector<unsigned char> rawBuf(static_cast<size_t>(fsize));
+    fread(rawBuf.data(), 1, rawBuf.size(), fp);
+    fclose(fp);
+
+    int imgWidth = 0, imgHeight = 0, imgChannels = 0;
+    unsigned char* decodedData = nullptr;
+
+    // 1. Check if standard JPEG at offset 24 (Webzen OZJ header)
+    if (rawBuf.size() > 24 && rawBuf[24] == 0xFF && rawBuf[25] == 0xD8)
+    {
+        TurboJpegHandle tjHandle;
+        if (tjHandle.valid())
+        {
+            int jpegSubsamp = TJSAMP_444;
+            int jpegColorspace = TJCS_RGB;
+            const unsigned char* jpegData = rawBuf.data() + 24;
+            unsigned long jpegSize = static_cast<unsigned long>(rawBuf.size() - 24);
+            if (tjDecompressHeader3(tjHandle.get(), jpegData, jpegSize, &imgWidth, &imgHeight, &jpegSubsamp, &jpegColorspace) == 0 &&
+                imgWidth > 0 && imgHeight > 0 && imgWidth <= MAX_WIDTH && imgHeight <= MAX_HEIGHT)
+            {
+                std::vector<unsigned char> rgbBuf(static_cast<std::size_t>(imgWidth) * imgHeight * 3u);
+                if (tjDecompress2(tjHandle.get(), jpegData, jpegSize, rgbBuf.data(), imgWidth, 0, imgHeight, TJPF_RGB, TJFLAG_FASTDCT) == 0)
+                {
+                    decodedData = (unsigned char*)malloc(static_cast<std::size_t>(imgWidth) * imgHeight * 4u);
+                    if (decodedData)
+                    {
+                        for (int r = 0; r < imgWidth * imgHeight; ++r)
+                        {
+                            decodedData[r * 4 + 0] = rgbBuf[r * 3 + 0];
+                            decodedData[r * 4 + 1] = rgbBuf[r * 3 + 1];
+                            decodedData[r * 4 + 2] = rgbBuf[r * 3 + 2];
+                            decodedData[r * 4 + 3] = 255;
+                        }
+                        imgChannels = 3;
+                    }
+                }
+            }
+        }
+    }
+    // 2. Check if standard JPEG at offset 0 (Raw JPEG)
+    else if (rawBuf[0] == 0xFF && rawBuf[1] == 0xD8)
+    {
+        TurboJpegHandle tjHandle;
+        if (tjHandle.valid())
+        {
+            int jpegSubsamp = TJSAMP_444;
+            int jpegColorspace = TJCS_RGB;
+            const unsigned char* jpegData = rawBuf.data();
+            unsigned long jpegSize = static_cast<unsigned long>(rawBuf.size());
+            if (tjDecompressHeader3(tjHandle.get(), jpegData, jpegSize, &imgWidth, &imgHeight, &jpegSubsamp, &jpegColorspace) == 0 &&
+                imgWidth > 0 && imgHeight > 0 && imgWidth <= MAX_WIDTH && imgHeight <= MAX_HEIGHT)
+            {
+                std::vector<unsigned char> rgbBuf(static_cast<std::size_t>(imgWidth) * imgHeight * 3u);
+                if (tjDecompress2(tjHandle.get(), jpegData, jpegSize, rgbBuf.data(), imgWidth, 0, imgHeight, TJPF_RGB, TJFLAG_FASTDCT) == 0)
+                {
+                    decodedData = (unsigned char*)malloc(static_cast<std::size_t>(imgWidth) * imgHeight * 4u);
+                    if (decodedData)
+                    {
+                        for (int r = 0; r < imgWidth * imgHeight; ++r)
+                        {
+                            decodedData[r * 4 + 0] = rgbBuf[r * 3 + 0];
+                            decodedData[r * 4 + 1] = rgbBuf[r * 3 + 1];
+                            decodedData[r * 4 + 2] = rgbBuf[r * 3 + 2];
+                            decodedData[r * 4 + 3] = 255;
+                        }
+                        imgChannels = 3;
+                    }
+                }
+            }
+        }
+    }
+
+    // 3. Fallback: stb_image (handles PNG, custom OZJ, corrupted headers, BMP, etc.)
+    if (!decodedData)
+    {
+        decodedData = stbi_load_from_memory(rawBuf.data(), static_cast<int>(rawBuf.size()), &imgWidth, &imgHeight, &imgChannels, 4);
+        if (!decodedData && rawBuf.size() > 24)
+        {
+            decodedData = stbi_load_from_memory(rawBuf.data() + 24, static_cast<int>(rawBuf.size() - 24), &imgWidth, &imgHeight, &imgChannels, 4);
+        }
+    }
+
+    // 4. Ultimate Fallback: Windows GDI+ (handles all truncated/corrupted/modded PNG/JPG/BMP)
+    if (!decodedData)
+    {
+        std::vector<unsigned char> gdiRgba;
+        if (LoadWithGdiplus(rawBuf.data(), rawBuf.size(), imgWidth, imgHeight, imgChannels, gdiRgba) ||
+            (rawBuf.size() > 24 && LoadWithGdiplus(rawBuf.data() + 24, rawBuf.size() - 24, imgWidth, imgHeight, imgChannels, gdiRgba)))
+        {
+            decodedData = (unsigned char*)malloc(gdiRgba.size());
+            if (decodedData)
+            {
+                std::memcpy(decodedData, gdiRgba.data(), gdiRgba.size());
+            }
+        }
+    }
+
+    if (!decodedData || imgWidth <= 0 || imgHeight <= 0 || imgWidth > MAX_WIDTH || imgHeight > MAX_HEIGHT)
+    {
+        if (decodedData) free(decodedData);
+        return false;
+    }
+
+    const int textureWidth = NextPowerOfTwo(imgWidth, MAX_WIDTH);
+    const int textureHeight = NextPowerOfTwo(imgHeight, MAX_HEIGHT);
+
+    auto pNewBitmap = std::make_unique<BITMAP_t>();
+    pNewBitmap->BitmapIndex = uiBitmapIndex;
+    wcsncpy(pNewBitmap->FileName, filename.c_str(), MAX_BITMAP_FILE_NAME - 1);
+    pNewBitmap->FileName[MAX_BITMAP_FILE_NAME - 1] = L'\0';
+    pNewBitmap->Width = static_cast<float>(textureWidth);
+    pNewBitmap->Height = static_cast<float>(textureHeight);
+    pNewBitmap->Components = (imgChannels == 4) ? 4 : 3;
+    pNewBitmap->Ref = 1;
+
+    const std::size_t BufferSize = static_cast<std::size_t>(textureWidth) * static_cast<std::size_t>(textureHeight) * 4u;
+    pNewBitmap->BufferStorage.resize(BufferSize, 255);
+    pNewBitmap->Buffer = pNewBitmap->BufferStorage.data();
+    m_dwUsedTextureMemory += static_cast<std::uint32_t>(BufferSize);
+
+    const int rows = std::min<int>(imgHeight, textureHeight);
+    const int cols = std::min<int>(imgWidth, textureWidth);
+    for (int row = 0; row < rows; ++row)
+    {
+        const unsigned char* srcRow = &decodedData[static_cast<std::size_t>(row) * imgWidth * 4u];
+        unsigned char* dstRow = &pNewBitmap->Buffer[static_cast<std::size_t>(row) * textureWidth * 4u];
+        std::memcpy(dstRow, srcRow, cols * 4u);
+    }
+
+    free(decodedData);
 
     RHI::TextureDesc desc;
     desc.width = textureWidth;
@@ -710,7 +828,6 @@ bool CGlobalBitmap::OpenJpegTurbo(GLuint uiBitmapIndex, const std::wstring& file
     pNewBitmap->TextureNumber = RHI::CreateTexture(desc, pNewBitmap->Buffer).id;
 
     m_mapBitmap.insert(type_bitmap_map::value_type(uiBitmapIndex, std::move(pNewBitmap)));
-
     return true;
 }
 
@@ -719,70 +836,125 @@ bool CGlobalBitmap::OpenTga(GLuint uiBitmapIndex, const std::wstring& filename, 
     std::wstring filename_ozt;
     ExchangeExt(filename, L"OZT", filename_ozt);
 
-    std::ifstream input(NarrowPath(filename_ozt), std::ios::binary);
-    if (!input)
+    FILE* fp = _wfopen(filename_ozt.c_str(), L"rb");
+    if (!fp)
     {
+        fp = _wfopen(filename.c_str(), L"rb");
+        if (!fp)
+        {
+            return false;
+        }
+    }
+
+    fseek(fp, 0, SEEK_END);
+    long fsize = ftell(fp);
+    fseek(fp, 0, SEEK_SET);
+
+    if (fsize < 18)
+    {
+        fclose(fp);
         return false;
     }
 
-    std::vector<unsigned char> pakBuffer((std::istreambuf_iterator<char>(input)), std::istreambuf_iterator<char>());
-    input.close();
+    std::vector<unsigned char> rawBuf(static_cast<size_t>(fsize));
+    fread(rawBuf.data(), 1, rawBuf.size(), fp);
+    fclose(fp);
 
-    if (pakBuffer.size() < 18) // minimal TGA header length check for OZT payload
+    int imgWidth = 0, imgHeight = 0, imgChannels = 0;
+    unsigned char* decodedData = nullptr;
+
+    // 1. Fast path: check Webzen 4-byte header + 18-byte TGA
+    if (rawBuf.size() >= 22)
     {
+        std::int16_t testNx = 0, testNy = 0;
+        std::memcpy(&testNx, &rawBuf[16], sizeof(testNx));
+        std::memcpy(&testNy, &rawBuf[18], sizeof(testNy));
+        char testBit = rawBuf[20];
+        if (testBit == 32 && testNx > 0 && testNy > 0 && testNx <= MAX_WIDTH && testNy <= MAX_HEIGHT)
+        {
+            imgWidth = testNx;
+            imgHeight = testNy;
+            decodedData = (unsigned char*)malloc(static_cast<std::size_t>(imgWidth) * imgHeight * 4u);
+            if (decodedData)
+            {
+                int index = 22;
+                for (int y = 0; y < imgHeight; y++)
+                {
+                    if (index + imgWidth * 4 > static_cast<int>(rawBuf.size()))
+                        break;
+                    const unsigned char* src = &rawBuf[index];
+                    index += imgWidth * 4;
+                    unsigned char* dst = &decodedData[(imgHeight - 1 - y) * imgWidth * 4];
+                    for (int x = 0; x < imgWidth; x++)
+                    {
+                        dst[x * 4 + 0] = src[x * 4 + 2];
+                        dst[x * 4 + 1] = src[x * 4 + 1];
+                        dst[x * 4 + 2] = src[x * 4 + 0];
+                        dst[x * 4 + 3] = src[x * 4 + 3];
+                    }
+                }
+            }
+        }
+    }
+
+    // 2. Fallback: stb_image (handles standard TGA at offset 0, PNG, BMP)
+    if (!decodedData)
+    {
+        decodedData = stbi_load_from_memory(rawBuf.data(), static_cast<int>(rawBuf.size()), &imgWidth, &imgHeight, &imgChannels, 4);
+        if (!decodedData && rawBuf.size() > 4)
+        {
+            decodedData = stbi_load_from_memory(rawBuf.data() + 4, static_cast<int>(rawBuf.size() - 4), &imgWidth, &imgHeight, &imgChannels, 4);
+        }
+    }
+
+    // 3. Ultimate Fallback: GDI+
+    if (!decodedData)
+    {
+        std::vector<unsigned char> gdiRgba;
+        if (LoadWithGdiplus(rawBuf.data(), rawBuf.size(), imgWidth, imgHeight, imgChannels, gdiRgba) ||
+            (rawBuf.size() > 4 && LoadWithGdiplus(rawBuf.data() + 4, rawBuf.size() - 4, imgWidth, imgHeight, imgChannels, gdiRgba)))
+        {
+            decodedData = (unsigned char*)malloc(gdiRgba.size());
+            if (decodedData)
+            {
+                std::memcpy(decodedData, gdiRgba.data(), gdiRgba.size());
+            }
+        }
+    }
+
+    if (!decodedData || imgWidth <= 0 || imgHeight <= 0 || imgWidth > MAX_WIDTH || imgHeight > MAX_HEIGHT)
+    {
+        if (decodedData) free(decodedData);
         return false;
     }
 
-    int index = 12;
-    index += 4;
-    std::int16_t nx, ny;
-    std::memcpy(&nx, &pakBuffer[index], sizeof(nx)); index += 2;
-    std::memcpy(&ny, &pakBuffer[index], sizeof(ny)); index += 2;
-    const char bit = pakBuffer[index]; index += 1;
-    index += 1;
-
-    if (bit != 32 || nx <= 0 || ny <= 0 || nx > MAX_WIDTH || ny > MAX_HEIGHT)
-    {
-        return false;
-    }
-
-    const int Width = NextPowerOfTwo(nx, MAX_WIDTH);
-    const int Height = NextPowerOfTwo(ny, MAX_HEIGHT);
+    const int Width = NextPowerOfTwo(imgWidth, MAX_WIDTH);
+    const int Height = NextPowerOfTwo(imgHeight, MAX_HEIGHT);
 
     auto pNewBitmap = std::make_unique<BITMAP_t>();
-
     pNewBitmap->BitmapIndex = uiBitmapIndex;
-
     wcsncpy(pNewBitmap->FileName, filename.c_str(), MAX_BITMAP_FILE_NAME - 1);
     pNewBitmap->FileName[MAX_BITMAP_FILE_NAME - 1] = L'\0';
-
     pNewBitmap->Width = static_cast<float>(Width);
     pNewBitmap->Height = static_cast<float>(Height);
     pNewBitmap->Components = 4;
     pNewBitmap->Ref = 1;
 
     const std::size_t BufferSize = static_cast<std::size_t>(Width) * static_cast<std::size_t>(Height) * 4u;
-    pNewBitmap->BufferStorage.resize(BufferSize);
+    pNewBitmap->BufferStorage.resize(BufferSize, 255);
     pNewBitmap->Buffer = pNewBitmap->BufferStorage.data();
-
     m_dwUsedTextureMemory += static_cast<std::uint32_t>(BufferSize);
 
-    for (int y = 0; y < ny; y++)
+    const int rows = std::min<int>(imgHeight, Height);
+    const int cols = std::min<int>(imgWidth, Width);
+    for (int row = 0; row < rows; ++row)
     {
-        const unsigned char* src = &pakBuffer[index];
-        index += nx * 4;
-        unsigned char* dst = &pNewBitmap->Buffer[(ny - 1 - y) * Width * pNewBitmap->Components];
-
-        for (int x = 0; x < nx; x++)
-        {
-            dst[0] = src[2];
-            dst[1] = src[1];
-            dst[2] = src[0];
-            dst[3] = src[3];
-            src += 4;
-            dst += pNewBitmap->Components;
-        }
+        const unsigned char* srcRow = &decodedData[static_cast<std::size_t>(row) * imgWidth * 4u];
+        unsigned char* dstRow = &pNewBitmap->Buffer[static_cast<std::size_t>(row) * Width * 4u];
+        std::memcpy(dstRow, srcRow, cols * 4u);
     }
+
+    free(decodedData);
 
     RHI::TextureDesc desc;
     desc.width = Width;
@@ -793,14 +965,6 @@ bool CGlobalBitmap::OpenTga(GLuint uiBitmapIndex, const std::wstring& filename, 
 
     m_mapBitmap.insert(type_bitmap_map::value_type(uiBitmapIndex, std::move(pNewBitmap)));
 
-    // DXP-08a: GL_TEXTURE_ENV/GL_TEXTURE_ENV_MODE is FFP-only texture-combiner state Core Profile
-    // removes outright (the id=1280 "<target> or <pname> require feature(s) disabled" violation);
-    // the shader path (PassthroughShader/IR::) never reads it, and this resets to GL's own default
-    // (GL_MODULATE) anyway, so it's a no-op on the shader pipeline regardless of profile. Guarded rather
-    // than deleted since this is a rarely-hit texture-load path, not proven dead with the same
-    // exhaustive attribution as the hot-path matrix-stack/color-bridge calls. Stays raw GL --
-    // texture-env is FFP pipeline state, not texture-object state, so it's out of RHI's scope
-    // (RHI.h has no equivalent, deliberately -- see DXP-11 design doc's Q1).
     if (!g_CoreProfile) glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 
     return true;

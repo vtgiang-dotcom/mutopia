@@ -1,0 +1,594 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>MUnique.OpenMU.ConnectServer</name>
+    </assembly>
+    <members>
+        <member name="T:MUnique.OpenMU.ConnectServer.CheckMaximumConnectionsPlugin">
+            <summary>
+            Plugin which checks if the maximum number of connections got exceeded. Refuses the connection to new clients, if that happens.
+            </summary>
+        </member>
+        <member name="M:MUnique.OpenMU.ConnectServer.CheckMaximumConnectionsPlugin.#ctor(MUnique.OpenMU.ConnectServer.ConnectServer,Microsoft.Extensions.Logging.ILogger{MUnique.OpenMU.ConnectServer.CheckMaximumConnectionsPlugin})">
+            <summary>
+            Initializes a new instance of the <see cref="T:MUnique.OpenMU.ConnectServer.CheckMaximumConnectionsPlugin" /> class.
+            </summary>
+            <param name="server">The server.</param>
+            <param name="logger">The logger.</param>
+        </member>
+        <member name="M:MUnique.OpenMU.ConnectServer.CheckMaximumConnectionsPlugin.OnAfterSocketAccept(System.Net.Sockets.Socket)">
+            <inheritdoc/>
+        </member>
+        <member name="T:MUnique.OpenMU.ConnectServer.Client">
+            <summary>
+            The client which connected to the connect server.
+            </summary>
+        </member>
+        <member name="M:MUnique.OpenMU.ConnectServer.Client.#ctor(MUnique.OpenMU.Network.IConnection,System.TimeSpan,MUnique.OpenMU.ConnectServer.PacketHandler.IPacketHandler{MUnique.OpenMU.ConnectServer.Client},System.Byte,Microsoft.Extensions.Logging.ILogger{MUnique.OpenMU.ConnectServer.Client})">
+            <summary>
+            Initializes a new instance of the <see cref="T:MUnique.OpenMU.ConnectServer.Client" /> class.
+            </summary>
+            <param name="connection">The connection.</param>
+            <param name="timeout">The timeout.</param>
+            <param name="packetHandler">The packet handler.</param>
+            <param name="maxPacketSize">Maximum size of the packet. This value is also used to initialize the receive buffer.</param>
+            <param name="logger">The logger.</param>
+        </member>
+        <member name="P:MUnique.OpenMU.ConnectServer.Client.Timeout">
+            <summary>
+            Gets or sets the timeout after which the client gets disconnected if he is inactive.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.ConnectServer.Client.ServerInfoRequestCount">
+            <summary>
+            Gets or sets the server information request count.
+            </summary>
+            <remarks>Used for DOS protection.</remarks>
+        </member>
+        <member name="P:MUnique.OpenMU.ConnectServer.Client.FtpRequestCount">
+            <summary>
+            Gets or sets the FTP request count.
+            </summary>
+            <remarks>Used for DOS protection.</remarks>
+        </member>
+        <member name="P:MUnique.OpenMU.ConnectServer.Client.ServerListRequestCount">
+            <summary>
+            Gets or sets the server list request count.
+            </summary>
+            <remarks>Used for DOS protection.</remarks>
+        </member>
+        <member name="P:MUnique.OpenMU.ConnectServer.Client.Address">
+            <summary>
+            Gets or sets the ip from which the client is connecting.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.ConnectServer.Client.Port">
+            <summary>
+            Gets or sets the port from which the client is connecting.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.ConnectServer.Client.Connection">
+            <summary>
+            Gets the connection from/to the client.
+            </summary>
+        </member>
+        <member name="M:MUnique.OpenMU.ConnectServer.Client.Dispose">
+            <inheritdoc/>
+        </member>
+        <member name="M:MUnique.OpenMU.ConnectServer.Client.SendHelloAsync">
+            <summary>
+            Sends the hello packet.
+            </summary>
+        </member>
+        <member name="T:MUnique.OpenMU.ConnectServer.ClientConnectionCounter">
+            <summary>
+            Counts the connections per ip address.
+            </summary>
+        </member>
+        <member name="M:MUnique.OpenMU.ConnectServer.ClientConnectionCounter.GetConnectionCount(System.Net.IPAddress)">
+            <summary>
+            Gets the connection count of the specified ip address.
+            </summary>
+            <param name="ipAddress">The ip address.</param>
+            <returns>The counted connections of the ip address.</returns>
+        </member>
+        <member name="M:MUnique.OpenMU.ConnectServer.ClientConnectionCounter.AddConnection(System.Net.IPAddress)">
+            <summary>
+            Adds the connection and increases its count for the specified ip address.
+            </summary>
+            <param name="ipAddress">The ip address.</param>
+        </member>
+        <member name="M:MUnique.OpenMU.ConnectServer.ClientConnectionCounter.RemoveConnection(System.Net.IPAddress)">
+            <summary>
+            Removes the connection and decreases its count for the specified ip address.
+            </summary>
+            <param name="ipAddress">The ip address.</param>
+        </member>
+        <member name="T:MUnique.OpenMU.ConnectServer.ClientConnectionCountPlugin">
+            <summary>
+            The client connection count plugin.
+            </summary>
+        </member>
+        <member name="M:MUnique.OpenMU.ConnectServer.ClientConnectionCountPlugin.#ctor(MUnique.OpenMU.Interfaces.IConnectServerSettings,Microsoft.Extensions.Logging.ILogger{MUnique.OpenMU.ConnectServer.ClientConnectionCountPlugin})">
+            <summary>
+            Initializes a new instance of the <see cref="T:MUnique.OpenMU.ConnectServer.ClientConnectionCountPlugin" /> class.
+            </summary>
+            <param name="connectServerSettings">The settings.</param>
+            <param name="logger">The logger.</param>
+        </member>
+        <member name="M:MUnique.OpenMU.ConnectServer.ClientConnectionCountPlugin.OnAfterSocketAccept(System.Net.Sockets.Socket)">
+            <inheritdoc/>
+        </member>
+        <member name="M:MUnique.OpenMU.ConnectServer.ClientConnectionCountPlugin.OnAfterDisconnect(MUnique.OpenMU.ConnectServer.Client)">
+            <inheritdoc/>
+        </member>
+        <member name="T:MUnique.OpenMU.ConnectServer.ClientListener">
+            <summary>
+            The listener which is waiting for new connecting clients.
+            </summary>
+        </member>
+        <member name="M:MUnique.OpenMU.ConnectServer.ClientListener.#ctor(MUnique.OpenMU.ConnectServer.IConnectServer,Microsoft.Extensions.Logging.ILoggerFactory)">
+            <summary>
+            Initializes a new instance of the <see cref="T:MUnique.OpenMU.ConnectServer.ClientListener" /> class.
+            </summary>
+            <param name="connectServer">The connect server.</param>
+            <param name="loggerFactory">The logger factory.</param>
+        </member>
+        <member name="E:MUnique.OpenMU.ConnectServer.ClientListener.ConnectedClientsChanged">
+            <summary>
+            Occurs when the number of connected clients changed.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.ConnectServer.ClientListener.Clients">
+            <summary>
+            Gets the connected clients.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.ConnectServer.ClientListener.ClientSocketAcceptPlugins">
+            <summary>
+            Gets the client socket accept plugins.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.ConnectServer.ClientListener.ClientSocketDisconnectPlugins">
+            <summary>
+            Gets the client socket disconnect plugins.
+            </summary>
+        </member>
+        <member name="M:MUnique.OpenMU.ConnectServer.ClientListener.StartListener">
+            <summary>
+            Starts the listener.
+            </summary>
+        </member>
+        <member name="M:MUnique.OpenMU.ConnectServer.ClientListener.StopListener">
+            <summary>
+            Stops the listener.
+            </summary>
+        </member>
+        <member name="T:MUnique.OpenMU.ConnectServer.ConnectServer">
+            <summary>
+            The connect server.
+            </summary>
+        </member>
+        <member name="M:MUnique.OpenMU.ConnectServer.ConnectServer.#ctor(MUnique.OpenMU.Interfaces.IConnectServerSettings,Microsoft.Extensions.Logging.ILoggerFactory)">
+            <summary>
+            Initializes a new instance of the <see cref="T:MUnique.OpenMU.ConnectServer.ConnectServer" /> class.
+            </summary>
+            <param name="connectServerSettings">The settings.</param>
+            <param name="loggerFactory">The logger factory.</param>
+        </member>
+        <member name="E:MUnique.OpenMU.ConnectServer.ConnectServer.PropertyChanged">
+            <inheritdoc />
+        </member>
+        <member name="P:MUnique.OpenMU.ConnectServer.ConnectServer.ServerState">
+            <inheritdoc/>
+        </member>
+        <member name="P:MUnique.OpenMU.ConnectServer.ConnectServer.Type">
+            <inheritdoc />
+        </member>
+        <member name="P:MUnique.OpenMU.ConnectServer.ConnectServer.Description">
+            <inheritdoc/>
+        </member>
+        <member name="P:MUnique.OpenMU.ConnectServer.ConnectServer.Id">
+            <inheritdoc/>
+        </member>
+        <member name="P:MUnique.OpenMU.ConnectServer.ConnectServer.ConfigurationId">
+            <inheritdoc />
+        </member>
+        <member name="P:MUnique.OpenMU.ConnectServer.ConnectServer.ConnectInfos">
+            <inheritdoc/>
+        </member>
+        <member name="P:MUnique.OpenMU.ConnectServer.ConnectServer.MUnique#OpenMU#ConnectServer#IConnectServer#ServerList">
+            <inheritdoc/>
+        </member>
+        <member name="P:MUnique.OpenMU.ConnectServer.ConnectServer.Settings">
+            <inheritdoc cref="T:MUnique.OpenMU.ConnectServer.IConnectServer"/>
+        </member>
+        <member name="P:MUnique.OpenMU.ConnectServer.ConnectServer.ClientVersion">
+            <inheritdoc />
+        </member>
+        <member name="P:MUnique.OpenMU.ConnectServer.ConnectServer.MaximumConnections">
+            <summary>
+            Gets the maximum allowed connections.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.ConnectServer.ConnectServer.CurrentConnections">
+            <summary>
+            Gets the current connection count.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.ConnectServer.ConnectServer.CurrentGameServerConnections">
+            <summary>
+            Gets the current game server connection count.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.ConnectServer.ConnectServer.RegisteredGameServers">
+            <summary>
+            Gets the registered game servers.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.ConnectServer.ConnectServer.ClientListener">
+            <summary>
+            Gets the client listener.
+            </summary>
+        </member>
+        <member name="M:MUnique.OpenMU.ConnectServer.ConnectServer.StartAsync(System.Threading.CancellationToken)">
+            <inheritdoc />
+        </member>
+        <member name="M:MUnique.OpenMU.ConnectServer.ConnectServer.StartAsync">
+            <inheritdoc/>
+        </member>
+        <member name="M:MUnique.OpenMU.ConnectServer.ConnectServer.StopAsync(System.Threading.CancellationToken)">
+            <inheritdoc />
+        </member>
+        <member name="M:MUnique.OpenMU.ConnectServer.ConnectServer.ShutdownAsync">
+            <inheritdoc/>
+        </member>
+        <member name="M:MUnique.OpenMU.ConnectServer.ConnectServer.RegisterGameServer(MUnique.OpenMU.Interfaces.ServerInfo,System.Net.IPEndPoint)">
+            <inheritdoc/>
+        </member>
+        <member name="M:MUnique.OpenMU.ConnectServer.ConnectServer.UnregisterGameServer(System.UInt16)">
+            <inheritdoc/>
+        </member>
+        <member name="M:MUnique.OpenMU.ConnectServer.ConnectServer.CurrentConnectionsChanged(System.UInt16,System.Int32)">
+            <inheritdoc />
+        </member>
+        <member name="M:MUnique.OpenMU.ConnectServer.ConnectServer.RaisePropertyChanged(System.String)">
+            <summary>
+            Called when a property changed.
+            </summary>
+            <param name="propertyName">Name of the property.</param>
+        </member>
+        <member name="T:MUnique.OpenMU.ConnectServer.ConnectServerFactory">
+            <summary>
+            The connect server factory.
+            </summary>
+        </member>
+        <member name="M:MUnique.OpenMU.ConnectServer.ConnectServerFactory.#ctor(Microsoft.Extensions.Logging.ILoggerFactory)">
+            <summary>
+            Initializes a new instance of the <see cref="T:MUnique.OpenMU.ConnectServer.ConnectServerFactory"/> class.
+            </summary>
+            <param name="loggerFactory">The logger factory.</param>
+        </member>
+        <member name="M:MUnique.OpenMU.ConnectServer.ConnectServerFactory.CreateConnectServer(MUnique.OpenMU.Interfaces.IConnectServerSettings)">
+            <summary>
+            Creates a new connect server instance.
+            </summary>
+            <param name="settings">The settings.</param>
+            <returns>
+            The new connect server instance.
+            </returns>
+        </member>
+        <member name="T:MUnique.OpenMU.ConnectServer.IAfterDisconnectPlugin">
+            <summary>
+            Plugin which is executed after a client disconnected.
+            </summary>
+        </member>
+        <member name="M:MUnique.OpenMU.ConnectServer.IAfterDisconnectPlugin.OnAfterDisconnect(MUnique.OpenMU.ConnectServer.Client)">
+            <summary>
+            Called after a client disconnected.
+            </summary>
+            <param name="client">The client.</param>
+        </member>
+        <member name="T:MUnique.OpenMU.ConnectServer.IAfterSocketAcceptPlugin">
+            <summary>
+            Plugin which is executed when a client socket got accepted by the listener.
+            </summary>
+        </member>
+        <member name="M:MUnique.OpenMU.ConnectServer.IAfterSocketAcceptPlugin.OnAfterSocketAccept(System.Net.Sockets.Socket)">
+            <summary>
+            Called after the client socket got accepted by the listener.
+            </summary>
+            <param name="socket">The socket.</param>
+            <returns>Flag that indicates if the socket is allowed to connect.</returns>
+        </member>
+        <member name="T:MUnique.OpenMU.ConnectServer.IConnectServer">
+            <summary>
+            The internal interface of a connect server.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.ConnectServer.IConnectServer.ConnectInfos">
+            <summary>
+            Gets the connect infos.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.ConnectServer.IConnectServer.ServerList">
+            <summary>
+            Gets the server list.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.ConnectServer.IConnectServer.Settings">
+            <summary>
+            Gets the connectServerSettings.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.ConnectServer.IConnectServer.ClientVersion">
+            <summary>
+            Gets the client version.
+            </summary>
+        </member>
+        <member name="T:MUnique.OpenMU.ConnectServer.IGameServerEntry">
+            <summary>
+            Interface for an entry of a gameserver in the connect server.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.ConnectServer.IGameServerEntry.ServerId">
+            <summary>
+            Gets the server identifier.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.ConnectServer.IGameServerEntry.EndPoint">
+            <summary>
+            Gets the end point under which the server is accessible.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.ConnectServer.IGameServerEntry.ServerLoadPercentage">
+            <summary>
+            Gets the server load percentage.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.ConnectServer.IGameServerEntry.CurrentConnections">
+            <summary>
+            Gets the count of current connections.
+            </summary>
+        </member>
+        <member name="T:MUnique.OpenMU.ConnectServer.PacketHandler.ClientPacketHandler">
+            <summary>
+            The handler of packets coming from the client.
+            </summary>
+        </member>
+        <member name="M:MUnique.OpenMU.ConnectServer.PacketHandler.ClientPacketHandler.#ctor(MUnique.OpenMU.ConnectServer.IConnectServer,Microsoft.Extensions.Logging.ILoggerFactory)">
+            <summary>
+            Initializes a new instance of the <see cref="T:MUnique.OpenMU.ConnectServer.PacketHandler.ClientPacketHandler" /> class.
+            </summary>
+            <param name="connectServer">The connect server.</param>
+            <param name="loggerFactory">The logger factory.</param>
+        </member>
+        <member name="M:MUnique.OpenMU.ConnectServer.PacketHandler.ClientPacketHandler.HandlePacketAsync(MUnique.OpenMU.ConnectServer.Client,System.Memory{System.Byte})">
+            <inheritdoc/>
+        </member>
+        <member name="T:MUnique.OpenMU.ConnectServer.PacketHandler.FtpRequestHandler">
+            <summary>
+            Handles the ftp related request. The client is sending its version, and the server answers
+            with the current version and the ftp address where the client can load a patch.
+            </summary>
+        </member>
+        <member name="M:MUnique.OpenMU.ConnectServer.PacketHandler.FtpRequestHandler.#ctor(MUnique.OpenMU.Interfaces.IConnectServerSettings,Microsoft.Extensions.Logging.ILogger{MUnique.OpenMU.ConnectServer.PacketHandler.FtpRequestHandler})">
+            <summary>
+            Initializes a new instance of the <see cref="T:MUnique.OpenMU.ConnectServer.PacketHandler.FtpRequestHandler" /> class.
+            </summary>
+            <param name="connectServerSettings">The settings.</param>
+            <param name="logger">The logger.</param>
+        </member>
+        <member name="T:MUnique.OpenMU.ConnectServer.PacketHandler.FtpRequestHandler.VersionCompareResult">
+            <summary>
+            The version compare result.
+            </summary>
+        </member>
+        <member name="M:MUnique.OpenMU.ConnectServer.PacketHandler.FtpRequestHandler.HandlePacketAsync(MUnique.OpenMU.ConnectServer.Client,System.Memory{System.Byte})">
+            <inheritdoc/>
+        </member>
+        <member name="M:MUnique.OpenMU.ConnectServer.PacketHandler.FtpRequestHandler.VersionCompare(System.Byte[],System.Int32,System.Span{System.Byte},System.Int32,System.Int32)">
+            <summary>
+            Compares the actual version of the client with the expected version.
+            </summary>
+            <param name="expectedVersion">The expected version.</param>
+            <param name="expectedIndex">The expected index.</param>
+            <param name="actualVersion">The actual version.</param>
+            <param name="actualIndex">The actual index.</param>
+            <param name="count">The count.</param>
+            <returns>The compare result.</returns>
+        </member>
+        <member name="T:MUnique.OpenMU.ConnectServer.PacketHandler.IPacketHandler`1">
+            <summary>
+            The interface for a packet handler with a type which is passed as context argument.
+            </summary>
+            <typeparam name="T">Type of the context argument.</typeparam>
+        </member>
+        <member name="M:MUnique.OpenMU.ConnectServer.PacketHandler.IPacketHandler`1.HandlePacketAsync(`0,System.Memory{System.Byte})">
+            <summary>
+            Handles the packet.
+            </summary>
+            <param name="obj">The object.</param>
+            <param name="packet">The packet.</param>
+        </member>
+        <member name="T:MUnique.OpenMU.ConnectServer.PacketHandler.ServerInfoRequestHandler">
+            <summary>
+            Handles the server info request of a client, which means the client wants to know the connect data of the server it just clicked on.
+            </summary>
+        </member>
+        <member name="M:MUnique.OpenMU.ConnectServer.PacketHandler.ServerInfoRequestHandler.#ctor(MUnique.OpenMU.ConnectServer.IConnectServer,Microsoft.Extensions.Logging.ILogger{MUnique.OpenMU.ConnectServer.PacketHandler.ServerInfoRequestHandler})">
+            <summary>
+            Initializes a new instance of the <see cref="T:MUnique.OpenMU.ConnectServer.PacketHandler.ServerInfoRequestHandler" /> class.
+            </summary>
+            <param name="connectServer">The connect server.</param>
+            <param name="logger">The logger.</param>
+        </member>
+        <member name="M:MUnique.OpenMU.ConnectServer.PacketHandler.ServerInfoRequestHandler.HandlePacketAsync(MUnique.OpenMU.ConnectServer.Client,System.Memory{System.Byte})">
+            <inheritdoc/>
+        </member>
+        <member name="T:MUnique.OpenMU.ConnectServer.PacketHandler.ServerListHandler">
+            <summary>
+            Handles the requests of server data.
+            </summary>
+        </member>
+        <member name="M:MUnique.OpenMU.ConnectServer.PacketHandler.ServerListHandler.#ctor(MUnique.OpenMU.ConnectServer.IConnectServer,Microsoft.Extensions.Logging.ILoggerFactory)">
+            <summary>
+            Initializes a new instance of the <see cref="T:MUnique.OpenMU.ConnectServer.PacketHandler.ServerListHandler" /> class.
+            </summary>
+            <param name="connectServer">The connect server.</param>
+            <param name="loggerFactory">The logger factory.</param>
+        </member>
+        <member name="M:MUnique.OpenMU.ConnectServer.PacketHandler.ServerListHandler.HandlePacketAsync(MUnique.OpenMU.ConnectServer.Client,System.Memory{System.Byte})">
+            <inheritdoc/>
+        </member>
+        <member name="T:MUnique.OpenMU.ConnectServer.PacketHandler.ServerListRequestHandler">
+            <summary>
+            Handles the request of the server list.
+            </summary>
+        </member>
+        <member name="M:MUnique.OpenMU.ConnectServer.PacketHandler.ServerListRequestHandler.#ctor(MUnique.OpenMU.ConnectServer.IConnectServer,Microsoft.Extensions.Logging.ILogger{MUnique.OpenMU.ConnectServer.PacketHandler.ServerListRequestHandler})">
+            <summary>
+            Initializes a new instance of the <see cref="T:MUnique.OpenMU.ConnectServer.PacketHandler.ServerListRequestHandler" /> class.
+            </summary>
+            <param name="connectServer">The connect server.</param>
+            <param name="logger">The logger.</param>
+        </member>
+        <member name="M:MUnique.OpenMU.ConnectServer.PacketHandler.ServerListRequestHandler.HandlePacketAsync(MUnique.OpenMU.ConnectServer.Client,System.Memory{System.Byte})">
+            <inheritdoc/>
+        </member>
+        <member name="T:MUnique.OpenMU.ConnectServer.ServerList">
+            <summary>
+            The server list.
+            </summary>
+        </member>
+        <member name="M:MUnique.OpenMU.ConnectServer.ServerList.#ctor(MUnique.OpenMU.Network.PlugIns.ClientVersion)">
+            <summary>
+            Initializes a new instance of the <see cref="T:MUnique.OpenMU.ConnectServer.ServerList" /> class.
+            </summary>
+            <param name="clientVersion">The client version.</param>
+        </member>
+        <member name="P:MUnique.OpenMU.ConnectServer.ServerList.TotalConnectionCount">
+            <summary>
+            Gets the total connection count.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.ConnectServer.ServerList.Cache">
+            <summary>
+            Gets the cache of the available servers.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.ConnectServer.ServerList.Items">
+            <summary>
+            Gets the <see cref="T:MUnique.OpenMU.ConnectServer.IGameServerEntry"/>s of this list.
+            </summary>
+        </member>
+        <member name="M:MUnique.OpenMU.ConnectServer.ServerList.Add(MUnique.OpenMU.ConnectServer.ServerListItem)">
+            <summary>
+            Adds the specified item to this instance.
+            </summary>
+            <param name="item">The item.</param>
+        </member>
+        <member name="M:MUnique.OpenMU.ConnectServer.ServerList.Remove(MUnique.OpenMU.ConnectServer.ServerListItem)">
+            <summary>
+            Removes the specified item from this instance.
+            </summary>
+            <param name="item">The item.</param>
+        </member>
+        <member name="M:MUnique.OpenMU.ConnectServer.ServerList.GetItem(System.UInt16)">
+            <summary>
+            Gets the <see cref="T:MUnique.OpenMU.ConnectServer.ServerListItem"/> of the specified server id.
+            </summary>
+            <param name="gameServerId">The game server identifier.</param>
+            <returns>The found <see cref="T:MUnique.OpenMU.ConnectServer.ServerListItem"/>.</returns>
+        </member>
+        <member name="M:MUnique.OpenMU.ConnectServer.ServerList.Serialize">
+            <summary>
+            Serializes this instance to a server list packet, which can be sent to the client.
+            </summary>
+            <returns>The serialized server list.</returns>
+        </member>
+        <member name="M:MUnique.OpenMU.ConnectServer.ServerList.InvalidateCache">
+            <summary>
+            Invalidates the cache.
+            </summary>
+        </member>
+        <member name="T:MUnique.OpenMU.ConnectServer.ServerList.ServerListItemComparer">
+            <summary>
+            Comparer for <see cref="T:MUnique.OpenMU.ConnectServer.ServerListItem"/>s.
+            </summary>
+        </member>
+        <member name="M:MUnique.OpenMU.ConnectServer.ServerList.ServerListItemComparer.Compare(MUnique.OpenMU.ConnectServer.ServerListItem,MUnique.OpenMU.ConnectServer.ServerListItem)">
+            <summary>Compares two objects and returns a value indicating whether one is less than, equal to, or greater than the other.</summary>
+            <returns>A signed integer that indicates the relative values of <paramref name="x" /> and <paramref name="y" />, as shown in the following table.Value Meaning Less than zero<paramref name="x" /> is less than <paramref name="y" />.Zero<paramref name="x" /> equals <paramref name="y" />.Greater than zero<paramref name="x" /> is greater than <paramref name="y" />.</returns>
+            <param name="x">The first object to compare.</param>
+            <param name="y">The second object to compare.</param>
+        </member>
+        <member name="T:MUnique.OpenMU.ConnectServer.ServerListItem">
+            <summary>
+            A list item of an available server.
+            </summary>
+        </member>
+        <member name="M:MUnique.OpenMU.ConnectServer.ServerListItem.#ctor(MUnique.OpenMU.ConnectServer.ServerList)">
+            <summary>
+            Initializes a new instance of the <see cref="T:MUnique.OpenMU.ConnectServer.ServerListItem"/> class.
+            </summary>
+            <param name="owner">The owner.</param>
+        </member>
+        <member name="P:MUnique.OpenMU.ConnectServer.ServerListItem.LoadIndex">
+            <summary>
+            Gets or sets the index of the server in the load (usage rate) array.
+            </summary>
+            <value>
+            The index of the server in the load (usage rate) array.
+            </value>
+        </member>
+        <member name="P:MUnique.OpenMU.ConnectServer.ServerListItem.ServerId">
+            <summary>
+            Gets or sets the server identifier.
+            </summary>
+            <value>
+            The server identifier.
+            </value>
+        </member>
+        <member name="P:MUnique.OpenMU.ConnectServer.ServerListItem.ServerLoadPercentage">
+            <summary>
+            Gets the server load (usage rate).
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.ConnectServer.ServerListItem.ConnectInfo">
+            <summary>
+            Gets the connect information.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.ConnectServer.ServerListItem.EndPoint">
+            <summary>
+            Gets or sets the ip end point.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.ConnectServer.ServerListItem.MaximumConnections">
+            <summary>
+            Gets or sets the maximum connection count.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.ConnectServer.ServerListItem.CurrentConnections">
+            <summary>
+            Gets or sets the current connection count.
+            </summary>
+        </member>
+        <member name="M:MUnique.OpenMU.ConnectServer.ServerListItem.ToString">
+            <inheritdoc/>
+        </member>
+        <member name="T:MUnique.OpenMU.ConnectServer.Utilities">
+            <summary>
+            Some utility functions.
+            </summary>
+        </member>
+        <member name="M:MUnique.OpenMU.ConnectServer.Utilities.ToHexString(System.Byte[])">
+            <summary>
+            Converts a byte array to a hexadecimal string, each byte separated by space.
+            </summary>
+            <param name="bytes">The byte array.</param>
+            <returns>The hexadecimal string.</returns>
+        </member>
+    </members>
+</doc>

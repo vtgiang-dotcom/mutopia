@@ -148,6 +148,13 @@ public class Account
     public DateTime? VipExpiry { get; set; }
 
     /// <summary>
+    /// Gets or sets the accumulated Goblin Points balance for this account.
+    /// Awarded automatically while the player is online (PlayTimeRewardPlugIn).
+    /// Spent at the Web Portal shop or in-game events.
+    /// </summary>
+    public int GoblinPoints { get; set; }
+
+    /// <summary>
     /// Gets or sets the characters.
     /// </summary>
     [MemberOfAggregate]

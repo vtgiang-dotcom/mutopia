@@ -1,0 +1,931 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>MUnique.OpenMU.Web.Map</name>
+    </assembly>
+    <members>
+        <member name="T:MUnique.OpenMU.Web.Map.Components.LiveMap">
+            <summary>
+            The map component which shows the terrain with the players, monsters etc. on top.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.Map.Components.LiveMap.Id">
+            <summary>
+            Gets or sets the id of the maps DOM-Element.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.Map.Components.LiveMap.MapController">
+            <summary>
+            Gets or sets the lazy map controller. It'll be initialized after the first render.
+            </summary>
+        </member>
+        <member name="M:MUnique.OpenMU.Web.Map.Components.LiveMap.OnAfterRenderAsync(System.Boolean)">
+            <inheritdoc />
+        </member>
+        <member name="T:MUnique.OpenMU.Web.Map.Components.MapCard">
+            <summary>
+            A bootstrap card for a game map.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.Map.Components.MapCard.MapInfo">
+            <summary>
+            Gets or sets the map information.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.Map.Components.MapCard.LiveMapRoute">
+            <summary>
+            Gets or sets the route to the live map, where the map id just has to be appended.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.Map.Components.MapCards.GameServer">
+            <summary>
+            Gets or sets the game server of the maps which are shown in this component.
+            </summary>
+        </member>
+        <member name="M:MUnique.OpenMU.Web.Map.Components.MapCards.Dispose">
+            <inheritdoc />
+        </member>
+        <member name="M:MUnique.OpenMU.Web.Map.Components.MapCards.OnInitialized">
+            <inheritdoc />
+        </member>
+        <member name="P:MUnique.OpenMU.Web.Map.Components.MapList.GameServer">
+            <summary>
+            Gets or sets the game server of the maps which are shown in this component.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.Map.Components.MapList.LiveMapRoute">
+            <summary>
+            Gets or sets the route to the live map, where the map id just has to be appended.
+            </summary>
+        </member>
+        <member name="M:MUnique.OpenMU.Web.Map.Components.MapList.Dispose">
+            <inheritdoc />
+        </member>
+        <member name="M:MUnique.OpenMU.Web.Map.Components.MapList.OnInitialized">
+            <inheritdoc />
+        </member>
+        <member name="P:MUnique.OpenMU.Web.Map.Components.MapPlayerList.MapController">
+            <summary>
+            Gets or sets the map controller.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.Map.Components.MapPlayerList.FollowedPlayerName">
+            <summary>
+            Gets or sets the followed player name.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.Map.Components.MapPlayerList.OnFollowPlayer">
+            <summary>
+            Gets or sets the callback invoked when the follow button is clicked.
+            </summary>
+        </member>
+        <member name="M:MUnique.OpenMU.Web.Map.Components.MapPlayerList.OnParametersSet">
+            <inheritdoc />
+        </member>
+        <member name="P:MUnique.OpenMU.Web.Map.Components.Map.MapFactory">
+            <summary>
+            Gets or sets the map factory.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.Map.Components.Map.Server">
+            <summary>
+            Gets or sets the server on which the map is hosted.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.Map.Components.Map.MapId">
+            <summary>
+            Gets or sets the map id.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.Map.Components.Map.FollowedPlayerName">
+            <summary>
+            Gets or sets the followed player name.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.Map.Components.Map.OnFollowPlayer">
+            <summary>
+            Gets or sets the callback invoked when the follow button is clicked.
+            </summary>
+        </member>
+        <member name="M:MUnique.OpenMU.Web.Map.Components.Map.OnInitialized">
+            <inheritdoc />
+        </member>
+        <member name="M:MUnique.OpenMU.Web.Map.Components.Map.Dispose">
+            <inheritdoc />
+        </member>
+        <member name="M:MUnique.OpenMU.Web.Map.Components.Map.DisposeAsync">
+            <inheritdoc />
+        </member>
+        <member name="T:MUnique.OpenMU.Web.Map.Exports">
+            <summary>
+            Class that holds the script exports of this project.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.Map.Exports.Scripts">
+            <summary>
+            Gets the scripts.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.Map.Exports.ScriptMappings">
+            <summary>
+            Gets the script mappings.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.Map.Exports.Stylesheets">
+            <summary>
+            Gets the stylesheets.
+            </summary>
+        </member>
+        <member name="T:MUnique.OpenMU.Web.Map.GameMapInfoAdapter">
+            <summary>
+            Adapter which takes an <see cref="T:MUnique.OpenMU.GameLogic.GameMap"/> and adapts it to a <see cref="T:MUnique.OpenMU.Web.Map.IGameMapInfo"/>.
+            </summary>
+        </member>
+        <member name="M:MUnique.OpenMU.Web.Map.GameMapInfoAdapter.#ctor(MUnique.OpenMU.GameLogic.GameMap,MUnique.OpenMU.GameLogic.IGameContext)">
+            <summary>
+            Initializes a new instance of the <see cref="T:MUnique.OpenMU.Web.Map.GameMapInfoAdapter"/> class.
+            </summary>
+            <param name="map">The map.</param>
+            <param name="gameContext">The game context.</param>
+        </member>
+        <member name="E:MUnique.OpenMU.Web.Map.GameMapInfoAdapter.PropertyChanged">
+            <inheritdoc/>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.Map.GameMapInfoAdapter.Id">
+            <inheritdoc/>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.Map.GameMapInfoAdapter.MapNumber">
+            <inheritdoc/>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.Map.GameMapInfoAdapter.MapName">
+            <inheritdoc/>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.Map.GameMapInfoAdapter.TerrainData">
+            <inheritdoc/>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.Map.GameMapInfoAdapter.Players">
+            <inheritdoc/>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.Map.GameMapInfoAdapter.PlayerCount">
+            <inheritdoc/>
+        </member>
+        <member name="M:MUnique.OpenMU.Web.Map.GameMapInfoAdapter.InitializeAsync">
+            <summary>
+            Initializes the adapter.
+            </summary>
+        </member>
+        <member name="M:MUnique.OpenMU.Web.Map.GameMapInfoAdapter.Dispose">
+            <inheritdoc />
+        </member>
+        <member name="T:MUnique.OpenMU.Web.Map.IObservableGameServer">
+            <summary>
+            Interface for an observable game server.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.Map.IObservableGameServer.Id">
+            <summary>
+            Gets the identifier of the server.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.Map.IObservableGameServer.Maps">
+            <summary>
+            Gets the maps which are hosted on this server.
+            </summary>
+        </member>
+        <member name="M:MUnique.OpenMU.Web.Map.IObservableGameServer.RegisterMapObserverAsync(System.Guid,MUnique.OpenMU.GameLogic.ILocateable)">
+            <summary>
+            Registers an observers to a game map.
+            </summary>
+            <param name="mapId">The id of the map.</param>
+            <param name="worldObserver">The world observer.</param>
+        </member>
+        <member name="M:MUnique.OpenMU.Web.Map.IObservableGameServer.UnregisterMapObserverAsync(System.Guid,System.UInt16)">
+            <summary>
+            Unregisters the map observer.
+            </summary>
+            <param name="mapId">The map identifier.</param>
+            <param name="worldObserverId">The world observer identifier.</param>
+        </member>
+        <member name="T:MUnique.OpenMU.Web.Map.IGameMapInfo">
+            <summary>
+            Information about a concrete instance of a game map.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.Map.IGameMapInfo.Id">
+            <summary>
+            Gets the unique map identifier.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.Map.IGameMapInfo.MapNumber">
+            <summary>
+            Gets the map number.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.Map.IGameMapInfo.MapName">
+            <summary>
+            Gets the name of the map.
+            </summary>
+            <value>
+            The name of the map.
+            </value>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.Map.IGameMapInfo.TerrainData">
+            <summary>
+            Gets the terrain data of the map.
+            </summary>
+            <value>
+            The terrain data.
+            </value>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.Map.IGameMapInfo.Players">
+            <summary>
+            Gets the players which are currently playing on the map.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.Map.IGameMapInfo.PlayerCount">
+            <summary>
+            Gets the player count.
+            </summary>
+        </member>
+        <member name="T:MUnique.OpenMU.Web.Map.IPlayerInfo">
+            <summary>
+            Information about a player.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.Map.IPlayerInfo.CharacterName">
+            <summary>
+            Gets the name of the character.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.Map.IPlayerInfo.AccountName">
+            <summary>
+            Gets the name of the account.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.Map.IPlayerInfo.LocationX">
+            <summary>
+            Gets the x coordinate on the game map.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.Map.IPlayerInfo.LocationY">
+            <summary>
+            Gets the y coordinate on the game map.
+            </summary>
+        </member>
+        <member name="T:MUnique.OpenMU.Web.Map.Map.CustomPlugInContainer`1">
+            <summary>
+            A plugin container which allows to manually register plugins.
+            </summary>
+            <typeparam name="T">The type of plugins.</typeparam>
+        </member>
+        <member name="M:MUnique.OpenMU.Web.Map.Map.CustomPlugInContainer`1.RegisterPlugIn``1(``0)">
+            <summary>
+            Registers the plug in.
+            </summary>
+            <typeparam name="TPlugIn">The type of the plug in.</typeparam>
+            <param name="plugIn">The plug in.</param>
+        </member>
+        <member name="M:MUnique.OpenMU.Web.Map.Map.CustomPlugInContainer`1.GetPlugIn``1">
+            <inheritdoc />
+        </member>
+        <member name="T:MUnique.OpenMU.Web.Map.Map.GameMapInfoExtensions">
+            <summary>
+            Extensions for the <see cref="T:MUnique.OpenMU.Web.Map.IGameMapInfo"/>.
+            </summary>
+        </member>
+        <member name="M:MUnique.OpenMU.Web.Map.Map.GameMapInfoExtensions.GetTerrainStream(MUnique.OpenMU.Web.Map.IGameMapInfo)">
+            <summary>
+            Gets the terrain stream of the map image.
+            </summary>
+            <param name="map">The map.</param>
+            <returns>The stream with the terrain as image.</returns>
+        </member>
+        <member name="M:MUnique.OpenMU.Web.Map.Map.GameMapInfoExtensions.GetTerrainString(MUnique.OpenMU.Web.Map.IGameMapInfo)">
+            <summary>
+            Gets the terrain image as base64 string, which can be directly embedded into an html img-element.
+            </summary>
+            <param name="map">The map.</param>
+            <returns>The terrain image as base64 string, which can be directly embedded into an html img-element.</returns>
+        </member>
+        <member name="T:MUnique.OpenMU.Web.Map.Map.GameMapTerrainExtensions">
+            <summary>
+            Extensions for the <see cref="T:MUnique.OpenMU.GameLogic.GameMapTerrain"/>.
+            </summary>
+        </member>
+        <member name="M:MUnique.OpenMU.Web.Map.Map.GameMapTerrainExtensions.ToImage(MUnique.OpenMU.GameLogic.GameMapTerrain)">
+            <summary>
+            Renders the terrain into an image.
+            </summary>
+            <param name="terrain">The terrain.</param>
+            <returns>The rendered image.</returns>
+        </member>
+        <member name="T:MUnique.OpenMU.Web.Map.Map.IMapController">
+            <summary>
+            Controller which contains the logic for the shown game map.
+            Extends <see cref="T:System.IAsyncDisposable"/> which needs to be used when the user interface removes the container element.
+            </summary>
+        </member>
+        <member name="E:MUnique.OpenMU.Web.Map.Map.IMapController.PlayersChanged">
+            <summary>
+            Occurs when <see cref="P:MUnique.OpenMU.Web.Map.Map.IMapController.Players"/> changed.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.Map.Map.IMapController.Players">
+            <summary>
+            Gets the objects which are on the map.
+            </summary>
+        </member>
+        <member name="T:MUnique.OpenMU.Web.Map.Map.IMapFactory">
+            <summary>
+            An interface for a map factory.
+            </summary>
+        </member>
+        <member name="M:MUnique.OpenMU.Web.Map.Map.IMapFactory.CreateMapAsync(MUnique.OpenMU.Web.Map.IObservableGameServer,System.Guid)">
+            <summary>
+            Creates the map for the specified server and map identifiers.
+            </summary>
+            <param name="server">The server.</param>
+            <param name="mapId">The map identifier.</param>
+            <returns>A disposable map controller.</returns>
+        </member>
+        <member name="M:MUnique.OpenMU.Web.Map.Map.IMapFactory.GetMapContainerIdentifier(System.Int32,System.Guid)">
+            <summary>
+            Gets the map identifier which is used to identify the container DOM-Element.
+            </summary>
+            <param name="serverId">The server identifier.</param>
+            <param name="mapId">The map identifier.</param>
+            <returns>The map identifier which is used to identify the container DOM-Element.</returns>
+        </member>
+        <member name="T:MUnique.OpenMU.Web.Map.Map.JavascriptMapFactory">
+            <summary>
+            Class which manages the creation of the map which is implemented in javascript.
+            </summary>
+        </member>
+        <member name="M:MUnique.OpenMU.Web.Map.Map.JavascriptMapFactory.#ctor(Microsoft.JSInterop.IJSRuntime,Microsoft.Extensions.Logging.ILoggerFactory)">
+            <summary>
+            Initializes a new instance of the <see cref="T:MUnique.OpenMU.Web.Map.Map.JavascriptMapFactory"/> class.
+            </summary>
+            <param name="jsRuntime">The js runtime.</param>
+            <param name="loggerFactory">The logger factory.</param>
+        </member>
+        <member name="M:MUnique.OpenMU.Web.Map.Map.JavascriptMapFactory.CreateMapAsync(MUnique.OpenMU.Web.Map.IObservableGameServer,System.Guid)">
+            <inheritdoc />
+        </member>
+        <member name="M:MUnique.OpenMU.Web.Map.Map.JavascriptMapFactory.GetMapContainerIdentifier(System.Int32,System.Guid)">
+            <inheritdoc />
+        </member>
+        <member name="T:MUnique.OpenMU.Web.Map.Map.LocateableExtensions">
+            <summary>
+            Extension methods for <see cref="T:MUnique.OpenMU.GameLogic.ILocateable"/>.
+            </summary>
+        </member>
+        <member name="M:MUnique.OpenMU.Web.Map.Map.LocateableExtensions.CreateMapObject(MUnique.OpenMU.GameLogic.ILocateable)">
+            <summary>
+            Creates a map object for the given locateable object.
+            </summary>
+            <param name="locateable">The locateable object.</param>
+            <returns>The created map object.</returns>
+        </member>
+        <member name="T:MUnique.OpenMU.Web.Map.Map.MapController">
+            <summary>
+            Controller which contains the logic for the shown game map.
+            </summary>
+        </member>
+        <member name="M:MUnique.OpenMU.Web.Map.Map.MapController.#ctor(Microsoft.JSInterop.IJSRuntime,Microsoft.Extensions.Logging.ILoggerFactory,System.String,MUnique.OpenMU.Web.Map.IObservableGameServer,System.Guid)">
+            <summary>
+            Initializes a new instance of the <see cref="T:MUnique.OpenMU.Web.Map.Map.MapController" /> class.
+            </summary>
+            <param name="jsRuntime">The js runtime.</param>
+            <param name="loggerFactory">The logger factory.</param>
+            <param name="mapIdentifier">The map identifier.</param>
+            <param name="gameServer">The game server.</param>
+            <param name="mapId">The map id.</param>
+        </member>
+        <member name="E:MUnique.OpenMU.Web.Map.Map.MapController.PlayersChanged">
+            <inheritdoc />
+        </member>
+        <member name="P:MUnique.OpenMU.Web.Map.Map.MapController.Logger">
+            <inheritdoc />
+        </member>
+        <member name="P:MUnique.OpenMU.Web.Map.Map.MapController.InfoRange">
+            <inheritdoc/>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.Map.Map.MapController.CurrentMap">
+            <inheritdoc/>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.Map.Map.MapController.Position">
+            <inheritdoc/>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.Map.Map.MapController.Id">
+            <inheritdoc cref="T:MUnique.OpenMU.GameLogic.ISupportIdUpdate" />
+        </member>
+        <member name="P:MUnique.OpenMU.Web.Map.Map.MapController.ObservingBuckets">
+            <inheritdoc/>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.Map.Map.MapController.ViewPlugIns">
+            <inheritdoc/>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.Map.Map.MapController.Players">
+            <inheritdoc />
+        </member>
+        <member name="M:MUnique.OpenMU.Web.Map.Map.MapController.LocateableAddedAsync(MUnique.OpenMU.GameLogic.ILocateable)">
+            <inheritdoc/>
+        </member>
+        <member name="M:MUnique.OpenMU.Web.Map.Map.MapController.LocateableRemovedAsync(MUnique.OpenMU.GameLogic.ILocateable)">
+            <inheritdoc/>
+        </member>
+        <member name="M:MUnique.OpenMU.Web.Map.Map.MapController.LocateablesOutOfScopeAsync(System.Collections.Generic.IEnumerable{MUnique.OpenMU.GameLogic.ILocateable})">
+            <inheritdoc/>
+        </member>
+        <member name="M:MUnique.OpenMU.Web.Map.Map.MapController.NewLocateablesInScopeAsync(System.Collections.Generic.IEnumerable{MUnique.OpenMU.GameLogic.ILocateable})">
+            <inheritdoc/>
+        </member>
+        <member name="M:MUnique.OpenMU.Web.Map.Map.MapController.DisposeAsync">
+            <inheritdoc />
+        </member>
+        <member name="T:MUnique.OpenMU.Web.Map.Map.MapObject">
+            <summary>
+            The map object which is used for the interop with the javascript map.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.Map.Map.MapObject.Id">
+            <summary>
+            Gets or sets the identifier.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.Map.Map.MapObject.Name">
+            <summary>
+            Gets or sets the name.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.Map.Map.MapObject.MapId">
+            <summary>
+            Gets or sets the map identifier.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.Map.Map.MapObject.X">
+            <summary>
+            Gets or sets the x.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.Map.Map.MapObject.Y">
+            <summary>
+            Gets or sets the y.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.Map.Map.MapObject.Direction">
+            <summary>
+            Gets or sets the direction.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.Map.Map.MapObject.NpcObjectKind">
+            <summary>
+            Gets or sets the NPC object kind (only set for NonPlayerCharacter instances).
+            </summary>
+        </member>
+        <member name="T:MUnique.OpenMU.Web.Map.Map.TerrainController">
+            <summary>
+            Controller for all map related functions.
+            </summary>
+        </member>
+        <member name="M:MUnique.OpenMU.Web.Map.Map.TerrainController.#ctor(System.Collections.Generic.IList{MUnique.OpenMU.Interfaces.IManageableServer},Microsoft.Extensions.Logging.ILogger{MUnique.OpenMU.Web.Map.Map.TerrainController})">
+            <summary>
+            Initializes a new instance of the <see cref="T:MUnique.OpenMU.Web.Map.Map.TerrainController"/> class.
+            </summary>
+            <param name="servers">The servers.</param>
+            <param name="logger">The logger.</param>
+        </member>
+        <member name="M:MUnique.OpenMU.Web.Map.Map.TerrainController.TerrainAsync(System.Int32,System.Guid)">
+            <summary>
+            Renders and returns the terrain of the specified server and map identifier.
+            </summary>
+            <param name="serverId">The server identifier.</param>
+            <param name="mapId">The map identifier.</param>
+            <returns>The rendered terrain.</returns>
+        </member>
+        <member name="T:MUnique.OpenMU.Web.Map.MapApp">
+            <summary>
+            The admin panel host class which provides a web server over ASP.NET Core Kestrel.
+            </summary>
+        </member>
+        <member name="M:MUnique.OpenMU.Web.Map.MapApp.#ctor(MUnique.OpenMU.Web.Map.IObservableGameServer,Microsoft.Extensions.Logging.ILoggerFactory)">
+            <summary>
+            Initializes a new instance of the <see cref="T:MUnique.OpenMU.Web.Map.MapApp" /> class.
+            </summary>
+            <param name="gameServer">The game server which contains the hosted maps.</param>
+            <param name="loggerFactory">The logger factory.</param>
+        </member>
+        <member name="M:MUnique.OpenMU.Web.Map.MapApp.StartAsync(System.Threading.CancellationToken)">
+            <inheritdoc />
+        </member>
+        <member name="M:MUnique.OpenMU.Web.Map.MapApp.StopAsync(System.Threading.CancellationToken)">
+            <inheritdoc />
+        </member>
+        <member name="M:MUnique.OpenMU.Web.Map.MapApp.Dispose">
+            <inheritdoc />
+        </member>
+        <member name="T:MUnique.OpenMU.Web.Map.ObservableGameServerAdapter">
+            <summary>
+            Adapter which takes an <see cref="T:MUnique.OpenMU.GameLogic.IGameServerContext"/> and adapts it to a <see cref="T:MUnique.OpenMU.Web.Map.IObservableGameServer"/>.
+            </summary>
+        </member>
+        <member name="M:MUnique.OpenMU.Web.Map.ObservableGameServerAdapter.#ctor(MUnique.OpenMU.GameLogic.IGameServerContext)">
+            <summary>
+            Initializes a new instance of the <see cref="T:MUnique.OpenMU.Web.Map.ObservableGameServerAdapter"/> class.
+            </summary>
+            <param name="gameContext">The game server context.</param>
+        </member>
+        <member name="E:MUnique.OpenMU.Web.Map.ObservableGameServerAdapter.PropertyChanged">
+            <inheritdoc />
+        </member>
+        <member name="P:MUnique.OpenMU.Web.Map.ObservableGameServerAdapter.Id">
+            <inheritdoc/>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.Map.ObservableGameServerAdapter.Maps">
+            <inheritdoc/>
+        </member>
+        <member name="M:MUnique.OpenMU.Web.Map.ObservableGameServerAdapter.InitializeAsync">
+            <summary>
+            Initializes this instance.
+            </summary>
+        </member>
+        <member name="M:MUnique.OpenMU.Web.Map.ObservableGameServerAdapter.RegisterMapObserverAsync(System.Guid,MUnique.OpenMU.GameLogic.ILocateable)">
+            <inheritdoc/>
+        </member>
+        <member name="M:MUnique.OpenMU.Web.Map.ObservableGameServerAdapter.UnregisterMapObserverAsync(System.Guid,System.UInt16)">
+            <inheritdoc/>
+        </member>
+        <member name="M:MUnique.OpenMU.Web.Map.ObservableGameServerAdapter.ToString">
+            <inheritdoc/>
+        </member>
+        <member name="M:MUnique.OpenMU.Web.Map.ObservableGameServerAdapter.Dispose(System.Boolean)">
+            <inheritdoc />
+        </member>
+        <member name="M:MUnique.OpenMU.Web.Map.ObservableGameServerAdapter.RaisePropertyChanged(System.String)">
+            <summary>
+            Called when a property has been changed.
+            </summary>
+            <param name="propertyName">Name of the property.</param>
+        </member>
+        <member name="T:MUnique.OpenMU.Web.Map.Program">
+            <summary>
+            The class of the entry point.
+            </summary>
+        </member>
+        <member name="M:MUnique.OpenMU.Web.Map.Program.Main(System.String[])">
+            <summary>
+            Defines the entry point of the application.
+            </summary>
+            <param name="args">The arguments.</param>
+        </member>
+        <member name="T:MUnique.OpenMU.Web.Map.Program.NullGameServer">
+            <summary>
+            An implementation of <see cref="T:MUnique.OpenMU.Web.Map.IObservableGameServer"/> which does nothing.
+            </summary>
+        </member>
+        <member name="E:MUnique.OpenMU.Web.Map.Program.NullGameServer.PropertyChanged">
+            <inheritdoc />
+        </member>
+        <member name="P:MUnique.OpenMU.Web.Map.Program.NullGameServer.Id">
+            <inheritdoc />
+        </member>
+        <member name="P:MUnique.OpenMU.Web.Map.Program.NullGameServer.Maps">
+            <inheritdoc />
+        </member>
+        <member name="M:MUnique.OpenMU.Web.Map.Program.NullGameServer.RegisterMapObserverAsync(System.Guid,MUnique.OpenMU.GameLogic.ILocateable)">
+            <inheritdoc />
+        </member>
+        <member name="M:MUnique.OpenMU.Web.Map.Program.NullGameServer.UnregisterMapObserverAsync(System.Guid,System.UInt16)">
+            <inheritdoc />
+        </member>
+        <member name="T:MUnique.OpenMU.Web.Map.Properties.Resources">
+            <summary>
+              A strongly-typed resource class, for looking up localized strings, etc.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.Map.Properties.Resources.ResourceManager">
+            <summary>
+              Returns the cached ResourceManager instance used by this class.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.Map.Properties.Resources.Culture">
+            <summary>
+              Overrides the current thread's CurrentUICulture property for all
+              resource lookups using this strongly typed resource class.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.Map.Properties.Resources.About">
+            <summary>
+              Looks up a localized string similar to About.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.Map.Properties.Resources.Actions">
+            <summary>
+              Looks up a localized string similar to Actions.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.Map.Properties.Resources.Disconnect">
+            <summary>
+              Looks up a localized string similar to Disconnect.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.Map.Properties.Resources.Home">
+            <summary>
+              Looks up a localized string similar to Home.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.Map.Properties.Resources.Id">
+            <summary>
+              Looks up a localized string similar to Id.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.Map.Properties.Resources.Initializing">
+            <summary>
+              Looks up a localized string similar to Initializing....
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.Map.Properties.Resources.MapName">
+            <summary>
+              Looks up a localized string similar to Map Name.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.Map.Properties.Resources.Maps">
+            <summary>
+              Looks up a localized string similar to Maps.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.Map.Properties.Resources.Name">
+            <summary>
+              Looks up a localized string similar to Name.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.Map.Properties.Resources.NoGameMapsHosted">
+            <summary>
+              Looks up a localized string similar to No game maps hosted. They are created as soon as a player enters a map..
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.Map.Properties.Resources.Number">
+            <summary>
+              Looks up a localized string similar to Number.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.Map.Properties.Resources.OnlinePlayers">
+            <summary>
+              Looks up a localized string similar to Online players:.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.Map.Properties.Resources.PlayerCount">
+            <summary>
+              Looks up a localized string similar to Players.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.Map.Properties.Resources.PlayerName">
+            <summary>
+              Looks up a localized string similar to Player Name.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.Map.Properties.Resources.Position">
+            <summary>
+              Looks up a localized string similar to Position.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.Map.Properties.Resources.Spectate">
+            <summary>
+              Looks up a localized string similar to Spectate.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.Map.Properties.Resources.TemporarilyBan">
+            <summary>
+              Looks up a localized string similar to Temporarily ban.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.Map.Properties.Resources.TerrainOf">
+            <summary>
+              Looks up a localized string similar to Terrain of {0}.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.Map.Properties.Resources.Follow">
+            <summary>
+              Looks up a localized string similar to Follow.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.Map.Properties.Resources.Following">
+            <summary>
+              Looks up a localized string similar to Following.
+            </summary>
+        </member>
+        <member name="T:MUnique.OpenMU.Web.Map.ViewPlugIns.JsViewPlugInBase">
+            <summary>
+            Base class for a javascript map view plugin.
+            </summary>
+        </member>
+        <member name="M:MUnique.OpenMU.Web.Map.ViewPlugIns.JsViewPlugInBase.#ctor(Microsoft.JSInterop.IJSRuntime,Microsoft.Extensions.Logging.ILoggerFactory,System.String,System.Threading.CancellationToken)">
+            <summary>
+            Initializes a new instance of the <see cref="T:MUnique.OpenMU.Web.Map.ViewPlugIns.JsViewPlugInBase"/> class.
+            </summary>
+            <param name="jsRuntime">The js runtime.</param>
+            <param name="loggerFactory">The logger factory.</param>
+            <param name="jsMethodName">Name of the js method.</param>
+            <param name="cancellationToken">The cancellation token.</param>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.Map.ViewPlugIns.JsViewPlugInBase.Logger">
+            <summary>
+            Gets the logger for this class.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.Map.ViewPlugIns.JsViewPlugInBase.JsRuntime">
+            <summary>
+            Gets the <see cref="T:Microsoft.JSInterop.IJSRuntime" /> to call the <see cref="P:MUnique.OpenMU.Web.Map.ViewPlugIns.JsViewPlugInBase.JsMethodName" />.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.Map.ViewPlugIns.JsViewPlugInBase.JsMethodName">
+            <summary>
+            Gets the method name of the javascript function which implements this view plugin logic on the client side.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.Map.ViewPlugIns.JsViewPlugInBase.CancellationToken">
+            <summary>
+            Gets the <see cref="P:MUnique.OpenMU.Web.Map.ViewPlugIns.JsViewPlugInBase.CancellationToken" /> which stops calling the <see cref="P:MUnique.OpenMU.Web.Map.ViewPlugIns.JsViewPlugInBase.JsMethodName" /> after the map object has been removed.
+            </summary>
+        </member>
+        <member name="M:MUnique.OpenMU.Web.Map.ViewPlugIns.JsViewPlugInBase.InvokeAsync(System.Object[])">
+            <summary>
+            Invokes the <see cref="P:MUnique.OpenMU.Web.Map.ViewPlugIns.JsViewPlugInBase.JsMethodName" /> with the specified parameters.
+            </summary>
+            <param name="args">The parameters for the function call.</param>
+            <returns>The <see cref="T:System.Threading.Tasks.ValueTask"/> of this async operation.</returns>
+        </member>
+        <member name="T:MUnique.OpenMU.Web.Map.ViewPlugIns.NewNpcsInScopePlugIn">
+            <summary>
+            Implementation of <see cref="T:MUnique.OpenMU.GameLogic.Views.World.INewNpcsInScopePlugIn"/> which uses the javascript map app.
+            </summary>
+        </member>
+        <member name="M:MUnique.OpenMU.Web.Map.ViewPlugIns.NewNpcsInScopePlugIn.#ctor(Microsoft.JSInterop.IJSRuntime,Microsoft.Extensions.Logging.ILoggerFactory,System.String,System.Threading.CancellationToken)">
+            <summary>
+            Initializes a new instance of the <see cref="T:MUnique.OpenMU.Web.Map.ViewPlugIns.NewNpcsInScopePlugIn" /> class.
+            </summary>
+            <param name="jsRuntime">The js runtime.</param>
+            <param name="loggerFactory">The logger factory.</param>
+            <param name="worldAccessor">The world accessor.</param>
+            <param name="cancellationToken">The cancellation token.</param>
+        </member>
+        <member name="M:MUnique.OpenMU.Web.Map.ViewPlugIns.NewNpcsInScopePlugIn.NewNpcsInScopeAsync(System.Collections.Generic.IEnumerable{MUnique.OpenMU.GameLogic.NPC.NonPlayerCharacter},System.Boolean)">
+            <inheritdoc />
+        </member>
+        <member name="T:MUnique.OpenMU.Web.Map.ViewPlugIns.NewPlayersInScopePlugIn">
+            <summary>
+            Implementation of <see cref="T:MUnique.OpenMU.GameLogic.Views.World.INewPlayersInScopePlugIn"/> which uses the javascript map app.
+            </summary>
+        </member>
+        <member name="M:MUnique.OpenMU.Web.Map.ViewPlugIns.NewPlayersInScopePlugIn.#ctor(Microsoft.JSInterop.IJSRuntime,Microsoft.Extensions.Logging.ILoggerFactory,System.String,System.Threading.CancellationToken,System.Collections.Concurrent.ConcurrentDictionary{System.Int32,MUnique.OpenMU.GameLogic.Player},System.Action)">
+            <summary>
+            Initializes a new instance of the <see cref="T:MUnique.OpenMU.Web.Map.ViewPlugIns.NewPlayersInScopePlugIn" /> class.
+            </summary>
+            <param name="jsRuntime">The js runtime.</param>
+            <param name="loggerFactory">The logger factory.</param>
+            <param name="worldAccessor">The world accessor.</param>
+            <param name="cancellationToken">The cancellation token.</param>
+            <param name="players">The objects.</param>
+            <param name="playersChangedCallback">The players changed callback.</param>
+        </member>
+        <member name="M:MUnique.OpenMU.Web.Map.ViewPlugIns.NewPlayersInScopePlugIn.NewPlayersInScopeAsync(System.Collections.Generic.IEnumerable{MUnique.OpenMU.GameLogic.Player},System.Boolean)">
+            <inheritdoc />
+        </member>
+        <member name="T:MUnique.OpenMU.Web.Map.ViewPlugIns.ObjectGotKilledPlugIn">
+            <summary>
+            Implementation of <see cref="T:MUnique.OpenMU.GameLogic.Views.World.IObjectGotKilledPlugIn"/> which uses the javascript map app.
+            </summary>
+        </member>
+        <member name="M:MUnique.OpenMU.Web.Map.ViewPlugIns.ObjectGotKilledPlugIn.#ctor(Microsoft.JSInterop.IJSRuntime,Microsoft.Extensions.Logging.ILoggerFactory,System.String,System.Threading.CancellationToken)">
+            <summary>
+            Initializes a new instance of the <see cref="T:MUnique.OpenMU.Web.Map.ViewPlugIns.ObjectGotKilledPlugIn"/> class.
+            </summary>
+            <param name="jsRuntime">The js runtime.</param>
+            <param name="loggerFactory">The logger factory.</param>
+            <param name="worldAccessor">The world accessor.</param>
+            <param name="cancellationToken">The cancellation token.</param>
+        </member>
+        <member name="M:MUnique.OpenMU.Web.Map.ViewPlugIns.ObjectGotKilledPlugIn.ObjectGotKilledAsync(MUnique.OpenMU.GameLogic.IAttackable,MUnique.OpenMU.GameLogic.IAttacker)">
+            <inheritdoc />
+        </member>
+        <member name="T:MUnique.OpenMU.Web.Map.ViewPlugIns.ObjectMovedPlugIn">
+            <summary>
+            Implementation of <see cref="T:MUnique.OpenMU.GameLogic.Views.World.IObjectMovedPlugIn"/> which uses the javascript map app.
+            </summary>
+        </member>
+        <member name="M:MUnique.OpenMU.Web.Map.ViewPlugIns.ObjectMovedPlugIn.#ctor(Microsoft.JSInterop.IJSRuntime,Microsoft.Extensions.Logging.ILoggerFactory,System.String,System.Threading.CancellationToken)">
+            <summary>
+            Initializes a new instance of the <see cref="T:MUnique.OpenMU.Web.Map.ViewPlugIns.ObjectMovedPlugIn"/> class.
+            </summary>
+            <param name="jsRuntime">The js runtime.</param>
+            <param name="loggerFactory">The logger factory.</param>
+            <param name="worldAccessor">The world accessor.</param>
+            <param name="cancellationToken">The cancellation token.</param>
+        </member>
+        <member name="M:MUnique.OpenMU.Web.Map.ViewPlugIns.ObjectMovedPlugIn.ObjectMovedAsync(MUnique.OpenMU.GameLogic.ILocateable,MUnique.OpenMU.GameLogic.Views.World.MoveType)">
+            <inheritdoc />
+        </member>
+        <member name="T:MUnique.OpenMU.Web.Map.ViewPlugIns.ObjectsOutOfScopePlugIn">
+            <summary>
+            Implementation of <see cref="T:MUnique.OpenMU.GameLogic.Views.World.IObjectsOutOfScopePlugIn"/> which uses the javascript map app.
+            </summary>
+        </member>
+        <member name="M:MUnique.OpenMU.Web.Map.ViewPlugIns.ObjectsOutOfScopePlugIn.#ctor(Microsoft.JSInterop.IJSRuntime,Microsoft.Extensions.Logging.ILoggerFactory,System.String,System.Threading.CancellationToken,System.Collections.Concurrent.ConcurrentDictionary{System.Int32,MUnique.OpenMU.GameLogic.Player},System.Action)">
+            <summary>
+            Initializes a new instance of the <see cref="T:MUnique.OpenMU.Web.Map.ViewPlugIns.ObjectsOutOfScopePlugIn" /> class.
+            </summary>
+            <param name="jsRuntime">The js runtime.</param>
+            <param name="loggerFactory">The logger factory.</param>
+            <param name="worldAccessor">The world accessor.</param>
+            <param name="cancellationToken">The cancellation token.</param>
+            <param name="players">The objects.</param>
+            <param name="playersChangedCallback">The objects changed callback.</param>
+        </member>
+        <member name="M:MUnique.OpenMU.Web.Map.ViewPlugIns.ObjectsOutOfScopePlugIn.ObjectsOutOfScopeAsync(System.Collections.Generic.IEnumerable{MUnique.OpenMU.GameLogic.IIdentifiable})">
+            <inheritdoc />
+        </member>
+        <member name="T:MUnique.OpenMU.Web.Map.ViewPlugIns.ShowAnimationPlugIn">
+            <summary>
+            Implementation of <see cref="T:MUnique.OpenMU.GameLogic.Views.World.IShowAnimationPlugIn"/> which uses the javascript map app.
+            </summary>
+        </member>
+        <member name="M:MUnique.OpenMU.Web.Map.ViewPlugIns.ShowAnimationPlugIn.#ctor(Microsoft.JSInterop.IJSRuntime,Microsoft.Extensions.Logging.ILoggerFactory,System.String,System.Threading.CancellationToken)">
+            <summary>
+            Initializes a new instance of the <see cref="T:MUnique.OpenMU.Web.Map.ViewPlugIns.ShowAnimationPlugIn"/> class.
+            </summary>
+            <param name="jsRuntime">The js runtime.</param>
+            <param name="loggerFactory">The logger factory.</param>
+            <param name="worldAccessor">The world accessor.</param>
+            <param name="cancellationToken">The cancellation token.</param>
+        </member>
+        <member name="M:MUnique.OpenMU.Web.Map.ViewPlugIns.ShowAnimationPlugIn.ShowAnimationAsync(MUnique.OpenMU.GameLogic.IIdentifiable,System.Byte,MUnique.OpenMU.GameLogic.IIdentifiable,MUnique.OpenMU.DataModel.Configuration.Direction)">
+            <inheritdoc />
+        </member>
+        <member name="M:MUnique.OpenMU.Web.Map.ViewPlugIns.ShowAnimationPlugIn.ShowMonsterAttackAnimationAsync(MUnique.OpenMU.GameLogic.IIdentifiable,MUnique.OpenMU.GameLogic.IIdentifiable,MUnique.OpenMU.DataModel.Configuration.Direction)">
+            <inheritdoc />
+        </member>
+        <member name="T:MUnique.OpenMU.Web.Map.ViewPlugIns.ShowAreaSkillAnimationPlugIn">
+            <summary>
+            Implementation of <see cref="T:MUnique.OpenMU.GameLogic.Views.World.IShowAreaSkillAnimationPlugIn"/> which uses the javascript map app.
+            </summary>
+        </member>
+        <member name="M:MUnique.OpenMU.Web.Map.ViewPlugIns.ShowAreaSkillAnimationPlugIn.#ctor(Microsoft.JSInterop.IJSRuntime,Microsoft.Extensions.Logging.ILoggerFactory,System.String,System.Threading.CancellationToken)">
+            <summary>
+            Initializes a new instance of the <see cref="T:MUnique.OpenMU.Web.Map.ViewPlugIns.ShowAreaSkillAnimationPlugIn"/> class.
+            </summary>
+            <param name="jsRuntime">The js runtime.</param>
+            <param name="loggerFactory">The logger factory.</param>
+            <param name="worldAccessor">The world accessor.</param>
+            <param name="cancellationToken">The cancellation token.</param>
+        </member>
+        <member name="M:MUnique.OpenMU.Web.Map.ViewPlugIns.ShowAreaSkillAnimationPlugIn.ShowAreaSkillAnimationAsync(MUnique.OpenMU.GameLogic.Player,MUnique.OpenMU.DataModel.Configuration.Skill,MUnique.OpenMU.Pathfinding.Point,System.Byte)">
+            <inheritdoc />
+        </member>
+        <member name="T:MUnique.OpenMU.Web.Map.ViewPlugIns.ShowSkillAnimationPlugIn">
+            <summary>
+            Implementation of <see cref="T:MUnique.OpenMU.GameLogic.Views.World.IShowSkillAnimationPlugIn"/> which uses the javascript map app.
+            </summary>
+        </member>
+        <member name="M:MUnique.OpenMU.Web.Map.ViewPlugIns.ShowSkillAnimationPlugIn.#ctor(Microsoft.JSInterop.IJSRuntime,Microsoft.Extensions.Logging.ILoggerFactory,System.String,System.Threading.CancellationToken)">
+            <summary>
+            Initializes a new instance of the <see cref="T:MUnique.OpenMU.Web.Map.ViewPlugIns.ShowSkillAnimationPlugIn"/> class.
+            </summary>
+            <param name="jsRuntime">The js runtime.</param>
+            <param name="loggerFactory">The logger factory.</param>
+            <param name="worldAccessor">The world accessor.</param>
+            <param name="cancellationToken">The cancellation token.</param>
+        </member>
+        <member name="M:MUnique.OpenMU.Web.Map.ViewPlugIns.ShowSkillAnimationPlugIn.ShowSkillAnimationAsync(MUnique.OpenMU.GameLogic.IAttacker,MUnique.OpenMU.GameLogic.IAttackable,MUnique.OpenMU.DataModel.Configuration.Skill,System.Boolean)">
+            <inheritdoc />
+        </member>
+        <member name="M:MUnique.OpenMU.Web.Map.ViewPlugIns.ShowSkillAnimationPlugIn.ShowSkillAnimationAsync(MUnique.OpenMU.GameLogic.IAttacker,MUnique.OpenMU.GameLogic.IAttackable,System.Int16,System.Boolean)">
+            <inheritdoc />
+        </member>
+        <member name="M:MUnique.OpenMU.Web.Map.ViewPlugIns.ShowSkillAnimationPlugIn.ShowComboAnimationAsync(MUnique.OpenMU.GameLogic.IAttacker,MUnique.OpenMU.GameLogic.IAttackable)">
+            <inheritdoc />
+        </member>
+        <member name="M:MUnique.OpenMU.Web.Map.ViewPlugIns.ShowSkillAnimationPlugIn.ShowNovaStartAsync(MUnique.OpenMU.GameLogic.IAttacker)">
+            <inheritdoc />
+        </member>
+        <member name="T:MUnique.OpenMU.Web.Map.WebApplicationExtensions">
+            <summary>
+            Extensions for the <see cref="T:Microsoft.AspNetCore.Builder.WebApplicationBuilder"/> to add the web map app.
+            </summary>
+        </member>
+        <member name="M:MUnique.OpenMU.Web.Map.WebApplicationExtensions.AddMapApp(Microsoft.AspNetCore.Builder.WebApplicationBuilder)">
+            <summary>
+            Adds the map application to the web app.
+            When using the DaprService, call the BuildAndConfigure-Method with the parameter to add Blazor.
+            </summary>
+            <param name="builder">The web application builder which should be configured.</param>
+            <returns>The web application builder.</returns>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.Map.Shared.NavMenu.NavMenuCssClass">
+            <summary>
+            Returns the class for the entries of the navigation menu.
+            "collapse" is a class of bootstrap which hides it.
+            In our css we also define to show it anyway, if the width sufficient.
+            </summary>
+        </member>
+    </members>
+</doc>

@@ -1,198 +1,66 @@
 {
-  "Metadata": {
-    "Project": "OpenMU Season 6 Episode 3 Simulation",
-    "Version": "1.1",
-    "GeneratedAt": "2026-08-17T15:58:00Z",
-    "Description": "Calibrated parameters and baseline data for Economic & Reset Progression Simulation"
-  },
-  "ExperienceSystem": {
+  "GameConfiguration": {
+    "ExperienceRate": 1.0,
     "MaximumLevel": 400,
-    "MaximumMasterLevel": 200,
-    "FormulaWebzen": "if(level == 0, 0, if(level < 256, 10 * (level + 8) * (level - 1) * (level - 1), (10 * (level + 8) * (level - 1) * (level - 1)) + (1000 * (level - 247) * (level - 256) * (level - 256))))",
-    "DefaultServerExpRate": 1.0,
-    "DynamicExpScale": {
-      "Level1_100": 400.0,
-      "Level101_200": 250.0,
-      "Level201_300": 100.0,
-      "Level301_350": 50.0,
-      "Level351_400": 35.0
-    }
-  },
-  "CharacterClasses": {
-    "DarkWizard": { "PointsPerLevel": 5, "StatColumns": 4, "IsSpecial": false },
-    "DarkKnight": { "PointsPerLevel": 5, "StatColumns": 4, "IsSpecial": false },
-    "FairyElf": { "PointsPerLevel": 5, "StatColumns": 4, "IsSpecial": false },
-    "Summoner": { "PointsPerLevel": 5, "StatColumns": 4, "IsSpecial": false },
-    "MagicGladiator": { "PointsPerLevel": 7, "StatColumns": 4, "IsSpecial": true },
-    "DarkLord": { "PointsPerLevel": 7, "StatColumns": 5, "IsSpecial": true },
-    "RageFighter": { "PointsPerLevel": 7, "StatColumns": 4, "IsSpecial": true }
-  },
-  "ResetSystemDefaults": {
-    "LevelAfterReset": 10,
-    "ResetLimit": null,
-    "ResetStats": true,
-    "ReplacePointsPerReset": true,
-    "MultiplyPointsByResetCount": false,
-    "PointsPerReset": 1500,
-    "DefaultRequiredLevel": 400,
-    "DefaultLadderFormula": "200 + ((currentReset / 5) * 10)",
-    "ProposedLevelProgression": {
-      "StartLevel": 50,
-      "StepLevel": 10,
-      "MaxLevel": 400,
-      "TotalResets": 36,
-      "Formula": "5 * RequiredLevel"
-    }
-  },
-  "DropSystem": {
-    "BaseMoneyDrop": 7,
+    "MaximumInventoryMoney": 2147483647,
+    "BaseMoneyDrop": 7.0,
     "DropChanceMoney": 0.50,
-    "DropChanceRandomItem": 0.30,
-    "DropChanceJewels": 0.001,
-    "DropChanceExcellent": 0.0001,
-    "SkillDropChancePercent": 50,
-    "LuckDropChancePercent": 25,
-    "MoneyFormula": "GainedExperience + BaseMoneyDrop",
-    "GainedExperienceIncludesServerRate": true,
-    "DefaultPickupEfficiency": 0.70
+    "DropChanceJewel": 0.001,
+    "DropChanceExc": 0.0001,
+    "PickupEfficiency": 0.70,
+    "RoutineCostPerHour": 850000
   },
-  "FarmingZones": [
-    {
-      "MinLevel": 1,
-      "MaxLevel": 30,
-      "MapName": "Lorencia",
-      "RepresentativeMonster": "Elite Bull Fighter",
-      "MonsterNumber": 4,
-      "MonsterLevel": 12,
-      "MonsterHp": 190,
-      "BaseMonsterExp": 185.0,
-      "KillsPerHour": 900
-    },
-    {
-      "MinLevel": 31,
-      "MaxLevel": 60,
-      "MapName": "Devias",
-      "RepresentativeMonster": "Elite Yeti",
-      "MonsterNumber": 20,
-      "MonsterLevel": 36,
-      "MonsterHp": 1200,
-      "BaseMonsterExp": 915.0,
-      "KillsPerHour": 850
-    },
-    {
-      "MinLevel": 61,
-      "MaxLevel": 100,
-      "MapName": "Lost Tower",
-      "RepresentativeMonster": "Cursed Wizard",
-      "MonsterNumber": 36,
-      "MonsterLevel": 56,
-      "MonsterHp": 4500,
-      "BaseMonsterExp": 1890.0,
-      "KillsPerHour": 800
-    },
-    {
-      "MinLevel": 101,
-      "MaxLevel": 150,
-      "MapName": "Atlans",
-      "RepresentativeMonster": "Lizard King",
-      "MonsterNumber": 48,
-      "MonsterLevel": 70,
-      "MonsterHp": 8500,
-      "BaseMonsterExp": 3450.42,
-      "KillsPerHour": 750
-    },
-    {
-      "MinLevel": 151,
-      "MaxLevel": 200,
-      "MapName": "Tarkan",
-      "RepresentativeMonster": "Tantallos",
-      "MonsterNumber": 58,
-      "MonsterLevel": 83,
-      "MonsterHp": 21000,
-      "BaseMonsterExp": 4976.98,
-      "KillsPerHour": 700
-    },
-    {
-      "MinLevel": 201,
-      "MaxLevel": 260,
-      "MapName": "Kanturu Ruins",
-      "RepresentativeMonster": "Splinter Wolf",
-      "MonsterNumber": 351,
-      "MonsterLevel": 85,
-      "MonsterHp": 25000,
-      "BaseMonsterExp": 5240.10,
-      "KillsPerHour": 650
-    },
-    {
-      "MinLevel": 261,
-      "MaxLevel": 320,
-      "MapName": "Kanturu Relics",
-      "RepresentativeMonster": "Persona",
-      "MonsterNumber": 358,
-      "MonsterLevel": 118,
-      "MonsterHp": 68000,
-      "BaseMonsterExp": 9946.88,
-      "KillsPerHour": 580
-    },
-    {
-      "MinLevel": 321,
-      "MaxLevel": 360,
-      "MapName": "Karutan 2",
-      "RepresentativeMonster": "Condra",
-      "MonsterNumber": 575,
-      "MonsterLevel": 117,
-      "MonsterHp": 90000,
-      "BaseMonsterExp": 9779.69,
-      "KillsPerHour": 500
-    },
-    {
-      "MinLevel": 361,
-      "MaxLevel": 400,
-      "MapName": "Raklion",
-      "RepresentativeMonster": "Iron Knight",
-      "MonsterNumber": 458,
-      "MonsterLevel": 142,
-      "MonsterHp": 95000,
-      "BaseMonsterExp": 14757.29,
-      "KillsPerHour": 380
-    }
+  "AccessibleMaps": [
+    { "MapNumber": 0, "MapName": "Lorencia", "RequiredLevel": 1 },
+    { "MapNumber": 3, "MapName": "Noria", "RequiredLevel": 1 },
+    { "MapNumber": 1, "MapName": "Dungeon", "RequiredLevel": 30 },
+    { "MapNumber": 2, "MapName": "Devias", "RequiredLevel": 20 },
+    { "MapNumber": 4, "MapName": "Lost Tower", "RequiredLevel": 50 },
+    { "MapNumber": 7, "MapName": "Atlans", "RequiredLevel": 70 },
+    { "MapNumber": 8, "MapName": "Tarkan", "RequiredLevel": 140 },
+    { "MapNumber": 37, "MapName": "Kanturu Ruins", "RequiredLevel": 160 },
+    { "MapNumber": 10, "MapName": "Icarus", "RequiredLevel": 170 },
+    { "MapNumber": 80, "MapName": "Karutan 1", "RequiredLevel": 170 },
+    { "MapNumber": 81, "MapName": "Karutan 2", "RequiredLevel": 170 },
+    { "MapNumber": 38, "MapName": "Kanturu Relics", "RequiredLevel": 230 },
+    { "MapNumber": 57, "MapName": "Raklion", "RequiredLevel": 280 },
+    { "MapNumber": 56, "MapName": "Swamp of Calmness", "RequiredLevel": 400 }
   ],
-  "ZenSinks": [
-    {
-      "Type": "PotionSupplies",
-      "Description": "Health & Mana Potions consumption during farming",
-      "EstimatedZenPerHour": 350000,
-      "Scaling": "ConstantToTier"
-    },
-    {
-      "Type": "GearRepair",
-      "Description": "Durability repair per hour of combat",
-      "EstimatedZenPerHour": 450000,
-      "Scaling": "IncreasesWithGearLevel"
-    },
-    {
-      "Type": "WarpFee",
-      "Description": "Map teleport fees (1k to 60k per warp)",
-      "EstimatedZenPerHour": 50000,
-      "Scaling": "MapDependent"
-    },
-    {
-      "Type": "ChaosMachineCrafting",
-      "Description": "Wings, +10..+15 upgrades, Ticket crafting",
-      "EstimatedZenPerCycle": 15000000,
-      "Scaling": "EventDriven"
-    },
-    {
-      "Type": "ResetCostLinear",
-      "Description": "Standard reset fee = 10,000,000 * resetCount",
-      "Formula": "10000000 * k",
-      "Scaling": "Linear"
-    },
-    {
-      "Type": "ResetCostExpProportional",
-      "Description": "Dynamic reset fee = 15% of total gained EXP in cycle",
-      "Formula": "0.15 * TotalExpInCycle",
-      "Scaling": "ExpProportional"
-    }
-  ]
+  "MonsterDatabase": [
+    { "MonsterNumber": 4, "MonsterName": "Elite Bull Fighter", "MonsterLevel": 12, "HP": 190, "MapNumber": 0, "MapName": "Lorencia", "BaseKillsPerHour": 900 },
+    { "MonsterNumber": 20, "MonsterName": "Elite Yeti", "MonsterLevel": 36, "HP": 1200, "MapNumber": 2, "MapName": "Devias", "BaseKillsPerHour": 850 },
+    { "MonsterNumber": 36, "MonsterName": "Cursed Wizard", "MonsterLevel": 56, "HP": 4500, "MapNumber": 4, "MapName": "Lost Tower", "BaseKillsPerHour": 800 },
+    { "MonsterNumber": 48, "MonsterName": "Lizard King", "MonsterLevel": 70, "HP": 8500, "MapNumber": 7, "MapName": "Atlans", "BaseKillsPerHour": 750 },
+    { "MonsterNumber": 58, "MonsterName": "Tantallos", "MonsterLevel": 83, "HP": 21000, "MapNumber": 8, "MapName": "Tarkan", "BaseKillsPerHour": 700 },
+    { "MonsterNumber": 351, "MonsterName": "Splinter Wolf", "MonsterLevel": 85, "HP": 25000, "MapNumber": 37, "MapName": "Kanturu Ruins", "BaseKillsPerHour": 650 },
+    { "MonsterNumber": 575, "MonsterName": "Condra", "MonsterLevel": 117, "HP": 90000, "MapNumber": 81, "MapName": "Karutan 2", "BaseKillsPerHour": 500 },
+    { "MonsterNumber": 358, "MonsterName": "Persona", "MonsterLevel": 118, "HP": 68000, "MapNumber": 38, "MapName": "Kanturu Relics", "BaseKillsPerHour": 580 },
+    { "MonsterNumber": 457, "MonsterName": "Coolutin", "MonsterLevel": 132, "HP": 88000, "MapNumber": 57, "MapName": "Raklion", "BaseKillsPerHour": 420 },
+    { "MonsterNumber": 458, "MonsterName": "Iron Knight", "MonsterLevel": 142, "HP": 95000, "MapNumber": 57, "MapName": "Raklion", "BaseKillsPerHour": 380 }
+  ],
+  "DynamicExpTiers": [
+    { "MinLevel": 1, "MaxLevel": 100, "ExpRate": 400.0 },
+    { "MinLevel": 101, "MaxLevel": 200, "ExpRate": 250.0 },
+    { "MinLevel": 201, "MaxLevel": 300, "ExpRate": 100.0 },
+    { "MinLevel": 301, "MaxLevel": 350, "ExpRate": 50.0 },
+    { "MinLevel": 351, "MaxLevel": 400, "ExpRate": 35.0 }
+  ],
+  "GoldPresetExpTiers": [
+    { "MinLevel": 1, "MaxLevel": 100, "ExpRate": 50.0 },
+    { "MinLevel": 101, "MaxLevel": 200, "ExpRate": 30.0 },
+    { "MinLevel": 201, "MaxLevel": 300, "ExpRate": 15.0 },
+    { "MinLevel": 301, "MaxLevel": 350, "ExpRate": 8.0 },
+    { "MinLevel": 351, "MaxLevel": 400, "ExpRate": 5.0 }
+  ],
+  "ResetFeeRules": {
+    "ScenarioA": "10000000 * ResetCount",
+    "ScenarioB": "10000000 * ResetCount",
+    "ScenarioC2_D2": "0.15 * CycleExp",
+    "GoldPreset": [
+      { "MinReset": 1, "MaxReset": 5, "ZenCost": "100000 * ResetCount", "Chaos": 0, "Creation": 0 },
+      { "MinReset": 6, "MaxReset": 15, "ZenCost": "2000000 * (ResetCount - 5)", "Chaos": 0, "Creation": 0 },
+      { "MinReset": 16, "MaxReset": 25, "ZenCost": "20000000 + (ResetCount - 15) * 3000000", "Chaos": 1, "Creation": 0 },
+      { "MinReset": 26, "MaxReset": 36, "ZenCost": "100000000 + (ResetCount - 25) * 15000000", "Chaos": 1, "Creation": 1 }
+    ]
+  }
 }

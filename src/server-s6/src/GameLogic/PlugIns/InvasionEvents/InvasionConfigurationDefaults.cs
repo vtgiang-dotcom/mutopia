@@ -69,4 +69,23 @@ internal static class InvasionConfigurationDefaults
             new(InvasionMonsters.DestructiveOgreArcher, 10, [], SpawnMapStrategy.RandomMap),
         ],
     };
+
+    /// <summary>
+    /// Gets the default configuration for the High-Level Invasion event
+    /// (Kanturu Relics, Raklion, Swamp of Calmness — for characters level 230+).
+    /// </summary>
+    public static PeriodicInvasionConfiguration GoldenHighLevel => new()
+    {
+        TaskDuration = TimeSpan.FromMinutes(30),
+        PreStartMessageDelay = TimeSpan.FromSeconds(3),
+        StartMessage = "[{mapName}] High-Level Invasion! Powerful monsters appear.",
+        EndMessage = "[{mapName}] High-Level Invasion has ended.",
+        Timetable = PeriodicTaskConfiguration.GenerateTimeSequence(TimeSpan.FromHours(6), new TimeOnly(3, 0)).ToList(),
+        Mobs =
+        [
+            new(InvasionMonsters.Persona, 10, [InvasionMaps.KanturuRelics], SpawnMapStrategy.RandomMap),
+            new(InvasionMonsters.IronKnight, 8, [InvasionMaps.Raklion], SpawnMapStrategy.RandomMap),
+            new(InvasionMonsters.SapiDuo, 10, [InvasionMaps.SwampOfCalmness], SpawnMapStrategy.RandomMap),
+        ],
+    };
 }

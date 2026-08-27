@@ -13,27 +13,26 @@ namespace OpenMU.Simulation
     {
         private static readonly long[] ExpTable = new long[402];
 
-        // Map access gating based on EnterGate / Warp requirements from Gates.cs
+        // Map access gating based on exact EnterGate / Warp requirements from Gates.cs (CreateWarpEntries)
         private static readonly List<MapGateAccess> AccessibleMaps = new()
         {
             new(0, "Lorencia", 1),
             new(3, "Noria", 1),
-            new(1, "Dungeon", 10),
-            new(2, "Devias", 15),
-            new(4, "Lost Tower", 40),
-            new(7, "Atlans", 60),
-            new(8, "Tarkan", 130),
-            new(37, "Kanturu Ruins", 150),
-            new(10, "Icarus", 160),
-            new(80, "Karutan 1", 160),
-            new(81, "Karutan 2", 160),
-            new(38, "Kanturu Relics", 220),
-            new(57, "Raklion", 240),
-            new(56, "Swamp of Calmness", 250)
+            new(1, "Dungeon", 30),
+            new(2, "Devias", 20),
+            new(4, "Lost Tower", 50),
+            new(7, "Atlans", 70),
+            new(8, "Tarkan", 140),
+            new(37, "Kanturu Ruins", 160),
+            new(10, "Icarus", 170),
+            new(80, "Karutan 1", 170),
+            new(81, "Karutan 2", 170),
+            new(38, "Kanturu Relics", 230),
+            new(57, "Raklion", 280),
+            new(56, "Swamp of Calmness", 400)
         };
 
         // Calibrated monster progression database linked to monster HP from PostgreSQL / OpenMU maps
-        // NOTE: BaseKillsPerHour is maintained temporarily pending empirical PlayerDps(level) curve measurements.
         private static readonly List<MonsterProfile> MonsterDatabase = new()
         {
             new(4, "Elite Bull Fighter", 12, 190, 0, "Lorencia", 900),
@@ -42,8 +41,8 @@ namespace OpenMU.Simulation
             new(48, "Lizard King", 70, 8500, 7, "Atlans", 750),
             new(58, "Tantallos", 83, 21000, 8, "Tarkan", 700),
             new(351, "Splinter Wolf", 85, 25000, 37, "Kanturu Ruins", 650),
-            new(358, "Persona", 118, 68000, 38, "Kanturu Relics", 580),
             new(575, "Condra", 117, 90000, 81, "Karutan 2", 500),
+            new(358, "Persona", 118, 68000, 38, "Kanturu Relics", 580),
             new(457, "Coolutin", 132, 88000, 57, "Raklion", 420),
             new(458, "Iron Knight", 142, 95000, 57, "Raklion", 380)
         };
@@ -75,7 +74,7 @@ namespace OpenMU.Simulation
             Directory.CreateDirectory(outputDir);
 
             Console.WriteLine("================================================================================");
-            Console.WriteLine(" OPENMU S6E3 — UNIFIED POST-CALIBRATION SIMULATION (DYNAMIC MONSTER RANKING)");
+            Console.WriteLine(" OPENMU S6E3 — UNIFIED SIMULATOR V3 (GATES AUDITED & DYNAMIC MONSTER RANKING)");
             Console.WriteLine("================================================================================");
 
             RunAllExports(outputDir);
@@ -84,13 +83,24 @@ namespace OpenMU.Simulation
             {
                 if (Directory.Exists(projectCsvDir))
                 {
+                    // Clean deprecated legacy files before export
+                    string[] staleFiles = { "monster_exp_calibration.csv", "gold_preset_audited.csv", "scenario_c2.csv", "jewel_economy.csv" };
+                    foreach (var stale in staleFiles)
+                    {
+                        string p = Path.Combine(projectCsvDir, stale);
+                        if (File.Exists(p)) File.Delete(p);
+                    }
+
                     RunAllExports(projectCsvDir);
                 }
             }
-            catch { }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"[WARN] Could not export to project CSV directory: {ex.Message}");
+            }
 
             Console.WriteLine();
-            Console.WriteLine("[SUCCESS] Unified simulation batch completed successfully.");
+            Console.WriteLine("[SUCCESS] Unified simulation V3 batch completed successfully.");
         }
 
         private static void RunAllExports(string dir)
@@ -106,22 +116,22 @@ namespace OpenMU.Simulation
             // 3. Export Monster Coverage Diagnostic Report
             ExportMonsterCoverageReport(dir);
 
-            // 4. Export Reset 27 Step-by-Step Breakdown (Per-Level Integrated, Continuous Boundaries, Verifiable)
+            // 4. Export Reset 27 Step-by-Step Breakdown (Split 260-279 Persona & 280-310 Iron Knight)
             ExportReset27Breakdown(dir);
 
             // 5. Scenario A: Baseline 1x
             RunScenarioA_Calibrated(dir);
 
-            // 6. Scenario B Audited (with Zen waiting logic & All-or-Nothing Zen guard)
+            // 6. Scenario B Audited (with Zen waiting logic & per-kill Zen guard)
             RunScenarioB_Audited(dir);
 
-            // 7. Scenario C2 & D2 (Capped ladders with 15% Exp cost)
+            // 7. Scenario C2 & D2 (Capped ladders with 15% Exp cost & strict blocked state)
             RunScenarioC2_D2_Audited(dir);
 
             // 8. Scenario E Invariance
             RunScenarioE_Invariance(dir);
 
-            // 9. Scenario F Timeline (Day 1..90)
+            // 9. Scenario F Timeline (Day 1..90 with separated Zen balance / Gross / Discarded columns)
             RunScenarioF_Timeline(dir);
 
             // 10. Jewel Economy Model
@@ -132,7 +142,7 @@ namespace OpenMU.Simulation
         }
 
         /// <summary>
-        /// Unit test verifying all-or-nothing Zen cap behavior matching OpenMU PlayerMoneyExtensions.TryAddMoney.
+        /// Unit test verifying per-drop and all-or-nothing Zen cap overflow guard matching OpenMU PlayerMoneyExtensions.TryAddMoney.
         /// </summary>
         public static void RunZenCapUnitTest()
         {
@@ -153,7 +163,21 @@ namespace OpenMU.Simulation
                 throw new InvalidOperationException($"[FAIL] Zen Cap Unit Test: expected discardedZen == 5000 (entire amount), got {disc}");
             }
 
-            Console.WriteLine("[PASS] Unit Test: Zen Cap All-or-Nothing overflow guard verified.");
+            // Test Per-Kill Granular Addition
+            long bal2 = MaximumInventoryMoney - 3000;
+            long disc2 = 0;
+            AddMoneyWithKillGranularity(ref bal2, 10, 1000, 1.0, ref disc2);
+            // 3 drops fit (3000), 7 drops discarded (7000)
+            if (bal2 != MaximumInventoryMoney)
+            {
+                throw new InvalidOperationException($"[FAIL] Granular Zen Unit Test: expected bal == MaximumInventoryMoney, got {bal2}");
+            }
+            if (disc2 != 7000)
+            {
+                throw new InvalidOperationException($"[FAIL] Granular Zen Unit Test: expected discarded == 7000, got {disc2}");
+            }
+
+            Console.WriteLine("[PASS] Unit Test: Zen Cap All-or-Nothing & Per-Kill Granular overflow guard verified.");
         }
 
         /// <summary>
@@ -167,14 +191,13 @@ namespace OpenMU.Simulation
 
         /// <summary>
         /// Evaluates ranking score (EXP/hour) of a monster for a player at playerLevel.
-        /// Isolated method to facilitate Part B empirical DPS curve integration.
         /// </summary>
         public static double ScoreMonster(MonsterProfile m, int playerLevel)
             => CalculateBaseExperience(m.MonsterLevel, playerLevel) * m.BaseKillsPerHour;
 
         /// <summary>
         /// Dynamic ranking monster selector: selects the accessible monster with highest EXP/hour at playerLevel.
-        /// Replaces hardcoded ladder if statements.
+        /// Returns Persona #358 at 230-279, Iron Knight #458 at 280-400.
         /// </summary>
         public static MonsterProfile GetBestMonsterForLevel(int playerLevel) =>
             MonsterDatabase
@@ -242,8 +265,8 @@ namespace OpenMU.Simulation
             using var writer = new StreamWriter(file);
             writer.WriteLine("MinLevel,MaxLevel,ZoneName,MonsterLevel,MonsterHP,BaseExpUnpenalized,KillsPerHour");
 
-            int[] starts = { 1, 31, 61, 101, 151, 201, 261, 321, 361 };
-            int[] ends   = { 30, 60, 100, 150, 200, 260, 320, 360, 400 };
+            int[] starts = { 1, 20, 50, 70, 140, 160, 170, 230, 280 };
+            int[] ends   = { 19, 49, 69, 139, 159, 169, 229, 279, 400 };
 
             for (int i = 0; i < starts.Length; i++)
             {
@@ -312,7 +335,7 @@ namespace OpenMU.Simulation
         }
 
         /// <summary>
-        /// Step-by-step breakdown of Reset 27 (Level 10 -> 310) with continuous boundaries and redundant verification metrics
+        /// Step-by-step breakdown of Reset 27 (Level 10 -> 310) with continuous boundaries and weighted rate tiers
         /// </summary>
         private static void ExportReset27Breakdown(string outputDir)
         {
@@ -320,8 +343,8 @@ namespace OpenMU.Simulation
             using var writer = new StreamWriter(file);
             writer.WriteLine("BracketStart,BracketEnd,MapZone,MonsterLevel,MonsterHP,RateTier,BracketExp,TotalKills,LevelingHours,KillsPerHour_Verify,ExpPerKill_Verify,GrossZen,NetZen");
 
-            int[] bracketStarts = { 10, 30, 60, 100, 150, 200, 260 };
-            int[] bracketEnds   = { 30, 60, 100, 150, 200, 260, 310 };
+            int[] bracketStarts = { 10, 30, 60, 100, 150, 200, 260, 280 };
+            int[] bracketEnds   = { 30, 60, 100, 150, 200, 260, 280, 310 };
 
             for (int i = 0; i < bracketStarts.Length; i++)
             {
@@ -335,7 +358,7 @@ namespace OpenMU.Simulation
                 long bNetZen = bGrossZen - bRoutineCosts;
                 var sampleMob = GetBestMonsterForLevel((s + e) / 2);
                 
-                // Calculate weighted average rate across the bracket to accurately reflect mixed tiers (e.g. 260-310)
+                // Calculate weighted average rate across the bracket to accurately reflect mixed tiers
                 double totalExpWeighted = 0;
                 for (int lvl = s; lvl < e; lvl++)
                 {
@@ -413,6 +436,35 @@ namespace OpenMU.Simulation
         }
 
         /// <summary>
+        /// Adds money in bulk with per-kill drop granularity to accurately model 2.147B inventory cap overflow.
+        /// </summary>
+        public static void AddMoneyWithKillGranularity(ref long currentMoney, double kills, double moneyPerKill, double dropChanceAndPickup, ref long discardedZen)
+        {
+            long totalDrops = (long)(kills * dropChanceAndPickup);
+            if (totalDrops <= 0) return;
+            long amountPerDrop = (long)moneyPerKill;
+            if (amountPerDrop <= 0) return;
+
+            long spaceRemaining = MaximumInventoryMoney - currentMoney;
+            if (spaceRemaining <= 0)
+            {
+                discardedZen += totalDrops * amountPerDrop;
+                return;
+            }
+
+            long dropsCanFit = spaceRemaining / amountPerDrop;
+            if (dropsCanFit >= totalDrops)
+            {
+                currentMoney += totalDrops * amountPerDrop;
+            }
+            else
+            {
+                currentMoney += dropsCanFit * amountPerDrop;
+                discardedZen += (totalDrops - dropsCanFit) * amountPerDrop;
+            }
+        }
+
+        /// <summary>
         /// All-or-nothing Zen accumulation logic mimicking OpenMU Player.cs:TryAddMoney with DiscardedZen tracking.
         /// Discards Zen and returns false ONLY when inventory reaches MaximumInventoryMoney (2,147,483,647).
         /// </summary>
@@ -464,6 +516,7 @@ namespace OpenMU.Simulation
             double cumHours = 0;
             double cumJewels = 0;
             int cumPoints = 0;
+            bool isChainBlocked = false;
 
             for (int k = 1; k <= 36; k++)
             {
@@ -471,6 +524,14 @@ namespace OpenMU.Simulation
                 int targetLvl = 50 + (k - 1) * 10;
                 long resetCost = 10_000_000L * k;
                 int pointsGranted = 5 * targetLvl;
+
+                if (isChainBlocked)
+                {
+                    writer.WriteLine(string.Format(CultureInfo.InvariantCulture,
+                        "{0},{1},{2:F2},{3:F2},{4},{5},{6},{7},{8},{9},{10},{11},{12:F2},{13}",
+                        k, targetLvl, 0.0, cumHours, 0, 0, 0, 0, resetCost, zenBalance, discardedZen, false, cumJewels, cumPoints));
+                    continue;
+                }
 
                 SimulateLevelRange(startLvl, targetLvl, _ => 1.0, out double levelingHours, out long cycleExp, out long grossZen, out long routineCosts, out double jewels, out double excItems, out double kills);
 
@@ -487,6 +548,10 @@ namespace OpenMU.Simulation
                 if (resetPaid)
                 {
                     cumPoints += pointsGranted;
+                }
+                else
+                {
+                    isChainBlocked = true; // Strict V3 rule: Insufficient Zen blocks reset chain
                 }
 
                 cumHours += levelingHours;
@@ -508,12 +573,21 @@ namespace OpenMU.Simulation
             long discardedZen = 0;
             double cumHours = 0;
             double cumJewels = 0;
+            bool chainBlocked = false;
 
             for (int k = 1; k <= 36; k++)
             {
                 int startLvl = 10;
                 int targetLvl = 50 + (k - 1) * 10;
                 long resetCost = 10_000_000L * k;
+
+                if (chainBlocked)
+                {
+                    writer.WriteLine(string.Format(CultureInfo.InvariantCulture,
+                        "{0},{1},{2:F2},{3:F2},{4:F2},{5:F2},{6},{7},{8},{9},{10},{11},{12},{13:F2}",
+                        k, targetLvl, 0.0, 0.0, 0.0, cumHours, 0, 0, 0, resetCost, zenBalance, discardedZen, true, cumJewels));
+                    continue;
+                }
 
                 SimulateLevelRange(startLvl, targetLvl, lvl => GetDynamicExpRate(lvl), out double levelingHours, out long cycleExp, out long grossZen, out long routineCosts, out double jewels, out double excItems, out double kills);
 
@@ -547,6 +621,7 @@ namespace OpenMU.Simulation
                     else
                     {
                         isBlocked = true;
+                        chainBlocked = true;
                     }
                 }
 
@@ -555,6 +630,7 @@ namespace OpenMU.Simulation
                 if (!resetPaid)
                 {
                     isBlocked = true;
+                    chainBlocked = true;
                 }
 
                 double totalCycleHours = levelingHours + waitHours;
@@ -576,29 +652,52 @@ namespace OpenMU.Simulation
             long zenBalanceC2 = 0;
             long discardedC2 = 0;
             double cumHoursC2 = 0;
+            bool blockedC2 = false;
+
             long zenBalanceD2 = 0;
             long discardedD2 = 0;
             double cumHoursD2 = 0;
+            bool blockedD2 = false;
 
             for (int k = 1; k <= 36; k++)
             {
                 int targetLvl = 50 + (k - 1) * 10;
 
-                SimulateLevelRange(10, targetLvl, _ => 1.0, out double hC2, out long expC2, out long grossC2, out long costC2, out double jC2, out double eC2, out double killsC2);
-                long resetCostC2 = (long)(expC2 * 0.15);
-                long netC2 = grossC2 - costC2 - resetCostC2;
-                TryAddMoneyAllOrNothing(ref zenBalanceC2, grossC2, ref discardedC2);
-                TryRemoveMoney(ref zenBalanceC2, costC2);
-                bool paidC2 = TryRemoveMoney(ref zenBalanceC2, resetCostC2);
-                cumHoursC2 += hC2;
+                // C2 (1x Baseline)
+                double hC2 = 0;
+                long resetCostC2 = 0;
+                long netC2 = 0;
+                bool paidC2 = false;
 
-                SimulateLevelRange(10, targetLvl, lvl => GetDynamicExpRate(lvl), out double hD2, out long expD2, out long grossD2, out long costD2, out double jD2, out double eD2, out double killsD2);
-                long resetCostD2 = (long)(expD2 * 0.15);
-                long netD2 = grossD2 - costD2 - resetCostD2;
-                TryAddMoneyAllOrNothing(ref zenBalanceD2, grossD2, ref discardedD2);
-                TryRemoveMoney(ref zenBalanceD2, costD2);
-                bool paidD2 = TryRemoveMoney(ref zenBalanceD2, resetCostD2);
-                cumHoursD2 += hD2;
+                if (!blockedC2)
+                {
+                    SimulateLevelRange(10, targetLvl, _ => 1.0, out hC2, out long expC2, out long grossC2, out long costC2, out double jC2, out double eC2, out double killsC2);
+                    resetCostC2 = (long)(expC2 * 0.15);
+                    netC2 = grossC2 - costC2 - resetCostC2;
+                    TryAddMoneyAllOrNothing(ref zenBalanceC2, grossC2, ref discardedC2);
+                    TryRemoveMoney(ref zenBalanceC2, costC2);
+                    paidC2 = TryRemoveMoney(ref zenBalanceC2, resetCostC2);
+                    if (!paidC2) blockedC2 = true;
+                    cumHoursC2 += hC2;
+                }
+
+                // D2 (Dynamic Exp)
+                double hD2 = 0;
+                long resetCostD2 = 0;
+                long netD2 = 0;
+                bool paidD2 = false;
+
+                if (!blockedD2)
+                {
+                    SimulateLevelRange(10, targetLvl, lvl => GetDynamicExpRate(lvl), out hD2, out long expD2, out long grossD2, out long costD2, out double jD2, out double eD2, out double killsD2);
+                    resetCostD2 = (long)(expD2 * 0.15);
+                    netD2 = grossD2 - costD2 - resetCostD2;
+                    TryAddMoneyAllOrNothing(ref zenBalanceD2, grossD2, ref discardedD2);
+                    TryRemoveMoney(ref zenBalanceD2, costD2);
+                    paidD2 = TryRemoveMoney(ref zenBalanceD2, resetCostD2);
+                    if (!paidD2) blockedD2 = true;
+                    cumHoursD2 += hD2;
+                }
 
                 writer.WriteLine(string.Format(CultureInfo.InvariantCulture,
                     "{0},{1},{2:F2},{3:F2},{4},{5},{6},{7},{8},{9:F2},{10:F2},{11},{12},{13},{14},{15}",
@@ -641,7 +740,7 @@ namespace OpenMU.Simulation
         {
             string file = Path.Combine(outputDir, "scenario_f_timeline.csv");
             using var writer = new StreamWriter(file);
-            writer.WriteLine("Day,Casual_Resets,Casual_Points,Casual_Zen,Casual_Jewels,Hardcore_Resets,Hardcore_Points,Hardcore_Zen,Hardcore_Jewels,Nolife_Resets,Nolife_Points,Nolife_Zen,Nolife_Jewels");
+            writer.WriteLine("Day,Casual_Resets,Casual_Points,Casual_ZenBalance,Casual_GrossZen,Casual_DiscardedZen,Casual_Jewels,Hardcore_Resets,Hardcore_Points,Hardcore_ZenBalance,Hardcore_GrossZen,Hardcore_DiscardedZen,Hardcore_Jewels,Nolife_Resets,Nolife_Points,Nolife_ZenBalance,Nolife_GrossZen,Nolife_DiscardedZen,Nolife_Jewels");
 
             double[] cycleHours = new double[37];
             long[] cycleGrossZen = new long[37];
@@ -689,17 +788,19 @@ namespace OpenMU.Simulation
                     double usedHours = 0;
                     int completedResets = 0;
                     int totalPoints = 0;
-                    long totalZen = 0;
-                    long dummyDiscard = 0;
+                    long totalZenBalance = 0;
+                    long cumulativeGrossZen = 0;
+                    long cumulativeDiscardedZen = 0;
                     double totalJewels = 0;
 
                     for (int k = 1; k <= 36; k++)
                     {
                         if (usedHours + cycleHours[k] <= totalBudgetHours)
                         {
-                            TryAddMoneyAllOrNothing(ref totalZen, cycleGrossZen[k], ref dummyDiscard);
-                            TryRemoveMoney(ref totalZen, cycleRoutine[k]);
-                            bool paid = TryRemoveMoney(ref totalZen, cycleResetFee[k]);
+                            cumulativeGrossZen += cycleGrossZen[k];
+                            TryAddMoneyAllOrNothing(ref totalZenBalance, cycleGrossZen[k], ref cumulativeDiscardedZen);
+                            TryRemoveMoney(ref totalZenBalance, cycleRoutine[k]);
+                            bool paid = TryRemoveMoney(ref totalZenBalance, cycleResetFee[k]);
                             if (paid)
                             {
                                 usedHours += cycleHours[k];
@@ -724,14 +825,20 @@ namespace OpenMU.Simulation
                         double remainingHours = totalBudgetHours - usedHours;
                         if (maxZenPerHour > 0)
                         {
-                            TryAddMoneyAllOrNothing(ref totalZen, (long)(remainingHours * maxZenPerHour), ref dummyDiscard);
+                            long extraGross = (long)(remainingHours * (maxMob.BaseKillsPerHour * DropChanceMoney * (maxExpPerKill + BaseMoneyDrop) * PickupEfficiency));
+                            long extraRoutine = (long)(remainingHours * RoutineCostPerHour);
+                            cumulativeGrossZen += extraGross;
+                            TryAddMoneyAllOrNothing(ref totalZenBalance, extraGross, ref cumulativeDiscardedZen);
+                            TryRemoveMoney(ref totalZenBalance, extraRoutine);
                         }
                         totalJewels += remainingHours * maxJewelsPerHour;
                     }
 
                     rowData.Add(completedResets.ToString());
                     rowData.Add(totalPoints.ToString());
-                    rowData.Add(totalZen.ToString());
+                    rowData.Add(totalZenBalance.ToString());
+                    rowData.Add(cumulativeGrossZen.ToString());
+                    rowData.Add(cumulativeDiscardedZen.ToString());
                     rowData.Add(totalJewels.ToString("F1", CultureInfo.InvariantCulture));
                 }
 
@@ -743,7 +850,7 @@ namespace OpenMU.Simulation
         {
             string file = Path.Combine(outputDir, "jewel_economy_model.csv");
             using var writer = new StreamWriter(file);
-            writer.WriteLine("ResetCount,TargetLevel,TotalKills,CumJewels_0.1pct,CumJewels_0.5pct,CumJewels_1.0pct,CumJewels_2.0pct");
+            writer.WriteLine("ResetCount,TargetLevel,RateProfile,TotalKills,CumJewels_0.1pct,CumJewels_0.5pct,CumJewels_1.0pct,CumJewels_2.0pct");
 
             double cumJewel01 = 0;
             double cumJewel05 = 0;
@@ -768,8 +875,8 @@ namespace OpenMU.Simulation
                 cumJewel20 += j20;
 
                 writer.WriteLine(string.Format(CultureInfo.InvariantCulture,
-                    "{0},{1},{2:F0},{3:F2},{4:F2},{5:F2},{6:F2}",
-                    k, targetLvl, totalKills, cumJewel01, cumJewel05, cumJewel10, cumJewel20));
+                    "{0},{1},\"{2}\",{3:F0},{4:F2},{5:F2},{6:F2},{7:F2}",
+                    k, targetLvl, "DynamicExp_0.7Pickup", totalKills, cumJewel01, cumJewel05, cumJewel10, cumJewel20));
             }
         }
 
@@ -783,12 +890,12 @@ namespace OpenMU.Simulation
             long discardedZen = 0;
             double cumHours = 0;
             double cumJewels = 0;
+            bool blockedGold = false;
 
             for (int k = 1; k <= 36; k++)
             {
                 int targetLvl = 50 + (k - 1) * 10;
-                SimulateLevelRange(10, targetLvl, lvl => GetGoldPresetExpRate(lvl), out double hours, out long cycleExp, out long grossZen, out long routineCosts, out double jewels, out double exc, out double kills);
-
+                
                 long resetFeeZen = 0;
                 int chaosReq = 0;
                 int creationReq = 0;
@@ -799,6 +906,16 @@ namespace OpenMU.Simulation
                 else if (k <= 25) { resetFeeZen = 20_000_000L + (k - 15) * 3_000_000L; chaosReq = 1; }
                 else { resetFeeZen = 100_000_000L + (k - 25) * 15_000_000L; chaosReq = 1; creationReq = 1; }
 
+                if (blockedGold)
+                {
+                    writer.WriteLine(string.Format(CultureInfo.InvariantCulture,
+                        "{0},{1},{2:F2},{3:F2},{4},{5},{6},{7},{8},{9},{10},{11},{12},{13:F2},{14:F2}",
+                        k, targetLvl, 0.0, cumHours, 0, 0, resetFeeZen, chaosReq, creationReq, 0, zenBalance, discardedZen, false, 0.0, cumJewels));
+                    continue;
+                }
+
+                SimulateLevelRange(10, targetLvl, lvl => GetGoldPresetExpRate(lvl), out double hours, out long cycleExp, out long grossZen, out long routineCosts, out double jewels, out double exc, out double kills);
+
                 cumHours += hours;
                 cumJewels += jewels;
 
@@ -806,6 +923,10 @@ namespace OpenMU.Simulation
                 TryAddMoneyAllOrNothing(ref zenBalance, grossZen, ref discardedZen);
                 TryRemoveMoney(ref zenBalance, routineCosts);
                 bool resetPaid = TryRemoveMoney(ref zenBalance, resetFeeZen);
+                if (!resetPaid)
+                {
+                    blockedGold = true;
+                }
 
                 double ratio = grossZen > 0 ? (double)(routineCosts + resetFeeZen) / grossZen * 100.0 : 0;
 

@@ -1,101 +1,65 @@
-﻿// <copyright file="CharacterClassNumber.cs" company="MUnique">
+// <copyright file="CharacterClassNumber.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
 namespace MUnique.OpenMU.Persistence.Initialization.CharacterClasses;
 
 /// <summary>
-/// The default character class numbers.
+/// Character class number constants according to MU Online protocol.
 /// </summary>
 public enum CharacterClassNumber : byte
 {
-    /// <summary>
-    /// The dark wizard.
-    /// </summary>
+    /// <summary>Dark Wizard.</summary>
     DarkWizard = 0,
 
-    /// <summary>
-    /// The soul master.
-    /// </summary>
-    SoulMaster = 2,
+    /// <summary>Soul Master.</summary>
+    SoulMaster = 1,
 
-    /// <summary>
-    /// The grand master.
-    /// </summary>
-    GrandMaster = 3,
+    /// <summary>Grand Master.</summary>
+    GrandMaster = 2,
 
-    /// <summary>
-    /// The dark knight.
-    /// </summary>
-    DarkKnight = 4,
+    /// <summary>Dark Knight.</summary>
+    DarkKnight = 16,
 
-    /// <summary>
-    /// The blade knight.
-    /// </summary>
-    BladeKnight = 6,
+    /// <summary>Blade Knight.</summary>
+    BladeKnight = 17,
 
-    /// <summary>
-    /// The blade master.
-    /// </summary>
-    BladeMaster = 7,
+    /// <summary>Blade Master.</summary>
+    BladeMaster = 18,
 
-    /// <summary>
-    /// The fairy elf.
-    /// </summary>
-    FairyElf = 8,
+    /// <summary>Fairy Elf.</summary>
+    FairyElf = 32,
 
-    /// <summary>
-    /// The muse elf.
-    /// </summary>
-    MuseElf = 10,
+    /// <summary>Muse Elf.</summary>
+    MuseElf = 33,
 
-    /// <summary>
-    /// The high elf.
-    /// </summary>
-    HighElf = 11,
+    /// <summary>High Elf.</summary>
+    HighElf = 34,
 
-    /// <summary>
-    /// The magic gladiator.
-    /// </summary>
-    MagicGladiator = 12,
+    /// <summary>Magic Gladiator.</summary>
+    MagicGladiator = 48,
 
-    /// <summary>
-    /// The duel master.
-    /// </summary>
-    DuelMaster = 13,
+    /// <summary>Duel Master.</summary>
+    DuelMaster = 49,
 
-    /// <summary>
-    /// The dark lord.
-    /// </summary>
-    DarkLord = 16,
+    /// <summary>Dark Lord.</summary>
+    DarkLord = 64,
 
-    /// <summary>
-    /// The lord emperor.
-    /// </summary>
-    LordEmperor = 17,
+    /// <summary>Lord Emperor.</summary>
+    LordEmperor = 65,
 
-    /// <summary>
-    /// The summoner.
-    /// </summary>
-    Summoner = 20,
+    /// <summary>Summoner.</summary>
+    Summoner = 80,
 
-    /// <summary>
-    /// The bloody summoner.
-    /// </summary>
-    BloodySummoner = 22,
+    /// <summary>Bloody Summoner.</summary>
+    BloodySummoner = 81,
 
-    /// <summary>
-    /// The dimension master.
-    /// </summary>
-    DimensionMaster = 23,
+    /// <summary>Dimension Master.</summary>
+    DimensionMaster = 82,
 
-    /// <summary>
-    /// The rage fighter.
-    /// </summary>
-    RageFighter = 24,
+    /// <summary>Rage Fighter.</summary>
+    RageFighter = 96,
 
-    /// <summary>
-    /// The fist master.
-    /// </summary>
-    FistMaster = 25,
+    /// <summary>Fist Master.</summary>
+    FistMaster = 97,
 }

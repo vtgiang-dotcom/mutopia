@@ -1,2 +1,7 @@
 bin/
 obj/
+.git/
+.vs/
+*.deps.json
+*.runtimeconfig.json
+*.staticwebassets.endpoints.json

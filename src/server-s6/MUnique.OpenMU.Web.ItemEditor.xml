@@ -1,0 +1,347 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>MUnique.OpenMU.Web.ItemEditor</name>
+    </assembly>
+    <members>
+        <member name="T:MUnique.OpenMU.Web.ItemEditor.EquippedItems">
+            <summary>
+            Component for a item box.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.ItemEditor.EquippedItems.SelectedItem">
+            <summary>
+            Gets or sets the selected item.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.ItemEditor.EquippedItems.SelectedItemChanged">
+            <summary>
+            Gets or sets the callback when the selected item changed.
+            </summary>
+        </member>
+        <member name="M:MUnique.OpenMU.Web.ItemEditor.EquippedItems.SetSelectedItemAsync(MUnique.OpenMU.Web.ItemEditor.ItemViewModel)">
+            <summary>
+            Sets the selected item.
+            </summary>
+            <param name="viewModel">The view model.</param>
+        </member>
+        <member name="M:MUnique.OpenMU.Web.ItemEditor.EquippedItems.OnParametersSet">
+            <inheritdoc />
+        </member>
+        <member name="M:MUnique.OpenMU.Web.ItemEditor.EquippedItems.TryParseValueFromString(System.String,MUnique.OpenMU.DataModel.Entities.ItemStorage@,System.String@)">
+            <inheritdoc />
+        </member>
+        <member name="T:MUnique.OpenMU.Web.ItemEditor.InventoryPlacementService">
+            <summary>
+            Service for calculating inventory item placement, slot availability, and positioning.
+            </summary>
+        </member>
+        <member name="M:MUnique.OpenMU.Web.ItemEditor.InventoryPlacementService.#ctor(MUnique.OpenMU.Web.ItemEditor.StorageType,System.Byte)">
+            <summary>
+            Initializes a new instance of the <see cref="T:MUnique.OpenMU.Web.ItemEditor.InventoryPlacementService"/> class.
+            </summary>
+            <param name="storageType">The type of storage (inventory, vault, etc.).</param>
+            <param name="numberOfExtensions">The number of inventory extensions.</param>
+        </member>
+        <member name="M:MUnique.OpenMU.Web.ItemEditor.InventoryPlacementService.FindFreeSlot(MUnique.OpenMU.DataModel.Entities.Item,System.Collections.Generic.IEnumerable{MUnique.OpenMU.DataModel.Entities.Item})">
+            <summary>
+            Finds the first available slot where the item can be placed.
+            </summary>
+            <param name="item">The item to place.</param>
+            <param name="existingItems">The existing items in the storage.</param>
+            <returns>The first available slot, or null if no slot is available.</returns>
+        </member>
+        <member name="T:MUnique.OpenMU.Web.ItemEditor.ItemExtensions">
+            <summary>
+            Extensions for <see cref="T:MUnique.OpenMU.DataModel.Entities.Item"/>.
+            </summary>
+        </member>
+        <member name="M:MUnique.OpenMU.Web.ItemEditor.ItemExtensions.AsViewModel(MUnique.OpenMU.DataModel.Entities.Item)">
+            <summary>
+            Returns the <see cref="T:MUnique.OpenMU.DataModel.Entities.Item"/> as <see cref="T:MUnique.OpenMU.Web.ItemEditor.ItemViewModel"/>.
+            </summary>
+            <param name="item">The <see cref="T:MUnique.OpenMU.DataModel.Entities.Item"/>.</param>
+            <returns>The <see cref="T:MUnique.OpenMU.Web.ItemEditor.ItemViewModel"/>.</returns>
+        </member>
+        <member name="M:MUnique.OpenMU.Web.ItemEditor.ItemExtensions.MoveLeft(MUnique.OpenMU.DataModel.Entities.Item)">
+            <summary>
+            Moves the item one place to the left.
+            </summary>
+            <param name="item">The item.</param>
+        </member>
+        <member name="M:MUnique.OpenMU.Web.ItemEditor.ItemExtensions.MoveRight(MUnique.OpenMU.DataModel.Entities.Item)">
+            <summary>
+            Moves the item one place to the right.
+            </summary>
+            <param name="item">The item.</param>
+        </member>
+        <member name="M:MUnique.OpenMU.Web.ItemEditor.ItemExtensions.MoveUp(MUnique.OpenMU.DataModel.Entities.Item)">
+            <summary>
+            Moves the item one place up.
+            </summary>
+            <param name="item">The item.</param>
+        </member>
+        <member name="M:MUnique.OpenMU.Web.ItemEditor.ItemExtensions.MoveDown(MUnique.OpenMU.DataModel.Entities.Item)">
+            <summary>
+            Moves the item one place down.
+            </summary>
+            <param name="item">The item.</param>
+        </member>
+        <member name="T:MUnique.OpenMU.Web.ItemEditor.ItemViewModel">
+            <summary>
+            View-Model for an <see cref="P:MUnique.OpenMU.Web.ItemEditor.ItemViewModel.Item"/>.
+            </summary>
+        </member>
+        <member name="F:MUnique.OpenMU.Web.ItemEditor.ItemViewModel.LevelMapping">
+            <summary>
+            The level mapping. Not each item level has its own effects. We save some
+            traffic and storage space of item pictures with this trick.
+            </summary>
+        </member>
+        <member name="M:MUnique.OpenMU.Web.ItemEditor.ItemViewModel.#ctor(MUnique.OpenMU.Web.ItemEditor.StorageViewModel,MUnique.OpenMU.DataModel.Entities.Item)">
+            <summary>
+            Initializes a new instance of the <see cref="T:MUnique.OpenMU.Web.ItemEditor.ItemViewModel"/> class.
+            </summary>
+            <param name="parent">The parent.</param>
+            <param name="item">The item.</param>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.ItemEditor.ItemViewModel.Parent">
+            <summary>
+            Gets the parent storage.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.ItemEditor.ItemViewModel.Item">
+            <summary>
+            Gets the item.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.ItemEditor.ItemViewModel.EffectLevel">
+            <summary>
+            Gets the effect level.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.ItemEditor.ItemViewModel.IsExcellent">
+            <summary>
+            Gets a value indicating whether this instance is excellent.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.ItemEditor.ItemViewModel.IsAncient">
+            <summary>
+            Gets a value indicating whether this instance is ancient.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.ItemEditor.ItemViewModel.OptionSuffix">
+            <summary>
+            Gets the option suffix.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.ItemEditor.ItemViewModel.Column">
+            <summary>
+            Gets the column.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.ItemEditor.ItemViewModel.Row">
+            <summary>
+            Gets the row.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.ItemEditor.ItemViewModel.EffectiveIndex">
+            <summary>
+            Gets the effective index of the item in the box.
+            </summary>
+        </member>
+        <member name="T:MUnique.OpenMU.Web.ItemEditor.MuItem">
+            <summary>
+            Component for an <see cref="T:MUnique.OpenMU.DataModel.Entities.Item"/>.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.ItemEditor.MuItem.Model">
+            <summary>
+            Gets or sets the item data.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.ItemEditor.MuItem.OnClick">
+            <summary>
+            Gets or sets the on click callback.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.ItemEditor.MuItem.OnItemMoved">
+            <summary>
+            Gets or sets the callback which is called when the selected item moved.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.ItemEditor.MuItem.OnDelete">
+            <summary>
+            Gets or sets the callback which is called when the item should be deleted.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.ItemEditor.MuItem.IsSelected">
+            <summary>
+            Gets or sets a value indicating whether this instance is selected.
+            </summary>
+        </member>
+        <member name="T:MUnique.OpenMU.Web.ItemEditor.MuItemStorage">
+            <summary>
+            Component for a item box.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.ItemEditor.MuItemStorage.SelectedItem">
+            <summary>
+            Gets or sets the selected item.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.ItemEditor.MuItemStorage.StorageType">
+            <summary>
+            Gets or sets the type of the storage.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.ItemEditor.MuItemStorage.NumberOfExtensions">
+            <summary>
+            Gets or sets the number of extensions.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.ItemEditor.MuItemStorage.ExtensionIndex">
+            <summary>
+            Gets or sets the index of the extension.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.ItemEditor.MuItemStorage.SelectedItemChanged">
+            <summary>
+            Gets or sets the callback when the selected item changed.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.ItemEditor.MuItemStorage.OnDelete">
+            <summary>
+            Gets or sets the callback when an item should be deleted.
+            </summary>
+        </member>
+        <member name="M:MUnique.OpenMU.Web.ItemEditor.MuItemStorage.SetSelectedItemAsync(MUnique.OpenMU.Web.ItemEditor.ItemViewModel)">
+            <summary>
+            Sets the selected item.
+            </summary>
+            <param name="viewModel">The view model.</param>
+        </member>
+        <member name="M:MUnique.OpenMU.Web.ItemEditor.MuItemStorage.OnParametersSet">
+            <inheritdoc />
+        </member>
+        <member name="M:MUnique.OpenMU.Web.ItemEditor.MuItemStorage.TryParseValueFromString(System.String,MUnique.OpenMU.DataModel.Entities.ItemStorage@,System.String@)">
+            <inheritdoc />
+        </member>
+        <member name="T:MUnique.OpenMU.Web.ItemEditor.StorageType">
+            <summary>
+            Defines the storage type.
+            </summary>
+        </member>
+        <member name="F:MUnique.OpenMU.Web.ItemEditor.StorageType.Inventory">
+            <summary>
+            The inventory.
+            </summary>
+        </member>
+        <member name="F:MUnique.OpenMU.Web.ItemEditor.StorageType.InventoryExtension">
+            <summary>
+            The inventory extension.
+            </summary>
+        </member>
+        <member name="F:MUnique.OpenMU.Web.ItemEditor.StorageType.PersonalStore">
+            <summary>
+            The personal store.
+            </summary>
+        </member>
+        <member name="F:MUnique.OpenMU.Web.ItemEditor.StorageType.Vault">
+            <summary>
+            The vault.
+            </summary>
+        </member>
+        <member name="F:MUnique.OpenMU.Web.ItemEditor.StorageType.VaultExtension">
+            <summary>
+            The vault extension.
+            </summary>
+        </member>
+        <member name="F:MUnique.OpenMU.Web.ItemEditor.StorageType.Merchant">
+            <summary>
+            The merchant.
+            </summary>
+        </member>
+        <member name="T:MUnique.OpenMU.Web.ItemEditor.StorageViewModel">
+            <summary>
+            View Model for the <see cref="T:MUnique.OpenMU.DataModel.Entities.ItemStorage"/>.
+            </summary>
+        </member>
+        <member name="M:MUnique.OpenMU.Web.ItemEditor.StorageViewModel.#ctor(MUnique.OpenMU.DataModel.Entities.ItemStorage,MUnique.OpenMU.Web.ItemEditor.StorageType,System.Int32,System.Int32,System.Int32,System.Nullable{System.Byte},System.Nullable{System.Byte})">
+            <summary>
+            Initializes a new instance of the <see cref="T:MUnique.OpenMU.Web.ItemEditor.StorageViewModel" /> class.
+            </summary>
+            <param name="storage">The storage.</param>
+            <param name="storageType">Type of the storage.</param>
+            <param name="rows">The rows.</param>
+            <param name="startIndex">The start index.</param>
+            <param name="endIndex">The end index.</param>
+            <param name="emptyRowsToNextStorage">The empty rows to next storage.</param>
+            <param name="emptyRowsToPreviousStorage">The empty rows to previous storage.</param>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.ItemEditor.StorageViewModel.Storage">
+            <summary>
+            Gets the storage.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.ItemEditor.StorageViewModel.StorageType">
+            <summary>
+            Gets the type of the storage.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.ItemEditor.StorageViewModel.Items">
+            <summary>
+            Gets the items.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.ItemEditor.StorageViewModel.Rows">
+            <summary>
+            Gets the rows.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.ItemEditor.StorageViewModel.StartIndex">
+            <summary>
+            Gets the start index.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.ItemEditor.StorageViewModel.EndIndex">
+            <summary>
+            Gets the end index.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.ItemEditor.StorageViewModel.EmptyRowsToNextStorage">
+            <summary>
+            Gets the empty rows to next storage.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.Web.ItemEditor.StorageViewModel.EmptyRowsToPreviousStorage">
+            <summary>
+            Gets the empty rows to previous storage.
+            </summary>
+        </member>
+        <member name="M:MUnique.OpenMU.Web.ItemEditor.StorageViewModel.IsIncluded(MUnique.OpenMU.DataModel.Entities.Item)">
+            <summary>
+            Determines whether the specified item is included in the shown storage box.
+            </summary>
+            <param name="item">The item.</param>
+            <returns>
+              <c>true</c> if the specified item is included; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="T:MUnique.OpenMU.Web.ItemEditor.StorageViewModelFactory">
+            <summary>
+            Factory for <see cref="T:MUnique.OpenMU.Web.ItemEditor.StorageViewModel"/>s.
+            </summary>
+        </member>
+        <member name="M:MUnique.OpenMU.Web.ItemEditor.StorageViewModelFactory.CreateViewModel(MUnique.OpenMU.DataModel.Entities.ItemStorage,MUnique.OpenMU.Web.ItemEditor.StorageType,System.Byte,System.Byte)">
+            <summary>
+            Creates the view model.
+            </summary>
+            <param name="storage">The storage.</param>
+            <param name="storageType">Type of the storage.</param>
+            <param name="extensions">The storage extensions.</param>
+            <param name="extensionIndex">The storage extension index.</param>
+            <returns>The created view model.</returns>
+        </member>
+    </members>
+</doc>

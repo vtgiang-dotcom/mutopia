@@ -154,28 +154,59 @@ bool OpenJpegBuffer(wchar_t* filename, float* BufferFloat)
     auto compressedFile = _wfopen(fileName.c_str(), L"rb");
     if (compressedFile == nullptr)
     {
-        wchar_t Text[256];
-        mu_swprintf(Text, L"%ls - File not exist.", fileName.c_str());
-        g_ErrorReport.Write(Text);
-        g_ErrorReport.Write(L"\r\n");
-        MessageBox(g_hWnd, Text, NULL, MB_OK);
-        SendMessage(g_hWnd, WM_DESTROY, 0, 0);
-        return false;
+        std::wstring rawFileName = L"Data\\";
+        rawFileName += filename;
+        compressedFile = _wfopen(rawFileName.c_str(), L"rb");
+        if (compressedFile == nullptr)
+        {
+            wchar_t Text[256];
+            mu_swprintf(Text, L"%ls - File not exist.", fileName.c_str());
+            g_ErrorReport.Write(Text);
+            g_ErrorReport.Write(L"\r\n");
+            MessageBox(g_hWnd, Text, NULL, MB_OK);
+            SendMessage(g_hWnd, WM_DESTROY, 0, 0);
+            return false;
+        }
     }
 
     fseek(compressedFile, 0, SEEK_END);
     const auto fileSize = ftell(compressedFile);
-    if (fileSize < 24)
+    if (fileSize < 4)
     {
         fclose(compressedFile);
         return false;
     }
 
-    fseek(compressedFile, 24, SEEK_SET);
-    const auto jpegSize = fileSize - 24;
-    std::vector<unsigned char> jpegBuf(static_cast<size_t>(jpegSize));
-    fread(jpegBuf.data(), 1, jpegBuf.size(), compressedFile);
+    fseek(compressedFile, 0, SEEK_SET);
+    std::vector<unsigned char> fullBuf(static_cast<size_t>(fileSize));
+    fread(fullBuf.data(), 1, fullBuf.size(), compressedFile);
     fclose(compressedFile);
+
+    const unsigned char* jpegData = nullptr;
+    size_t jpegSize = 0;
+
+    // 1. Check if Webzen OZJ (24-byte header, JPEG starts at offset 24)
+    if (fullBuf.size() > 24 && fullBuf[24] == 0xFF && fullBuf[25] == 0xD8)
+    {
+        jpegData = fullBuf.data() + 24;
+        jpegSize = fullBuf.size() - 24;
+    }
+    // 2. Check if raw JPEG at offset 0
+    else if (fullBuf.size() >= 2 && fullBuf[0] == 0xFF && fullBuf[1] == 0xD8)
+    {
+        jpegData = fullBuf.data();
+        jpegSize = fullBuf.size();
+    }
+    else if (fullBuf.size() > 24)
+    {
+        jpegData = fullBuf.data() + 24;
+        jpegSize = fullBuf.size() - 24;
+    }
+    else
+    {
+        jpegData = fullBuf.data();
+        jpegSize = fullBuf.size();
+    }
 
     int jpegWidth = 0;
     int jpegHeight = 0;
@@ -183,33 +214,44 @@ bool OpenJpegBuffer(wchar_t* filename, float* BufferFloat)
     int jpegColorspace = TJCS_RGB;
 
     auto tjhandle = tjInitDecompress();
-    if (tjhandle == nullptr)
+    if (tjhandle != nullptr)
     {
-        return false;
+        auto result = tjDecompressHeader3(tjhandle, jpegData, jpegSize, &jpegWidth, &jpegHeight, &jpegSubsamp, &jpegColorspace);
+        if (result != 0 && jpegData != fullBuf.data() && fullBuf.size() >= 2 && fullBuf[0] == 0xFF && fullBuf[1] == 0xD8)
+        {
+            jpegData = fullBuf.data();
+            jpegSize = fullBuf.size();
+            result = tjDecompressHeader3(tjhandle, jpegData, jpegSize, &jpegWidth, &jpegHeight, &jpegSubsamp, &jpegColorspace);
+        }
+        else if (result != 0 && jpegData != fullBuf.data() + 24 && fullBuf.size() > 24)
+        {
+            jpegData = fullBuf.data() + 24;
+            jpegSize = fullBuf.size() - 24;
+            result = tjDecompressHeader3(tjhandle, jpegData, jpegSize, &jpegWidth, &jpegHeight, &jpegSubsamp, &jpegColorspace);
+        }
+
+        if (result == 0 && jpegWidth > 0 && jpegHeight > 0)
+        {
+            const auto bufferSize = static_cast<size_t>(jpegWidth) * static_cast<size_t>(jpegHeight) * 3;
+            std::vector<unsigned char> buffer(bufferSize);
+            result = tjDecompress2(tjhandle, jpegData, jpegSize, buffer.data(), jpegWidth, 0, jpegHeight, TJPF_RGB, TJFLAG_BOTTOMUP);
+            tjDestroy(tjhandle);
+            if (result == 0)
+            {
+                for (size_t i = 0; i < bufferSize; ++i)
+                {
+                    BufferFloat[i] = static_cast<float>(buffer[i]) / 255.f;
+                }
+                return true;
+            }
+        }
+        else
+        {
+            tjDestroy(tjhandle);
+        }
     }
 
-    auto result = tjDecompressHeader3(tjhandle, jpegBuf.data(), jpegBuf.size(), &jpegWidth, &jpegHeight, &jpegSubsamp, &jpegColorspace);
-    if (result != 0)
-    {
-        tjDestroy(tjhandle);
-        return false;
-    }
-
-    const auto bufferSize = static_cast<size_t>(jpegWidth) * static_cast<size_t>(jpegHeight) * 3;
-    std::vector<unsigned char> buffer(bufferSize);
-    result = tjDecompress2(tjhandle, jpegBuf.data(), jpegBuf.size(), buffer.data(), jpegWidth, 0, jpegHeight, TJPF_RGB, TJFLAG_BOTTOMUP);
-    tjDestroy(tjhandle);
-    if (result != 0)
-    {
-        return false;
-    }
-
-    for (size_t i = 0; i < bufferSize; ++i)
-    {
-        BufferFloat[i] = static_cast<float>(buffer[i]) / 255.f;
-    }
-
-    return true;
+    return false;
 }
 
 #ifdef KJH_ADD_INGAMESHOP_UI_SYSTEM
@@ -239,6 +281,7 @@ bool LoadBitmap(const wchar_t* szFileName, GLuint uiTextureIndex, GLuint uiFilte
         {
             wchar_t szErrorMsg[256] = { 0, };
             mu_swprintf(szErrorMsg, L"LoadBitmap Failed: %ls", szFullPath);
+            g_ErrorReport.Write(L"%ls\r\n", szErrorMsg);
 #ifdef FOR_WORK
             PopUpErrorCheckMsgBox(szErrorMsg);
 #else // FOR_WORK

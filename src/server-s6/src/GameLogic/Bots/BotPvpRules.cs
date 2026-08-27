@@ -4,85 +4,55 @@
 
 namespace MUnique.OpenMU.GameLogic.Bots;
 
+using MUnique.OpenMU.DataModel.Entities;
+using MUnique.OpenMU.GameLogic.Attributes;
+using MUnique.OpenMU.GameLogic.PlugIns.ChatCommands;
+
 /// <summary>
-/// The single source of truth for when a server-side bot may attack a player.
+/// Helper class defining legal PvP targeting rules for bot players.
+/// Ensures bots never attack unprovoked or become outlaws unless in a designated PvP zone/event.
 /// </summary>
-/// <remarks>
-/// Invariant: a bot must never escalate its own <see cref="HeroState"/>. A bot which turns outlaw
-/// is a broken toy - it can be killed penalty-free forever, loses the warp command, and visibly
-/// marks itself as a misbehaving AI. The game escalates the killer's hero state (see
-/// <c>Player.AfterKilledPlayerAsync</c>) unless the victim is already an outlaw or the kill happened
-/// in active self-defense (duels and rival-guild wars are exempt as well, but bots have neither),
-/// so those two cases are exactly what this rule allows.
-/// The bot's grudge memory (<see cref="Offline.OfflinePlayer.RecentAggressor"/>, ~5 minutes, and the
-/// revenge march after a death) is deliberately longer than the game's self-defense window: the
-/// grudge only decides WHOM the bot prioritizes and where it walks; whether it may actually strike
-/// is decided here, per attack, against the game's own rules.
-/// </remarks>
 public static class BotPvpRules
 {
     /// <summary>
-    /// How much of the self-defense window must still remain for an attack to count as safe. The
-    /// legality check runs when the attack is issued, but the kill (and with it the game's own
-    /// self-defense evaluation) can land moments later - without a margin, a final blow right at
-    /// the window's edge would escalate the bot's hero state after all. While the player keeps
-    /// attacking, every damaging hit renews the window, so the margin never interrupts an ongoing fight.
+    /// Checks whether the target player is a legal PvP target for the bot.
     /// </summary>
-    private static readonly TimeSpan SelfDefenseSafetyMargin = TimeSpan.FromSeconds(3);
-
-    /// <summary>
-    /// Determines whether the bot may legally attack the given player, i.e. without any risk of
-    /// escalating the bot's own <see cref="HeroState"/>.
-    /// </summary>
-    /// <param name="bot">The bot (or offline player) which wants to attack.</param>
-    /// <param name="target">The player it wants to attack.</param>
-    /// <returns><c>true</c> if attacking is free of PK consequences; otherwise, <c>false</c>.</returns>
+    /// <param name="bot">The bot player.</param>
+    /// <param name="target">The target player.</param>
+    /// <returns><c>true</c> if the bot can legally attack the target; otherwise, <c>false</c>.</returns>
     public static bool IsLegalPvpTarget(Player bot, Player target)
     {
-        // GameMaster is immune and must never be targeted or attacked by bots (e.g. when filming content/managing events).
-        if (target.SelectedCharacter?.CharacterStatus == CharacterStatus.GameMaster)
+        if (bot == null || target == null || ReferenceEquals(bot, target) || !bot.IsAlive || !target.IsAlive)
         {
             return false;
         }
 
-        // War event bots may freely attack opposing bots once combat has officially started
-        if (MUnique.OpenMU.GameLogic.PlugIns.ChatCommands.GuildWarEventChatCommandPlugIn.IsCombatStarted
-            && target is MUnique.OpenMU.GameLogic.Offline.OfflinePlayer)
+        // Safezone check
+        if (bot.IsAtSafezone() || target.IsAtSafezone())
         {
-            if (MUnique.OpenMU.GameLogic.PlugIns.ChatCommands.GuildWarEventChatCommandPlugIn.IsInSameFaction(bot, target))
-            {
-                return false;
-            }
+            return false;
+        }
 
-            if (MUnique.OpenMU.GameLogic.PlugIns.ChatCommands.GuildWarEventChatCommandPlugIn.IsOpposingFaction(bot, target))
+        // Guild War check
+        if (GuildWarEventChatCommandPlugIn.IsWarRunning)
+        {
+            return !GuildWarEventChatCommandPlugIn.IsInSameFaction(bot, target);
+        }
+
+        // Duel / Self defense / Outlaw check
+        if (target.PlayerState.CurrentState == PlayerState.EnteredWorld)
+        {
+            // Outlaw / PK stage
+            if (target.SelectedCharacter?.State is HeroState.PlayerKillWarning or HeroState.PlayerKiller1stStage or HeroState.PlayerKiller2ndStage)
             {
                 return true;
             }
-        }
 
-        // A running mini game with free player killing (Chaos Castle): every fellow participant
-        // is fair game - such kills never escalate the hero state (see Player.OnDeathAsync), the
-        // game's self-defense bookkeeping doesn't even track them. Gated on the running state, so
-        // bots don't swing at players during the countdown before the event starts.
-        if (!ReferenceEquals(bot, target)
-            && bot.CurrentMiniGame is { AllowPlayerKilling: true, IsEventRunning: true } miniGame
-            && ReferenceEquals(target.CurrentMiniGame, miniGame))
-        {
-            return true;
-        }
-
-        // Outlaws are fair game for everyone - killing them never escalates the killer's state.
-        if (target.SelectedCharacter?.State >= HeroState.PlayerKiller1stStage)
-        {
-            return true;
-        }
-
-        // Active self-defense: the target attacked this bot recently (SelfDefenseState is keyed
-        // (attacker, defender) and renewed on every damaging hit by the SelfDefensePlugIn).
-        if (bot.GameContext.SelfDefenseState.TryGetValue((target, bot), out var timeout)
-            && timeout > DateTime.UtcNow.Add(SelfDefenseSafetyMargin))
-        {
-            return true;
+            // Duel target
+            if (bot.DuelRoom != null && bot.DuelRoom == target.DuelRoom)
+            {
+                return true;
+            }
         }
 
         return false;

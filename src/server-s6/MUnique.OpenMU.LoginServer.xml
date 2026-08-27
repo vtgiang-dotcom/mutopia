@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>MUnique.OpenMU.LoginServer</name>
+    </assembly>
+    <members>
+        <member name="T:MUnique.OpenMU.LoginServer.LoginServer">
+            <summary>
+            The login server which keeps track of connected accounts in-memory.
+            </summary>
+        </member>
+        <member name="M:MUnique.OpenMU.LoginServer.LoginServer.GetSnapshotAsync">
+            <inheritdoc/>
+        </member>
+        <member name="M:MUnique.OpenMU.LoginServer.LoginServer.TryLoginAsync(System.String,System.Byte)">
+            <inheritdoc/>
+        </member>
+        <member name="M:MUnique.OpenMU.LoginServer.LoginServer.LogOffAsync(System.String,System.Byte)">
+            <inheritdoc/>
+        </member>
+    </members>
+</doc>

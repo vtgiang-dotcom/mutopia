@@ -1,0 +1,459 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>MUnique.OpenMU.ChatServer</name>
+    </assembly>
+    <members>
+        <member name="T:MUnique.OpenMU.ChatServer.ChatClient">
+            <summary>
+            ChatClient implementation, uses socket connections.
+            </summary>
+            <remarks>
+            Messages are decrypted and encrypted again with the same XOR3 key - in theory we could optimize this (and
+            the conversion to a string) away. However, we'll leave it for easier debugging.
+            </remarks>
+        </member>
+        <member name="F:MUnique.OpenMU.ChatServer.ChatClient.MessageDecryptor">
+            <summary>
+            <see cref="T:MUnique.OpenMU.Network.ISpanDecryptor"/> for chat messages. The incoming chat messages are "encrypted" with the commonly known XOR-3 encryption for reasons we don't know ;).
+            </summary>
+        </member>
+        <member name="F:MUnique.OpenMU.ChatServer.ChatClient.MessageEncryptor">
+            <summary>
+            <see cref="T:MUnique.OpenMU.Network.ISpanEncryptor"/> for chat messages. The outgoing chat messages are "encrypted" with the commonly known XOR-3 encryption for reasons we don't know ;).
+            </summary>
+        </member>
+        <member name="M:MUnique.OpenMU.ChatServer.ChatClient.#ctor(MUnique.OpenMU.Network.IConnection,MUnique.OpenMU.ChatServer.ChatRoomManager,Microsoft.Extensions.Logging.ILogger{MUnique.OpenMU.ChatServer.ChatClient})">
+            <summary>
+            Initializes a new instance of the <see cref="T:MUnique.OpenMU.ChatServer.ChatClient" /> class.
+            </summary>
+            <param name="connection">The connection.</param>
+            <param name="manager">The manager.</param>
+            <param name="logger">The logger.</param>
+        </member>
+        <member name="E:MUnique.OpenMU.ChatServer.ChatClient.Disconnected">
+            <summary>
+            Occurs when the client has been disconnected.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.ChatServer.ChatClient.Index">
+            <inheritdoc/>
+        </member>
+        <member name="P:MUnique.OpenMU.ChatServer.ChatClient.AuthenticationToken">
+            <inheritdoc />
+        </member>
+        <member name="P:MUnique.OpenMU.ChatServer.ChatClient.Nickname">
+            <inheritdoc/>
+        </member>
+        <member name="P:MUnique.OpenMU.ChatServer.ChatClient.LastActivity">
+            <inheritdoc/>
+        </member>
+        <member name="M:MUnique.OpenMU.ChatServer.ChatClient.SendMessageAsync(System.Byte,System.String)">
+            <inheritdoc/>
+        </member>
+        <member name="M:MUnique.OpenMU.ChatServer.ChatClient.SendChatRoomClientListAsync(System.Collections.Generic.IReadOnlyCollection{MUnique.OpenMU.ChatServer.IChatClient})">
+            <inheritdoc/>
+        </member>
+        <member name="M:MUnique.OpenMU.ChatServer.ChatClient.SendChatRoomClientUpdateAsync(System.Byte,System.String,MUnique.OpenMU.ChatServer.ChatRoomClientUpdateType)">
+            <inheritdoc/>
+        </member>
+        <member name="M:MUnique.OpenMU.ChatServer.ChatClient.LogOffAsync">
+            <inheritdoc/>
+        </member>
+        <member name="M:MUnique.OpenMU.ChatServer.ChatClient.ToString">
+            <summary>
+            Returns a <see cref="T:System.String" /> that represents this instance.
+            </summary>
+            <returns>
+            A <see cref="T:System.String" /> that represents this instance.
+            </returns>
+        </member>
+        <member name="T:MUnique.OpenMU.ChatServer.ChatRoom">
+            <summary>
+            This class represents a Chat Room.
+            </summary>
+        </member>
+        <member name="F:MUnique.OpenMU.ChatServer.ChatRoom._registeredClients">
+            <summary>
+            Nicknames of the registered Clients.
+            </summary>
+        </member>
+        <member name="F:MUnique.OpenMU.ChatServer.ChatRoom._connectedClients">
+            <summary>
+            Gets the <see cref="T:MUnique.OpenMU.ChatServer.IChatClient"/>s which are currently connected to the ChatRoom.
+            </summary>
+        </member>
+        <member name="M:MUnique.OpenMU.ChatServer.ChatRoom.#ctor(System.UInt16,Microsoft.Extensions.Logging.ILogger{MUnique.OpenMU.ChatServer.ChatRoom})">
+            <summary>
+            Initializes a new instance of the <see cref="T:MUnique.OpenMU.ChatServer.ChatRoom" /> class.
+            </summary>
+            <param name="roomId">The room identifier.</param>
+            <param name="logger">The logger.</param>
+        </member>
+        <member name="P:MUnique.OpenMU.ChatServer.ChatRoom.ConnectedClients">
+            <summary>
+            Gets the currently connected clients.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.ChatServer.ChatRoom.RoomId">
+            <summary>
+            Gets the id of the Chat Room.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.ChatServer.ChatRoom.AuthenticationRequiredUntil">
+            <summary>
+            Gets a datetime indicating until a authentication is required.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.ChatServer.ChatRoom.RoomClosed">
+            <summary>
+            Gets or sets the room closed event handler.
+            </summary>
+        </member>
+        <member name="M:MUnique.OpenMU.ChatServer.ChatRoom.RegisterClient(MUnique.OpenMU.Interfaces.ChatServerAuthenticationInfo)">
+            <summary>
+            Registers a chat client to the chatroom. this is only called
+            by the game server which will send id to the participants
+            over the games connection.
+            </summary>
+            <param name="authenticationInfo">Authentication information of the participant.</param>
+        </member>
+        <member name="M:MUnique.OpenMU.ChatServer.ChatRoom.GetNextClientIndex">
+            <summary>
+            Gets the index of the next client.
+            </summary>
+            <returns>The index of the next client.</returns>
+        </member>
+        <member name="M:MUnique.OpenMU.ChatServer.ChatRoom.Close">
+            <summary>
+            Closes this chat room by disconnecting all clients.
+            </summary>
+        </member>
+        <member name="M:MUnique.OpenMU.ChatServer.ChatRoom.Dispose">
+            <summary>
+            Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+            </summary>
+        </member>
+        <member name="M:MUnique.OpenMU.ChatServer.ChatRoom.TryJoinAsync(MUnique.OpenMU.ChatServer.IChatClient)">
+            <summary>
+            The specified client will join the chatroom, if its registered. The Nickname is set to the clients object.
+            </summary>
+            <param name="chatClient">The chat client.</param>
+            <returns>True, if the <paramref name="chatClient"/> provides the correct registered id with it's token.</returns>
+        </member>
+        <member name="M:MUnique.OpenMU.ChatServer.ChatRoom.LeaveAsync(MUnique.OpenMU.ChatServer.IChatClient)">
+            <summary>
+            The specified client will leave the chatroom.
+            If the chatroom is empty then, it will be removed from the manager.
+            </summary>
+            <param name="chatClient">The chat client.</param>
+        </member>
+        <member name="M:MUnique.OpenMU.ChatServer.ChatRoom.SendMessageAsync(System.Byte,System.String)">
+            <summary>
+            Sends a Message to all chat clients.
+            </summary>
+            <param name="senderId">The sender identifier.</param>
+            <param name="message">The message.</param>
+        </member>
+        <member name="T:MUnique.OpenMU.ChatServer.ChatRoomClosedEventArgs">
+            <summary>
+            Event arguments which contains the chat room which has been closed.
+            </summary>
+            <seealso cref="T:System.EventArgs" />
+        </member>
+        <member name="M:MUnique.OpenMU.ChatServer.ChatRoomClosedEventArgs.#ctor(MUnique.OpenMU.ChatServer.ChatRoom)">
+            <summary>
+            Initializes a new instance of the <see cref="T:MUnique.OpenMU.ChatServer.ChatRoomClosedEventArgs"/> class.
+            </summary>
+            <param name="room">The chat room.</param>
+        </member>
+        <member name="P:MUnique.OpenMU.ChatServer.ChatRoomClosedEventArgs.ChatRoom">
+            <summary>
+            Gets the chat room which has been closed.
+            </summary>
+        </member>
+        <member name="T:MUnique.OpenMU.ChatServer.ChatRoomManager">
+            <summary>
+            The Chat Room Manager manages the creation and destruction of chat rooms.
+            </summary>
+        </member>
+        <member name="F:MUnique.OpenMU.ChatServer.ChatRoomManager._rooms">
+            <summary>
+            All currently used chat rooms.
+            </summary>
+        </member>
+        <member name="M:MUnique.OpenMU.ChatServer.ChatRoomManager.#ctor(Microsoft.Extensions.Logging.ILoggerFactory)">
+            <summary>
+            Initializes a new instance of the <see cref="T:MUnique.OpenMU.ChatServer.ChatRoomManager" /> class.
+            </summary>
+            <param name="loggerFactory">The logger factory.</param>
+        </member>
+        <member name="P:MUnique.OpenMU.ChatServer.ChatRoomManager.OpenedRooms">
+            <summary>
+            Gets the opened rooms.
+            </summary>
+        </member>
+        <member name="M:MUnique.OpenMU.ChatServer.ChatRoomManager.CreateChatRoom">
+            <summary>
+            Creates a new ChatRoom and returns its Room-ID.
+            </summary>
+            <returns>The Room-ID of the new room. Returns ushort.MaxValue, if there is no free chat room available.</returns>
+        </member>
+        <member name="M:MUnique.OpenMU.ChatServer.ChatRoomManager.GetChatRoom(System.UInt16)">
+            <summary>
+            Returns the chat room with the corresponding Room-ID.
+            Returns null, if ChatRoom wasn't found.
+            </summary>
+            <param name="roomId">Room-ID.</param>
+            <returns>ChatRoom or null.</returns>
+        </member>
+        <member name="T:MUnique.OpenMU.ChatServer.ChatServer">
+            <summary>
+            Chat Server Listener that accepts incoming connections.
+            </summary>
+        </member>
+        <member name="M:MUnique.OpenMU.ChatServer.ChatServer.#ctor(MUnique.OpenMU.Network.IIpAddressResolver,Microsoft.Extensions.Logging.ILoggerFactory,MUnique.OpenMU.PlugIns.PlugInManager)">
+            <summary>
+            Initializes a new instance of the <see cref="T:MUnique.OpenMU.ChatServer.ChatServer" /> class.
+            </summary>
+            <param name="addressResolver">The address resolver which returns the address on which the listener will be bound to.</param>
+            <param name="loggerFactory">The logger factory.</param>
+            <param name="plugInManager">The plug in manager.</param>
+        </member>
+        <member name="E:MUnique.OpenMU.ChatServer.ChatServer.PropertyChanged">
+            <inheritdoc/>
+        </member>
+        <member name="P:MUnique.OpenMU.ChatServer.ChatServer.Description">
+            <inheritdoc/>
+        </member>
+        <member name="P:MUnique.OpenMU.ChatServer.ChatServer.Id">
+            <inheritdoc/>
+        </member>
+        <member name="P:MUnique.OpenMU.ChatServer.ChatServer.ConfigurationId">
+            <inheritdoc />
+        </member>
+        <member name="P:MUnique.OpenMU.ChatServer.ChatServer.Type">
+            <inheritdoc />
+        </member>
+        <member name="P:MUnique.OpenMU.ChatServer.ChatServer.ServerState">
+            <inheritdoc/>
+        </member>
+        <member name="P:MUnique.OpenMU.ChatServer.ChatServer.MaximumConnections">
+            <inheritdoc/>
+        </member>
+        <member name="P:MUnique.OpenMU.ChatServer.ChatServer.CurrentConnections">
+            <inheritdoc/>
+        </member>
+        <member name="M:MUnique.OpenMU.ChatServer.ChatServer.RegisterClientAsync(System.UInt16,System.String)">
+            <inheritdoc/>
+        </member>
+        <member name="M:MUnique.OpenMU.ChatServer.ChatServer.CreateChatRoomAsync">
+            <inheritdoc/>
+        </member>
+        <member name="M:MUnique.OpenMU.ChatServer.ChatServer.StartAsync(System.Threading.CancellationToken)">
+            <inheritdoc />
+        </member>
+        <member name="M:MUnique.OpenMU.ChatServer.ChatServer.StartAsync">
+            <summary>
+            Starts the listener of this chat server instance.
+            </summary>
+        </member>
+        <member name="M:MUnique.OpenMU.ChatServer.ChatServer.StopAsync(System.Threading.CancellationToken)">
+            <inheritdoc />
+        </member>
+        <member name="M:MUnique.OpenMU.ChatServer.ChatServer.Initialize(MUnique.OpenMU.ChatServer.ChatServerSettings)">
+            <summary>
+            Initializes the server with the specified settings.
+            </summary>
+            <param name="settings">The settings.</param>
+            <exception cref="T:System.InvalidOperationException">Can only initialize when server is stopped.</exception>
+        </member>
+        <member name="M:MUnique.OpenMU.ChatServer.ChatServer.ShutdownAsync">
+            <inheritdoc/>
+        </member>
+        <member name="M:MUnique.OpenMU.ChatServer.ChatServer.Dispose">
+            <summary>
+            Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+            </summary>
+        </member>
+        <member name="M:MUnique.OpenMU.ChatServer.ChatServer.GetRandomAuthenticationToken(System.Byte)">
+            <summary>
+            Gets a random authentication token.
+            </summary>
+            <param name="clientIndex">Index of the client.</param>
+            <returns>The random authentication token as a string.</returns>
+            <remarks>
+             This is the original way of generating the token - not especially secure, but to keep it simple, I leave it that way.
+            </remarks>
+        </member>
+        <member name="M:MUnique.OpenMU.ChatServer.ChatServer.RaisePropertyChanged(System.String)">
+            <summary>
+            Called when a property changed.
+            </summary>
+            <param name="propertyName">Name of the property.</param>
+        </member>
+        <member name="T:MUnique.OpenMU.ChatServer.ChatServerEndpoint">
+            <summary>
+            A client-version-specific endpoint for a chat server.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.ChatServer.ChatServerEndpoint.NetworkPort">
+            <summary>
+            Gets or sets the tcp network port under which the server is listening for new clients.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.ChatServer.ChatServerEndpoint.ClientVersion">
+            <summary>
+            Gets or sets the client version for which the endpoint is meant for.
+            </summary>
+        </member>
+        <member name="T:MUnique.OpenMU.ChatServer.ChatServerListener">
+            <summary>
+            A listener which listens to the specified endpoint and provides the initialized <see cref="T:MUnique.OpenMU.Network.IConnection"/> by the event <see cref="E:MUnique.OpenMU.ChatServer.ChatServerListener.ClientAccepted"/>.
+            </summary>
+        </member>
+        <member name="M:MUnique.OpenMU.ChatServer.ChatServerListener.#ctor(MUnique.OpenMU.ChatServer.ChatServerEndpoint,MUnique.OpenMU.PlugIns.PlugInManager,Microsoft.Extensions.Logging.ILoggerFactory)">
+            <summary>
+            Initializes a new instance of the <see cref="T:MUnique.OpenMU.ChatServer.ChatServerListener" /> class.
+            </summary>
+            <param name="endpoint">The endpoint.</param>
+            <param name="plugInManager">The plug in manager.</param>
+            <param name="loggerFactory">The logger factory.</param>
+        </member>
+        <member name="E:MUnique.OpenMU.ChatServer.ChatServerListener.ClientAccepted">
+            <summary>
+            Occurs when a new client was accepted.
+            </summary>
+        </member>
+        <member name="E:MUnique.OpenMU.ChatServer.ChatServerListener.ClientAccepting">
+            <summary>
+            Occurs when a client has been accepted by the tcp listener, but before a <see cref="T:MUnique.OpenMU.Network.Connection"/> is created.
+            </summary>
+        </member>
+        <member name="M:MUnique.OpenMU.ChatServer.ChatServerListener.Start">
+            <summary>
+            Starts the tcp listener of this instance.
+            </summary>
+        </member>
+        <member name="M:MUnique.OpenMU.ChatServer.ChatServerListener.Stop">
+            <summary>
+            Stops this instance.
+            </summary>
+        </member>
+        <member name="T:MUnique.OpenMU.ChatServer.ChatServerSettings">
+            <summary>
+            Settings for the <see cref="T:MUnique.OpenMU.ChatServer.ChatServer"/>.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.ChatServer.ChatServerSettings.Id">
+            <summary>
+            Gets or sets the identifier for this configuration.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.ChatServer.ChatServerSettings.ServerId">
+            <summary>
+            Gets or sets the server identifier.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.ChatServer.ChatServerSettings.Description">
+            <summary>
+            Gets or sets the description.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.ChatServer.ChatServerSettings.MaximumConnections">
+            <summary>
+            Gets or sets the maximum connections.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.ChatServer.ChatServerSettings.ClientTimeout">
+            <summary>
+            Gets or sets the client timeout. When a client did not send any data in this timespan, it's automatically disconnected.
+            </summary>
+            <value>
+            The client timeout.
+            </value>
+        </member>
+        <member name="P:MUnique.OpenMU.ChatServer.ChatServerSettings.ClientCleanUpInterval">
+            <summary>
+            Gets or sets the interval in which a client clean up takes place.
+            For all connected clients it's checked whether or not the <see cref="P:MUnique.OpenMU.ChatServer.ChatServerSettings.ClientTimeout"/> has been reached.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.ChatServer.ChatServerSettings.RoomCleanUpInterval">
+            <summary>
+            Gets or sets the interval in which empty chat rooms are cleaned up.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.ChatServer.ChatServerSettings.Endpoints">
+            <summary>
+            Gets the endpoints under which the chat server is available for specific game clients.
+            </summary>
+        </member>
+        <member name="T:MUnique.OpenMU.ChatServer.ChatRoomClientUpdateType">
+            <summary>
+            Type of the chat room client update message.
+            </summary>
+        </member>
+        <member name="F:MUnique.OpenMU.ChatServer.ChatRoomClientUpdateType.Joined">
+            <summary>
+            A client joined the chat room. Then the client which receives the message adds this client to it's local chat room client list.
+            </summary>
+        </member>
+        <member name="F:MUnique.OpenMU.ChatServer.ChatRoomClientUpdateType.Left">
+            <summary>
+            A client left the chat room. Then the client which receives the message removes this client from it's local chat room client list.
+            </summary>
+        </member>
+        <member name="T:MUnique.OpenMU.ChatServer.IChatClient">
+            <summary>
+            Interface for a chat client.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.ChatServer.IChatClient.Index">
+            <summary>
+            Gets or sets the index of the client in the room.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.ChatServer.IChatClient.AuthenticationToken">
+            <summary>
+            Gets the authentication token which was sent by the client.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.ChatServer.IChatClient.Nickname">
+            <summary>
+            Gets or sets the nickname.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.ChatServer.IChatClient.LastActivity">
+            <summary>
+            Gets the last activity.
+            </summary>
+        </member>
+        <member name="M:MUnique.OpenMU.ChatServer.IChatClient.LogOffAsync">
+            <summary>
+            Logs the chat client off, which means it removes it from it's current chat room and closes the connection.
+            </summary>
+        </member>
+        <member name="M:MUnique.OpenMU.ChatServer.IChatClient.SendMessageAsync(System.Byte,System.String)">
+            <summary>
+            Sends the message to this chat client.
+            </summary>
+            <param name="senderId">The sender identifier.</param>
+            <param name="message">The message.</param>
+        </member>
+        <member name="M:MUnique.OpenMU.ChatServer.IChatClient.SendChatRoomClientListAsync(System.Collections.Generic.IReadOnlyCollection{MUnique.OpenMU.ChatServer.IChatClient})">
+            <summary>
+            Sends the client list of the chat room to this client.
+            </summary>
+            <param name="clients">The chat room clients.</param>
+        </member>
+        <member name="M:MUnique.OpenMU.ChatServer.IChatClient.SendChatRoomClientUpdateAsync(System.Byte,System.String,MUnique.OpenMU.ChatServer.ChatRoomClientUpdateType)">
+            <summary>
+            Notifies the client that another client has joined the chat room.
+            </summary>
+            <param name="updatedClientId">The joined client identifier.</param>
+            <param name="updatedClientName">Name of the joined client.</param>
+            <param name="updateType">Type of the update (join or leave).</param>
+        </member>
+    </members>
+</doc>

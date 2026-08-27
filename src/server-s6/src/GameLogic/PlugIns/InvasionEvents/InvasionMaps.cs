@@ -33,4 +33,19 @@ internal static class InvasionMaps
     /// The Tarkan map.
     /// </summary>
     public const ushort Tarkan = 8;
+
+    /// <summary>
+    /// The Kanturu Relics map (map 38).
+    /// </summary>
+    public const ushort KanturuRelics = 38;
+
+    /// <summary>
+    /// The Raklion Hatchery map (map 57).
+    /// </summary>
+    public const ushort Raklion = 57;
+
+    /// <summary>
+    /// The Swamp of Calmness map (map 56).
+    /// </summary>
+    public const ushort SwampOfCalmness = 56;
 }

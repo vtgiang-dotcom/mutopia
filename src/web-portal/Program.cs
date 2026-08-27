@@ -84,13 +84,13 @@ app.UseRateLimiter();
 app.MapPost("/api/auth/login", async (HttpContext httpContext, AccountService accountService) =>
 {
     var form = await httpContext.Request.ReadFormAsync();
-    var loginName = form["loginName"].ToString();
+    var loginName = form["loginName"].ToString().Trim();
     var password = form["password"].ToString();
 
     var account = await accountService.AuthenticateAsync(loginName, password);
     if (account is null)
     {
-        return Results.Redirect("/login?error=Invalid username or password.");
+        return Results.Redirect($"/login?error=Invalid+username+or+password.&username={Uri.EscapeDataString(loginName)}");
     }
 
     var isGm = await accountService.IsGameMasterAsync(account.Id);
@@ -106,6 +106,23 @@ app.MapPost("/api/auth/login", async (HttpContext httpContext, AccountService ac
 
     await httpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal);
     return Results.Redirect("/account");
+}).DisableAntiforgery().RequireRateLimiting("login");
+
+app.MapPost("/api/auth/register", async (HttpContext httpContext, AccountService accountService) =>
+{
+    var form = await httpContext.Request.ReadFormAsync();
+    var loginName = form["loginName"].ToString().Trim();
+    var email = form["email"].ToString().Trim();
+    var password = form["password"].ToString();
+    var repeatPassword = form["repeatPassword"].ToString();
+
+    var error = await accountService.RegisterAsync(loginName, email, password, repeatPassword);
+    if (error is not null)
+    {
+        return Results.Redirect($"/register?error={Uri.EscapeDataString(error)}");
+    }
+
+    return Results.Redirect($"/login?registered=1&username={Uri.EscapeDataString(loginName)}");
 }).DisableAntiforgery().RequireRateLimiting("login");
 
 app.MapGet("/logout", async (HttpContext httpContext) =>

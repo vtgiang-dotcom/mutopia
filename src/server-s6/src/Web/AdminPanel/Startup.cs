@@ -1,31 +1,18 @@
-﻿// <copyright file="Startup.cs" company="MUnique">
+// <copyright file="Startup.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
 namespace MUnique.OpenMU.Web.AdminPanel;
 
-using System.IO;
-using Blazored.Toast;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Hosting;
-using MUnique.OpenMU.DataModel.Entities;
-using MUnique.OpenMU.Web.AdminPanel.Components;
-using MUnique.OpenMU.Web.AdminPanel.Services;
-using MUnique.OpenMU.Web.Shared;
-using MUnique.OpenMU.Web.Shared.Components.Modal;
-using MUnique.OpenMU.Web.Shared.Models;
-using MUnique.OpenMU.Web.Shared.Services;
 
 /// <summary>
-/// The startup class for the blazor app.
+/// The startup class for the admin panel standalone host.
 /// </summary>
-/// <remarks>
-/// This class is only used when running as all-in-one deployment.
-/// </remarks>
 public class Startup
 {
     /// <summary>
@@ -40,77 +27,34 @@ public class Startup
     /// <summary>
     /// Gets the configuration.
     /// </summary>
-    /// <value>
-    /// The configuration.
-    /// </value>
     public IConfiguration Configuration { get; }
 
     /// <summary>
-    /// This method gets called by the runtime. Use this method to add services to the container.
-    /// For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940.
+    /// Configures the services.
     /// </summary>
-    /// <param name="services">The service collection.</param>
+    /// <param name="services">The services.</param>
     public void ConfigureServices(IServiceCollection services)
     {
-        services.AddRazorComponents()
-            .AddInteractiveServerComponents();
-
-        services.AddSignalR().AddJsonProtocol(o => o.PayloadSerializerOptions.Converters.Add(new TimeSpanConverter()));
-
-        services.AddControllers()
-            .ConfigureApplicationPartManager(setup =>
-                setup.FeatureProviders.Add(new GenericControllerFeatureProvider()));
-
-        services.AddBlazoredToast();
-        services.AddScoped<ModalService>();
-        services.AddScoped<IModalService>(sp => sp.GetRequiredService<ModalService>());
-
-        services.AddSingleton<ILookupController, PersistentObjectsLookupController>();
-        services.AddSingleton<ConfigurationSearchIndexCache>();
-
-        services.AddScoped<AccountService>();
-        services.AddScoped<IDataService<Account>>(serviceProvider => serviceProvider.GetService<AccountService>()!);
-
-        services.AddScoped<PlugInController>();
-        services.AddScoped<IDataService<PlugInConfigurationViewItem>>(serviceProvider => serviceProvider.GetService<PlugInController>()!);
-        services.AddScoped<ChatCommandController>();
-        services.AddScoped<IDataService<ChatCommandViewItem>>(serviceProvider => serviceProvider.GetService<ChatCommandController>()!);
-        services.AddScoped<CreationPanelService>();
-
-        services.AddScoped<IChangeNotificationService, ChangeNotificationService>();
+        // Service registration handled via WebApplicationExtensions.AddAdminPanel
     }
 
     /// <summary>
-    /// This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
+    /// Configures the application.
     /// </summary>
-    /// <param name="app">The app builder.</param>
-    /// <param name="env">The web host environment.</param>
+    /// <param name="app">The application builder.</param>
+    /// <param name="env">The host environment.</param>
     public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
     {
         if (env.IsDevelopment())
         {
             app.UseDeveloperExceptionPage();
         }
-        else
-        {
-            app.UseExceptionHandler("/Error", createScopeForErrors: true);
-        }
 
-        // HTTPS redirection disabled — container runs behind plain HTTP port mapping (8081:8080).
-        // HSTS and UseHttpsRedirection break Blazor SignalR WebSocket when no SSL cert is available.
         app.UseStaticFiles();
-        app.UseStaticFiles(new StaticFileOptions
-        {
-            FileProvider = new PhysicalFileProvider(Path.Combine(Directory.GetCurrentDirectory(), "logs")),
-            RequestPath = "/logs",
-        });
-
-        app.UseAntiforgery();
+        app.UseRouting();
 
         app.UseEndpoints(endpoints =>
         {
-            endpoints.MapRazorComponents<App>()
-                .AddInteractiveServerRenderMode();
             endpoints.MapControllers();
         });
     }

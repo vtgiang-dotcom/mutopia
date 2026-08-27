@@ -1,0 +1,233 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>MUnique.OpenMU.FriendServer</name>
+    </assembly>
+    <members>
+        <member name="T:MUnique.OpenMU.FriendServer.FriendNotifierToGameServer">
+            <summary>
+            An implementation of a <see cref="T:MUnique.OpenMU.FriendServer.IFriendNotifier"/> which forwards the calls to the available game server instances.
+            </summary>
+        </member>
+        <member name="M:MUnique.OpenMU.FriendServer.FriendNotifierToGameServer.#ctor(System.Collections.Generic.IDictionary{System.Int32,MUnique.OpenMU.Interfaces.IGameServer})">
+            <summary>
+            Initializes a new instance of the <see cref="T:MUnique.OpenMU.FriendServer.FriendNotifierToGameServer"/> class.
+            </summary>
+            <param name="gameServers">The game servers.</param>
+        </member>
+        <member name="M:MUnique.OpenMU.FriendServer.FriendNotifierToGameServer.FriendRequestAsync(System.String,System.String,System.Int32)">
+            <inheritdoc />
+        </member>
+        <member name="M:MUnique.OpenMU.FriendServer.FriendNotifierToGameServer.LetterReceivedAsync(MUnique.OpenMU.Interfaces.LetterHeader)">
+            <inheritdoc />
+        </member>
+        <member name="M:MUnique.OpenMU.FriendServer.FriendNotifierToGameServer.FriendOnlineStateChangedAsync(System.Int32,System.String,System.String,System.Int32)">
+            <inheritdoc />
+        </member>
+        <member name="M:MUnique.OpenMU.FriendServer.FriendNotifierToGameServer.ChatRoomCreatedAsync(System.Int32,MUnique.OpenMU.Interfaces.ChatServerAuthenticationInfo,System.String)">
+            <inheritdoc />
+        </member>
+        <member name="M:MUnique.OpenMU.FriendServer.FriendNotifierToGameServer.InitializeMessengerAsync(System.Int32,MUnique.OpenMU.Interfaces.MessengerInitializationData)">
+            <inheritdoc />
+        </member>
+        <member name="T:MUnique.OpenMU.FriendServer.FriendServer">
+            <summary>
+            The friend server which manages the friend list with chat and letter system.
+            </summary>
+        </member>
+        <member name="M:MUnique.OpenMU.FriendServer.FriendServer.#ctor(MUnique.OpenMU.FriendServer.IFriendNotifier,MUnique.OpenMU.Interfaces.IChatServer,MUnique.OpenMU.Persistence.IPersistenceContextProvider,Microsoft.Extensions.Logging.ILogger{MUnique.OpenMU.FriendServer.FriendServer})">
+            <summary>
+            Initializes a new instance of the <see cref="T:MUnique.OpenMU.FriendServer.FriendServer" /> class.
+            </summary>
+            <param name="friendNotifier">The friend notifier.</param>
+            <param name="chatServer">The chat server.</param>
+            <param name="persistenceContextProvider">The persistence context provider.</param>
+            <param name="logger">The logger.</param>
+        </member>
+        <member name="P:MUnique.OpenMU.FriendServer.FriendServer.OfflineServerId">
+            <summary>
+            Gets the server id which represents being offline.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.FriendServer.FriendServer.InvisibleServerId">
+            <summary>
+            Gets the server id which represents being invisible (=offline to other players).
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.FriendServer.FriendServer.OnlineFriends">
+            <summary>
+            Gets the online friends dictionary. The key is the name of the character of the corresponding OnlineFriend object.
+            </summary>
+        </member>
+        <member name="M:MUnique.OpenMU.FriendServer.FriendServer.ForwardLetterAsync(MUnique.OpenMU.Interfaces.LetterHeader)">
+            <inheritdoc/>
+        </member>
+        <member name="M:MUnique.OpenMU.FriendServer.FriendServer.FriendRequestAsync(System.String,System.String)">
+            <inheritdoc/>
+        </member>
+        <member name="M:MUnique.OpenMU.FriendServer.FriendServer.IsFriendAsync(System.String,System.String)">
+            <inheritdoc/>
+        </member>
+        <member name="M:MUnique.OpenMU.FriendServer.FriendServer.DeleteFriendAsync(System.String,System.String)">
+            <inheritdoc/>
+        </member>
+        <member name="M:MUnique.OpenMU.FriendServer.FriendServer.FriendResponseAsync(System.String,System.String,System.Boolean)">
+            <inheritdoc/>
+        </member>
+        <member name="M:MUnique.OpenMU.FriendServer.FriendServer.CreateChatRoomAsync(System.String,System.String)">
+            <inheritdoc/>
+        </member>
+        <member name="M:MUnique.OpenMU.FriendServer.FriendServer.InviteFriendToChatRoomAsync(System.String,System.String,System.UInt16)">
+            <inheritdoc />
+        </member>
+        <member name="M:MUnique.OpenMU.FriendServer.FriendServer.PlayerEnteredGameAsync(System.Byte,System.Guid,System.String)">
+            <remarks>Note, that the ServerId is not filled by this implementation. The player will receive it separately when the subscription is created.</remarks>
+            <inheritdoc/>
+        </member>
+        <member name="M:MUnique.OpenMU.FriendServer.FriendServer.PlayerLeftGameAsync(System.Guid,System.String)">
+            <inheritdoc/>
+        </member>
+        <member name="M:MUnique.OpenMU.FriendServer.FriendServer.SetPlayerVisibilityStateAsync(System.Byte,System.Guid,System.String,System.Boolean)">
+            <inheritdoc/>
+        </member>
+        <member name="T:MUnique.OpenMU.FriendServer.IFriendNotifier">
+            <summary>
+            Interface for a class which notifies a player about changes in the friend system.
+            </summary>
+        </member>
+        <member name="M:MUnique.OpenMU.FriendServer.IFriendNotifier.FriendRequestAsync(System.String,System.String,System.Int32)">
+            <summary>
+            Notifies the server that a player made a friend request to another player, which is online on this server.
+            </summary>
+            <param name="requester">The requester.</param>
+            <param name="receiver">The receiver.</param>
+            <param name="serverId">The server identifier of the receiver.</param>
+        </member>
+        <member name="M:MUnique.OpenMU.FriendServer.IFriendNotifier.LetterReceivedAsync(MUnique.OpenMU.Interfaces.LetterHeader)">
+            <summary>
+            Notifies the game server that a letter got received for an online player.
+            </summary>
+            <param name="letter">The letter header.</param>
+        </member>
+        <member name="M:MUnique.OpenMU.FriendServer.IFriendNotifier.FriendOnlineStateChangedAsync(System.Int32,System.String,System.String,System.Int32)">
+            <summary>
+            Notifies the game server that a friend online state changed.
+            </summary>
+            <param name="playerServerId">The player server identifier.</param>
+            <param name="player">The player who is playing on the server, and needs to get notified.</param>
+            <param name="friend">The friend whose state changed.</param>
+            <param name="friendServerId">The friend server identifier.</param>
+        </member>
+        <member name="M:MUnique.OpenMU.FriendServer.IFriendNotifier.ChatRoomCreatedAsync(System.Int32,MUnique.OpenMU.Interfaces.ChatServerAuthenticationInfo,System.String)">
+            <summary>
+            Notifies the game server that a chat room got created on the chat server for a player which is online on this game server.
+            </summary>
+            <param name="serverId">The server identifier.</param>
+            <param name="playerAuthenticationInfo">Authentication information of the player who should get notified about the created chat room.</param>
+            <param name="friendName">Name of the friend player which is expected to be in the chat room.</param>
+        </member>
+        <member name="M:MUnique.OpenMU.FriendServer.IFriendNotifier.InitializeMessengerAsync(System.Int32,MUnique.OpenMU.Interfaces.MessengerInitializationData)">
+            <summary>
+            Initializes the messenger for a connected player.
+            </summary>
+            <param name="serverId">The server identifier.</param>
+            <param name="initializationData">The initialization data.</param>
+        </member>
+        <member name="T:MUnique.OpenMU.FriendServer.OnlineFriend">
+            <summary>
+            Represents an online friend who can observe his other friends, and be subscribed by other friends.
+            </summary>
+        </member>
+        <member name="F:MUnique.OpenMU.FriendServer.OnlineFriend._subscribers">
+            <summary>
+            The subscribers which want to know state changes of this instance.
+            </summary>
+        </member>
+        <member name="F:MUnique.OpenMU.FriendServer.OnlineFriend._readerWriterLock">
+            <summary>
+            The synchronize object which is used for locks.
+            </summary>
+        </member>
+        <member name="F:MUnique.OpenMU.FriendServer.OnlineFriend._subscriptions">
+            <summary>
+            This are all subscriptions, to which this player subscribed.
+            </summary>
+        </member>
+        <member name="M:MUnique.OpenMU.FriendServer.OnlineFriend.#ctor(MUnique.OpenMU.FriendServer.IFriendNotifier,System.String)">
+            <summary>
+            Initializes a new instance of the <see cref="T:MUnique.OpenMU.FriendServer.OnlineFriend" /> class.
+            </summary>
+            <param name="gameServer">The game server.</param>
+            <param name="playerName">Name of the player.</param>
+        </member>
+        <member name="P:MUnique.OpenMU.FriendServer.OnlineFriend.PlayerName">
+            <summary>
+            Gets the name of the player.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.FriendServer.OnlineFriend.ServerId">
+            <summary>
+            Gets or sets the server identifier.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.FriendServer.OnlineFriend.IsInvisibleOrOffline">
+            <summary>
+            Gets a value indicating whether this friend is invisible or offline.
+            </summary>
+        </member>
+        <member name="P:MUnique.OpenMU.FriendServer.OnlineFriend.Subscribers">
+            <summary>
+            Gets the subscribers which want to know when the online state of the friend changes.
+            </summary>
+        </member>
+        <member name="M:MUnique.OpenMU.FriendServer.OnlineFriend.Subscribe(System.IObserver{MUnique.OpenMU.FriendServer.OnlineFriend})">
+            <summary>
+            Subscribes the specified observer who want to know when the online state of the friend changes.
+            </summary>
+            <param name="observer">The observer.</param>
+            <returns>The <see cref="T:System.IDisposable"/> to unsubscribe.</returns>
+        </member>
+        <member name="M:MUnique.OpenMU.FriendServer.OnlineFriend.AddSubscription(System.IDisposable)">
+            <summary>
+            Remembers the subscription of an observation, to be able to unsubscribe later.
+            </summary>
+            <param name="subscription">The subscription.</param>
+        </member>
+        <member name="M:MUnique.OpenMU.FriendServer.OnlineFriend.OnCompleted">
+            <summary>
+            Will be called, when this player is getting removed from the player list.
+            </summary>
+        </member>
+        <member name="M:MUnique.OpenMU.FriendServer.OnlineFriend.OnError(System.Exception)">
+            <inheritdoc/>
+        </member>
+        <member name="M:MUnique.OpenMU.FriendServer.OnlineFriend.OnNext(MUnique.OpenMU.FriendServer.OnlineFriend)">
+            <summary>
+            Will be called when a subscribed onlinefriend changes his state.
+            </summary>
+            <param name="value">online friend with changed state.</param>
+        </member>
+        <member name="M:MUnique.OpenMU.FriendServer.OnlineFriend.ChangeServer(System.Int32)">
+            <summary>
+            This player is changing its server. All subscribers will be informed.
+            </summary>
+            <param name="serverId">The new server id of this instance.</param>
+        </member>
+        <member name="M:MUnique.OpenMU.FriendServer.OnlineFriend.HasSubscriber(MUnique.OpenMU.FriendServer.OnlineFriend)">
+            <summary>
+            Determines whether the specified player is a subscriber of this player.
+            </summary>
+            <param name="player">The player.</param>
+            <returns>True, if the specified player is a subscriber of this player.</returns>
+        </member>
+        <member name="M:MUnique.OpenMU.FriendServer.OnlineFriend.RemoveSubscriber(MUnique.OpenMU.FriendServer.OnlineFriend)">
+            <summary>
+            Removes the subscriber (friendship ended) and sends him the new state that this instance is offline now.
+            </summary>
+            <param name="friend">The player who should no longer get state updates.</param>
+        </member>
+        <member name="M:MUnique.OpenMU.FriendServer.OnlineFriend.Dispose">
+            <inheritdoc/>
+        </member>
+    </members>
+</doc>

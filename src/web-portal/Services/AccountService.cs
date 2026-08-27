@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using OpenMU.PlayerWeb.Data;
 
 namespace OpenMU.PlayerWeb.Services;
@@ -49,14 +49,16 @@ public class AccountService
         }
 
         await using var db = await _dbFactory.CreateDbContextAsync();
+        var cleanUsername = loginName.Trim();
+        var cleanEmail = email.Trim();
 
         // 1. Kiểm tra trùng lặp trên S6 (PostgreSQL)
-        if (await db.Accounts.AnyAsync(a => a.LoginName == loginName))
+        if (await db.Accounts.AnyAsync(a => a.LoginName.ToLower() == cleanUsername.ToLower()))
         {
             return "Username already in use.";
         }
 
-        if (await db.Accounts.AnyAsync(a => a.EMail == email))
+        if (await db.Accounts.AnyAsync(a => a.EMail.ToLower() == cleanEmail.ToLower()))
         {
             return "Email already in use.";
         }
@@ -124,11 +126,16 @@ public class AccountService
         catch { return false; }
     }
 
-    /// <summary>Validates credentials. Returns the account on success, otherwise null.</summary>
     public async Task<Account?> AuthenticateAsync(string loginName, string password)
     {
+        if (string.IsNullOrWhiteSpace(loginName) || string.IsNullOrEmpty(password))
+        {
+            return null;
+        }
+
+        var cleanUsername = loginName.Trim();
         await using var db = await _dbFactory.CreateDbContextAsync();
-        var account = await db.Accounts.FirstOrDefaultAsync(a => a.LoginName == loginName);
+        var account = await db.Accounts.FirstOrDefaultAsync(a => a.LoginName.ToLower() == cleanUsername.ToLower());
         if (account is null)
         {
             return null;
